@@ -116,6 +116,7 @@
     <Compile Include="SourceDC\CSourceDC_EA_PS8080_510.vb" />
     <Compile Include="SourceDC\CSourceDC_EA_PS9080_200.vb" />
     <Compile Include="SourceDC\CSourceDC_EA_PS9600_25.vb" />
+    <Compile Include="TC\CTC_WEISS_WK64.vb" />
     <Compile Include="TestInterface.vb" />
     <Compile Include="Visa\frmSessionConfig.designer.vb">
       <DependentUpon>frmSessionConfig.vb</DependentUpon>
@@ -136,7 +137,7 @@
     <Compile Include="DAQ\CDAQ_KTLY2000.vb" />
     <Compile Include="Scope\CScope_Yokogawa_DLM4038.vb" />
     <Compile Include="SourceDC\ISource_DC.vb" />
-    <Compile Include="TC\ITempChamber.vb" />
+    <Compile Include="TC\ITC.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
