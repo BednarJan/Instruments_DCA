@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E47E2A30-EDB2-4261-886E-8F54F33B9ED4}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Instruments</RootNamespace>
+    <AssemblyName>Instruments</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>Console</MyType>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>Instruments.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>Instruments.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Sub Main</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Ivi.Visa, Version=5.8.0.0, Culture=neutral, PublicKeyToken=a128c98f1d7717c1, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.Visa, Version=17.5.0.49152, Culture=neutral, PublicKeyToken=2eaa5af0834e221d, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+    <Import Include="System.Threading.Tasks" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DAQ\CDAQ_AGIL34980A.vb" />
+    <Compile Include="frmDeviceControl.designer.vb">
+      <DependentUpon>frmDeviceControl.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmDeviceControl.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IDevice.vb" />
+    <Compile Include="Load\CLoad_CHROMA_63203.vb" />
+    <Compile Include="Load\CLoad_CHROMA_63209.vb" />
+    <Compile Include="Load\CLoad_CHROMA_63210E_600_700.vb" />
+    <Compile Include="Load\CLoad_CHROMA_63212E_150_1200.vb" />
+    <Compile Include="Load\CLoad_CHROMA_6314.vb" />
+    <Compile Include="Load\CLoad_HP_6050A.vb" />
+    <Compile Include="Load\CLoad_CHROMA_63204.vb" />
+    <Compile Include="Load\CLoad_ZENTRO_EL3000.vb" />
+    <Compile Include="OfflineHandler\OfflineHandler.vb" />
+    <Compile Include="PWAN\CPWAN_INFRA_106A.vb" />
+    <Compile Include="PWAN\CPWAN_INFRA_SM201.vb" />
+    <Compile Include="PWAN\CPWAN_YOKO_WT3000.vb" />
+    <Compile Include="PWAN\CPWAN_HIOKI_PW3337.vb" />
+    <Compile Include="PWAN\CPWAN_YOKO_WT310HC.vb" />
+    <Compile Include="PWAN\CPWAN_YOKO_WT500.vb" />
+    <Compile Include="PWAN\IPWAN.vb" />
+    <Compile Include="PWAN\CPWAN_Helper.vb" />
+    <Compile Include="Scope\CMeas.vb" />
+    <Compile Include="Scope\CScope_Helper.vb" />
+    <Compile Include="SourceAC\CSourceAC_CHROMA_61512.vb" />
+    <Compile Include="SourceAC\CSourceAC_CHROMA_6530.vb" />
+    <Compile Include="SourceAC\CSourceAC_CHROMA_6560.vb" />
+    <Compile Include="SourceAC\ISource_AC.vb" />
+    <Compile Include="SourceDC\CSourceDC_SORENSEN_60_10.vb" />
+    <Compile Include="SourceDC\CSourceDC_AGILENT_6030A.vb" />
+    <Compile Include="SourceDC\CSourceDC_AGILENT_66104A.vb" />
+    <Compile Include="SourceDC\CSourceDC_TOELLNER_8872_80.vb" />
+    <Compile Include="SourceDC\CSourceDC_EA_PS8080_340.vb" />
+    <Compile Include="SourceDC\CSourceDC_EA_PS8080_510.vb" />
+    <Compile Include="SourceDC\CSourceDC_EA_PS9080_200.vb" />
+    <Compile Include="SourceDC\CSourceDC_EA_PS9600_25.vb" />
+    <Compile Include="TestInterface.vb" />
+    <Compile Include="Visa\frmSessionConfig.designer.vb">
+      <DependentUpon>frmSessionConfig.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Visa\frmSessionConfig.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Visa\VisaDeviceFactory\IVisaDeviceFactory.vb" />
+    <Compile Include="Visa\VisaDeviceFactory\CVisaDeviceFactoryNI.vb" />
+    <Compile Include="Visa\CVisaManager.vb" />
+    <Compile Include="Visa\VisaDevice\CVisaDeviceNI.vb" />
+    <Compile Include="Visa\VisaDevice\IVisaDevice.vb" />
+    <Compile Include="Load\CLoad_PRODIGIT_3311.vb" />
+    <Compile Include="DAQ\IDAQ.vb" />
+    <Compile Include="Load\ILoad.vb" />
+    <Compile Include="CErrorLogger.vb" />
+    <Compile Include="CHelper.vb" />
+    <Compile Include="DAQ\CDAQ_KTLY2000.vb" />
+    <Compile Include="Scope\CScope_Yokogawa_DLM4038.vb" />
+    <Compile Include="SourceDC\ISource_DC.vb" />
+    <Compile Include="TC\ITempChamber.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="frmDeviceControl.resx">
+      <DependentUpon>frmDeviceControl.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Visa\frmSessionConfig.resx">
+      <DependentUpon>frmSessionConfig.vb</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Accessibility">
+      <Guid>{1EA4DBF0-3C3B-11CF-810C-00AA00389B71}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
