@@ -7,12 +7,20 @@ Imports System.Xml.Serialization
 Module TestInterface
 
     Public Sub main()
-        Dim DeviceFactory As New CVisaDeviceFactoryNI
+
+        Const VISAAddrTC As String = "ASRL5::INSTR"
+
+        Dim DeviceFactory As New CVisaDeviceFactoryKSGHT
         Dim ErrorLogger As New CErrorLogger("C:\ErrorLog\ErrorLog.txt")
         Dim ResMngr As New CVisaManager()
 
         Dim DCSource As New CSourceDC_SORENSEN_60_10(DeviceFactory.CreateDevice(ResMngr.Resources.Item(7)), ErrorLogger)
         DCSource.Name = "Sorensen DLM 60-10"
+
+        Dim myTC As ITC = New CTC_WEISS_WK64(DeviceFactory.CreateDevice(VISAAddrTC), ErrorLogger)
+
+
+
 
         Dim PWAN As New CPWAN_HIOKI_PW3337(DeviceFactory.CreateDevice(ResMngr.Resources.Item(10)), ErrorLogger)
         PWAN.Name = "HIOKI PW3337"
