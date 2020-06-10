@@ -19,7 +19,8 @@ Public Class CTC_WEISS_WT3340
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
 
         MyBase.New(Session, ErrorLogger)
-        MyBase.Name = "Weiss WT3340"
+        Name = "Weiss WT3340"
+
 
     End Sub
 #End Region
@@ -33,6 +34,13 @@ Public Class CTC_WEISS_WT3340
         SetpointPressure = Single.MinValue
         MinTemp = -75
         MaxTemp = 130
+
+        HeatGrad = 3  ' K/min
+        CoolGrad = 3  ' K/min
+        HumiGrad = 2.5 ' K/min
+        DeHumiGrad = 2.5 ' K/min
+
+        SetGradients()
 
         TurnOFF()
 
@@ -69,7 +77,7 @@ Public Class CTC_WEISS_WT3340
 
         Checksum = Calc_Checksum(cmdStr)
 
-        cmdStr = Chr(2) & cmdStr & Checksum
+        cmdStr = Chr(STX) & cmdStr & Checksum & Chr(ETX)
 
         MyBase.SendCommand(cmdStr)
     End Sub
@@ -111,6 +119,23 @@ Public Class CTC_WEISS_WT3340
     End Function
 
 
+    Overrides Sub SetGradients()
+
+        Dim cmdStr As String
+        Dim Checksum As String = vbNullString
+
+        cmdStr = "1U" & Format(HeatGrad, "0000.0") & " "
+        cmdStr &= Format(CoolGrad, "0000.0") & " "
+        cmdStr &= Format(HumiGrad, "0000.0") & " "
+        cmdStr &= Format(DeHumiGrad, "0000.0")
+
+        Checksum = Calc_Checksum(cmdStr)
+
+        cmdStr = Chr(STX) & cmdStr & Checksum & Chr(ETX)
+
+        MyBase.SendCommand(cmdStr)
+
+    End Sub
 
 #End Region
 

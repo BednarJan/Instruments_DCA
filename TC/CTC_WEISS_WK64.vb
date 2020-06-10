@@ -19,7 +19,7 @@ Public Class CTC_WEISS_WK64
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
 
         MyBase.New(Session, ErrorLogger)
-        MyBase.Name = "Weiss WK64"
+        Name = "Weiss WK64"
 
     End Sub
 #End Region
@@ -33,6 +33,13 @@ Public Class CTC_WEISS_WK64
         SetpointPressure = Single.MinValue
         MinTemp = -75
         MaxTemp = 130
+
+        HeatGrad = 3  ' K/min
+        CoolGrad = 3  ' K/min
+        HumiGrad = 2.5 ' K/min
+        DeHumiGrad = 2.5 ' K/min
+
+        SetGradients()
 
         TurnOFF()
 
@@ -103,6 +110,10 @@ Public Class CTC_WEISS_WK64
 
     End Function
 
+
+    Overrides Sub SetGradients()
+
+    End Sub
 
 #End Region
 

@@ -5,6 +5,9 @@ Public Class BCTC_WEISS
     Implements ITC
     Implements IDevice
 
+    Public Const STX As Byte = 2
+    Public Const ETX As Byte = 3
+
     Private _ErrorLogger As CErrorLogger
     Private _strVisa_Adr As String = String.Empty
 
@@ -27,6 +30,13 @@ Public Class BCTC_WEISS
     Public Property MinPressure As Single Implements ITC.MinPressure
     Public Property MaxPressure As Single Implements ITC.MaxPressure
 
+    Public Property HeatGrad As Single Implements ITC.HeatGrad
+    Public Property CoolGrad As Single Implements ITC.CoolGrad
+
+    Public Property HumiGrad As Single Implements ITC.HumiGrad
+
+    Public Property DeHumiGrad As Single Implements ITC.DeHumiGrad
+
 
 #End Region
 
@@ -34,7 +44,6 @@ Public Class BCTC_WEISS
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
         _Visa = New CVisaDeviceNI(Session, ErrorLogger)
         _ErrorLogger = ErrorLogger
-        _Name = "Weiss WK64"
     End Sub
 #End Region
 
@@ -55,12 +64,7 @@ Public Class BCTC_WEISS
 
     Public Overridable Sub Initialize() Implements IDevice.Initialize
 
-        _SetpointTemp = 25
-        _SetpointHumidity = 0
-        _SetpointPressure = 1.5
-        _MinTemp = -75
-        _MaxTemp = 130
-
+        SetGradients()
         TurnOFF()
 
     End Sub
@@ -127,6 +131,11 @@ Public Class BCTC_WEISS
         'Throw New NotImplementedException()
         Return Single.MinValue
     End Function
+
+    Public Overridable Sub SetGradients() Implements ITC.SetGradients
+
+    End Sub
+
 
 #End Region
 

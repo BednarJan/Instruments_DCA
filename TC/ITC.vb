@@ -3,9 +3,9 @@
 
 #Region "Properties"
 
-    ReadOnly Property SetpointTemp As Single
-    ReadOnly Property SetpointHumidity As Single
-    ReadOnly Property SetpointPressure As Single
+    Property SetpointTemp As Single
+    Property SetpointHumidity As Single
+    Property SetpointPressure As Single
 
     ReadOnly Property MinTemp As Single
     ReadOnly Property MaxTemp As Single
@@ -15,6 +15,13 @@
 
     ReadOnly Property MinPressure As Single
     ReadOnly Property MaxPressure As Single
+
+    Property HeatGrad As Single
+    Property CoolGrad As Single
+
+    Property HumiGrad As Single
+    Property DeHumiGrad As Single
+
 
 #End Region
 
@@ -26,6 +33,8 @@
 
 
     Sub SetTemp(ByVal val As Single)
+
+
 
     Function GetSetpointTemp() As Single
     Function GetInternalTemp() As Single
@@ -41,6 +50,8 @@
 
     Sub TurnOFF()
     Sub TurnON()
+
+    Sub SetGradients()
 
 #End Region
 
