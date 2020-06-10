@@ -3,6 +3,7 @@ Imports System.IO
 Imports System.Runtime.Serialization
 Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Xml.Serialization
+Imports Ivi.Visa
 
 Module TestInterface
 
@@ -10,14 +11,25 @@ Module TestInterface
 
         Const VISAAddrTC As String = "ASRL5::INSTR"
 
-        Dim DeviceFactory As New CVisaDeviceFactoryKSGHT
+        Dim DeviceFactory As New CVisaDeviceFactory
         Dim ErrorLogger As New CErrorLogger("C:\ErrorLog\ErrorLog.txt")
         Dim ResMngr As New CVisaManager()
+        Dim MySession As IMessageBasedSession
+
 
         Dim DCSource As New CSourceDC_SORENSEN_60_10(DeviceFactory.CreateDevice(ResMngr.Resources.Item(7)), ErrorLogger)
         DCSource.Name = "Sorensen DLM 60-10"
 
-        Dim myTC As ITC = New CTC_WEISS_WK64(DeviceFactory.CreateDevice(VISAAddrTC), ErrorLogger)
+        MySession = DeviceFactory.CreateDevice(VISAAddrTC)
+        Dim serial As Ivi.Visa.ISerialSession = MySession
+
+        serial.BaudRate = 9600
+        serial.DataBits = 8
+        serial.Parity = SerialParity.None
+        serial.StopBits = SerialStopBitsMode.One
+        serial.FlowControl = SerialFlowControlModes.None
+
+        Dim myTC As ITC = New CTC_WEISS_WK64(MySession, ErrorLogger)
 
 
 
