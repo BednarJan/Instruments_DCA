@@ -30,7 +30,7 @@ Public Class CTC_WEISS_WK64
 
         SetpointTemp = 25
         SetpointHumidity = 0
-        SetpointPressure = 1.5
+        SetpointPressure = Single.MinValue
         MinTemp = -75
         MaxTemp = 130
 
@@ -47,7 +47,7 @@ Public Class CTC_WEISS_WK64
 
 #Region "private methodes and functions"
 
-    Overrides Sub SetTempHumidity(ByVal temp As Single, Optional hum As Single = 0, Optional bONOff As Boolean = True)
+    Overrides Sub SetTempAndHumidity(ByVal temp As Single, Optional hum As Single = 0, Optional bONOff As Boolean = True)
 
         Dim strg As String, cmdStr As String
         Dim sONoFF As String

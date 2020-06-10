@@ -80,7 +80,7 @@ Public Class BCTC_WEISS
 
         _SetpointTemp = val
 
-        Call SetTempHumidity(_SetpointTemp,, False)
+        Call SetTempAndHumidity(_SetpointTemp,, False)
     End Sub
 
     Public Overridable Function GetSetpointTemp() As Single Implements ITC.GetSetpointTemp
@@ -97,11 +97,11 @@ Public Class BCTC_WEISS
     End Sub
 
     Public Overridable Sub TurnOFF() Implements ITC.TurnOFF
-        SetTempHumidity(_SetpointTemp, , False)
+        SetTempAndHumidity(_SetpointTemp, , False)
     End Sub
 
     Public Overridable Sub TurnON() Implements ITC.TurnON
-        SetTempHumidity(_SetpointTemp, , True)
+        SetTempAndHumidity(_SetpointTemp, , True)
     End Sub
 
     Public Overridable Function GetInternalTemp() As Single Implements ITC.GetInternalTemp
@@ -132,13 +132,53 @@ Public Class BCTC_WEISS
 
 #Region "private methodes and functions"
 
-    Overridable Sub SetTempHumidity(ByVal temp As Single, Optional hum As Single = 0, Optional bONOff As Boolean = True)
+    Overridable Sub SetTempAndHumidity(ByVal temp As Single, Optional hum As Single = 0, Optional bONOff As Boolean = True)
 
     End Sub
 
 
     Overridable Function GetTempAndHumidity(ByRef hum As Single) As Single
 
+        Return Single.MinValue
+
+    End Function
+
+
+    Public Function Calc_Checksum(ByVal myStr)
+        Dim l As Integer, i As Integer
+        Dim b As Integer, j As Integer, K As Byte
+        Dim ch As String
+
+        myStr = Chr(2) + myStr
+        l = Len(myStr)
+        b = 256
+
+        For i = 1 To l
+            ch = Mid(myStr, i, 1)
+            j = Asc(ch)
+            If j < b Then
+                b += -j
+            Else
+                b += -j
+                b += 256
+            End If
+        Next i
+
+        j = b \ 16
+        If j < 10 Then
+            j += 48
+        Else
+            j += 55
+        End If
+
+        K = b Mod 16
+        If K < 10 Then
+            K += 48
+        Else
+            K += 55
+        End If
+
+        Return Chr(j) + Chr(K)
 
     End Function
 

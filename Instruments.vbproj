@@ -112,6 +112,7 @@
     <Compile Include="SourceDC\CSourceDC_EA_PS9080_200.vb" />
     <Compile Include="SourceDC\CSourceDC_EA_PS9600_25.vb" />
     <Compile Include="TC\BCTC_WEISS.vb" />
+    <Compile Include="TC\CTC_WEISS_WT3340.vb" />
     <Compile Include="TC\CTC_WEISS_WK64.vb" />
     <Compile Include="TestInterface.vb" />
     <Compile Include="Visa\frmSessionConfig.designer.vb">
@@ -177,17 +178,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\" />
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="Accessibility">
-      <Guid>{1EA4DBF0-3C3B-11CF-810C-00AA00389B71}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>1</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
