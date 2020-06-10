@@ -20,22 +20,19 @@ Module TestInterface
         Dim DCSource As New CSourceDC_SORENSEN_60_10(DeviceFactory.CreateDevice(ResMngr.Resources.Item(7)), ErrorLogger)
         DCSource.Name = "Sorensen DLM 60-10"
 
-        MySession = DeviceFactory.CreateDevice(VISAAddrTC)
-        Dim serial As Ivi.Visa.ISerialSession = MySession
 
-        serial.BaudRate = 9600
-        serial.DataBits = 8
-        serial.Parity = SerialParity.None
-        serial.StopBits = SerialStopBitsMode.One
-        serial.FlowControl = SerialFlowControlModes.None
+        MySession = DeviceFactory.CreateDevice(VISAAddrTC)
+
+        'SerialParity port settings in the order: baudrate, SerialParity, SerialStopBitsMode, Databits, FlowControlModes  
+
+        DeviceFactory.SetSerialPort(MySession, "9600,0,1,8,N")
 
         Dim myTC As ITC = New CTC_WEISS_WK64(MySession, ErrorLogger)
 
 
 
-
-        Dim PWAN As New CPWAN_HIOKI_PW3337(DeviceFactory.CreateDevice(ResMngr.Resources.Item(10)), ErrorLogger)
-        PWAN.Name = "HIOKI PW3337"
+        'Dim PWAN As New CPWAN_HIOKI_PW3337(DeviceFactory.CreateDevice(ResMngr.Resources.Item(10)), ErrorLogger)
+        'PWAN.Name = "HIOKI PW3337"
 
         Dim frmControl As New frmDeviceControl(DCSource.Name, DCSource)
 
