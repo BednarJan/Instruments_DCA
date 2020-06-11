@@ -10,7 +10,7 @@ Public Class CDAQ_KTLY2000
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
 
-        _Visa = New CVisaDeviceNI(Session, ErrorLogger)
+        _Visa = New CVisaDevice(Session, ErrorLogger)
 
     End Sub
 

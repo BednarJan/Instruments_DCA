@@ -1,8 +1,8 @@
 ﻿Imports System.Runtime.Serialization
 Imports Ivi.Visa
-Imports NationalInstruments.Visa
+Imports Keysight.Visa
 
-Public Class CVisaDeviceNI
+Public Class CVisaDevice
     Implements IVisaDevice
 
 #Region "Readonly Properties"

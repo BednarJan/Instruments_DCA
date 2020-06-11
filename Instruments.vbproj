@@ -5,11 +5,11 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E47E2A30-EDB2-4261-886E-8F54F33B9ED4}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>Instruments</RootNamespace>
     <AssemblyName>Instruments</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <MyType>Console</MyType>
+    <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -44,7 +44,8 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Sub Main</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -52,7 +53,6 @@
   <ItemGroup>
     <Reference Include="Ivi.Visa, Version=5.8.0.0, Culture=neutral, PublicKeyToken=a128c98f1d7717c1, processorArchitecture=MSIL" />
     <Reference Include="Keysight.Visa, Version=18.1.0.0, Culture=neutral, PublicKeyToken=7a01cdb2a9131f73, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.Visa, Version=17.5.0.49152, Culture=neutral, PublicKeyToken=2eaa5af0834e221d, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -123,9 +123,8 @@
     </Compile>
     <Compile Include="Visa\VisaDeviceFactory\CVisaDeviceFactory.vb" />
     <Compile Include="Visa\VisaDeviceFactory\IVisaDeviceFactory.vb" />
-    <Compile Include="Visa\VisaDeviceFactory\CVisaDeviceFactoryNI.vb" />
     <Compile Include="Visa\CVisaManager.vb" />
-    <Compile Include="Visa\VisaDevice\CVisaDeviceNI.vb" />
+    <Compile Include="Visa\VisaDevice\CVisaDevice.vb" />
     <Compile Include="Visa\VisaDevice\IVisaDevice.vb" />
     <Compile Include="DAQ\IDAQ.vb" />
     <Compile Include="Load\ILoad.vb" />
@@ -139,6 +138,7 @@
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>

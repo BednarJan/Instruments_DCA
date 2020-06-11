@@ -159,7 +159,7 @@ Public Class frmDeviceControl
     End Sub
 
     Private Sub btnClose_Click(sender As Object, e As EventArgs) Handles btnClose.Click
-        End
+
     End Sub
 
 #End Region

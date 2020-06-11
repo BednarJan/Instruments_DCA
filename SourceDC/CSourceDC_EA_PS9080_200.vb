@@ -21,7 +21,7 @@ Public Class CSourceDC_EA_PS9080_200
 
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
-        _Visa = New CVisaDeviceNI(Session, ErrorLogger)
+        _Visa = New CVisaDevice(Session, ErrorLogger)
         _ErrorLogger = ErrorLogger
     End Sub
 #End Region
