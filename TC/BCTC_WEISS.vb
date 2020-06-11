@@ -84,7 +84,7 @@ Public Class BCTC_WEISS
 
         _SetpointTemp = val
 
-        Call SetTempAndHumidity(_SetpointTemp,, False)
+        Call SetTempAndHumidity(_SetpointTemp,, True)
     End Sub
 
     Public Overridable Function GetSetpointTemp() As Single Implements ITC.GetSetpointTemp

@@ -31,10 +31,7 @@
     Sub SendCommand(cmdStr As String)
     Function ReadResponse() As String
 
-
     Sub SetTemp(ByVal val As Single)
-
-
 
     Function GetSetpointTemp() As Single
     Function GetInternalTemp() As Single
