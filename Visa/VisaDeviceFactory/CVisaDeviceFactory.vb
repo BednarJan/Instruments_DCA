@@ -14,7 +14,7 @@ Public Class CVisaDeviceFactory
                 Case InStr(ResourceName, "GPIB",)
                     _Session = New GpibSession(ResourceName)
                 Case InStr(ResourceName, "ASRL")
-                    _Session = New Keysight.Visa.SerialSession(ResourceName)
+                    _Session = New SerialSession(ResourceName)
                 Case InStr(ResourceName, "USB")
                     _Session = New UsbSession(ResourceName)
                 Case InStr(ResourceName, "TCPIP")
