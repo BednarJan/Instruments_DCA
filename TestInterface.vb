@@ -9,25 +9,25 @@ Module TestInterface
 
     Public Sub main()
 
-        'Const VISAAddrTC As String = "ASRL7::INSTR"
+        Const VISAAddrTC As String = "ASRL7::INSTR"
 
-        'Dim DeviceFactory As New CVisaDeviceFactory
-        'Dim ErrorLogger As New CErrorLogger("C:\ErrorLog\ErrorLog.txt")
-        'Dim ResMngr As New CVisaManager()
-        'Dim MySession As IMessageBasedSession
+        Dim DeviceFactory As New CVisaDeviceFactory
+        Dim ErrorLogger As New CErrorLogger("C:\ErrorLog\ErrorLog.txt")
+        Dim ResMngr As New CVisaManager()
+        Dim MySession As IMessageBasedSession
 
 
         'Dim DCSource As New CSourceDC_SORENSEN_60_10(DeviceFactory.CreateDevice(ResMngr.Resources.Item(7)), ErrorLogger)
         'DCSource.Name = "Sorensen DLM 60-10"
 
 
-        'MySession = DeviceFactory.CreateDevice(VISAAddrTC)
+        MySession = DeviceFactory.CreateDevice(VISAAddrTC)
 
         'SerialParity port settings in the order: baudrate, SerialParity, SerialStopBitsMode, Databits, FlowControlModes  
 
-        'DeviceFactory.SetSerialPort(MySession, "9600,0,1,8,N")
+        DeviceFactory.SetSerialPort(MySession, "9600,0,1,8,N")
 
-        'Dim myTC As ITC = New CTC_WEISS_WT3340(MySession, ErrorLogger)
+        Dim myTC As ITC = New CTC_WEISS_WT3340(MySession, ErrorLogger)
 
         'myTC.HeatGrad = 1
         'myTC.CoolGrad = 1

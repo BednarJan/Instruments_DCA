@@ -37,7 +37,7 @@
     Function GetInternalTemp() As Single
     Function GetProcessTemp() As Single
 
-    Function RegTemp(ByVal val As Single) As Boolean
+    Function RegTemp(ByVal val As Single, Optional ByVal accu As Single = 1) As Boolean
 
     Sub SetHumidity(ByVal val As Single)
     Function GetHumidity() As Single
@@ -46,7 +46,6 @@
     Function GetPumpPressure() As Single
 
     Sub TurnOFF()
-    Sub TurnON()
 
     Sub SetGradients()
 

@@ -85,6 +85,7 @@ Public Class BCTC_WEISS
         _SetpointTemp = val
 
         Call SetTempAndHumidity(_SetpointTemp,, True)
+
     End Sub
 
     Public Overridable Function GetSetpointTemp() As Single Implements ITC.GetSetpointTemp
@@ -93,19 +94,25 @@ Public Class BCTC_WEISS
 
     Public Overridable Sub SetHumidity(val As Single) Implements ITC.SetHumidity
 
-        Throw New NotImplementedException()
+        _SetpointHumidity = val
+        Call SetTempAndHumidity(_SetpointTemp, val, True)
+
     End Sub
+
+    Public Overridable Function GetHumidity() As Single Implements ITC.GetHumidity
+        Return _SetpointHumidity
+    End Function
 
     Public Overridable Sub SetPumpPressure(val As Single) Implements ITC.SetPumpPressure
         Throw New NotImplementedException()
     End Sub
 
-    Public Overridable Sub TurnOFF() Implements ITC.TurnOFF
-        SetTempAndHumidity(_SetpointTemp, , False)
-    End Sub
+    Public Overridable Function GetPumpPressure() As Single Implements ITC.GetPumpPressure
+        Throw New NotImplementedException()
+    End Function
 
-    Public Overridable Sub TurnON() Implements ITC.TurnON
-        SetTempAndHumidity(_SetpointTemp, , True)
+    Public Overridable Sub TurnOFF() Implements ITC.TurnOFF
+        SetTempAndHumidity(_SetpointTemp, _SetpointHumidity, False)
     End Sub
 
     Public Overridable Function GetInternalTemp() As Single Implements ITC.GetInternalTemp
@@ -118,19 +125,37 @@ Public Class BCTC_WEISS
         Return GetTempAndHumidity(actual_humidity)
     End Function
 
-    Public Overridable Function RegTemp(ByVal val As Single) As Boolean Implements ITC.RegTemp
-        Throw New NotImplementedException()
+    Public Overridable Function RegTemp(ByVal mySetVal As Single, Optional ByVal accu As Single = 1) As Boolean Implements ITC.RegTemp
+
+        Dim EndTime
+        Dim actTemp As Single
+        Dim NotFinished As Boolean
+
+        NotFinished = True
+
+        Call SetTemp(mySetVal)
+        EndTime = Now() + TimeSerial(1, 1, 0)
+        cHelper.Delay(3)           ' wait 3 sec
+
+        Do While NotFinished        ' condition for waiting till Chamber will sets a temp
+            If Now() < EndTime Then ' timeout condition, if it should take more than 1 hour  
+
+                actTemp = GetProcessTemp()
+
+                If (actTemp < mySetVal + accu) And (actTemp > mySetVal - accu) Then   ' acuarecy +/- C
+                    NotFinished = False
+                Else
+                    cHelper.Delay(5)
+                End If
+            Else
+                NotFinished = True
+            End If
+        Loop
+
+        Return Not NotFinished
+
     End Function
 
-    Public Overridable Function GetHumidity() As Single Implements ITC.GetHumidity
-        'Throw New NotImplementedException()
-        Return Single.MinValue
-    End Function
-
-    Public Overridable Function GetPumpPressure() As Single Implements ITC.GetPumpPressure
-        'Throw New NotImplementedException()
-        Return Single.MinValue
-    End Function
 
     Public Overridable Sub SetGradients() Implements ITC.SetGradients
 

@@ -10,8 +10,8 @@ Public Class CTC_WEISS_WT3340
     Private _ErrorLogger As CErrorLogger
     Private _strVisa_Adr As String = String.Empty
 
-#Region "Shorthand Properties"
 
+#Region "Shorthand Properties"
 
 #End Region
 
@@ -20,7 +20,14 @@ Public Class CTC_WEISS_WT3340
 
         MyBase.New(Session, ErrorLogger)
         Name = "Weiss WT3340"
+        MinTemp = -75
+        MaxTemp = 130
 
+        MinHumidity = 0
+        MaxHumidity = 100
+
+        MinPressure = Single.MinValue
+        MaxPressure = Single.MaxValue
 
     End Sub
 #End Region

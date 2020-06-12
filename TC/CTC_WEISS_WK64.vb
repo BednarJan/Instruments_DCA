@@ -21,6 +21,15 @@ Public Class CTC_WEISS_WK64
         MyBase.New(Session, ErrorLogger)
         Name = "Weiss WK64"
 
+        MinTemp = -75
+        MaxTemp = 130
+
+        MinHumidity = Single.MinValue
+        MaxHumidity = Single.MaxValue
+
+        MinPressure = Single.MinValue
+        MaxPressure = Single.MaxValue
+
     End Sub
 #End Region
 
