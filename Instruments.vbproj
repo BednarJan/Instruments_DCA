@@ -104,7 +104,8 @@
     <Compile Include="Scope\CScope_Helper.vb" />
     <Compile Include="SourceAC\CSourceAC_CHROMA_6530.vb" />
     <Compile Include="SourceAC\ISource_AC.vb" />
-    <Compile Include="SourceDC\CSourceDC_SORENSEN_60_10.vb" />
+    <Compile Include="SourceDC\CSourceDC_SORENSEN_60_1.vb" />
+    <Compile Include="SourceDC\BCSourceDC.vb" />
     <Compile Include="SourceDC\CSourceDC_AGILENT_6030A.vb" />
     <Compile Include="SourceDC\CSourceDC_AGILENT_66104A.vb" />
     <Compile Include="SourceDC\CSourceDC_EA_PS8080_340.vb" />

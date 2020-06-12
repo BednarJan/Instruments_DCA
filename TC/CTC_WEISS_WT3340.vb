@@ -7,9 +7,6 @@ Public Class CTC_WEISS_WT3340
     Implements ITC
     Implements IDevice
 
-    Private _ErrorLogger As CErrorLogger
-    Private _strVisa_Adr As String = String.Empty
-
 
 #Region "Shorthand Properties"
 
@@ -19,6 +16,7 @@ Public Class CTC_WEISS_WT3340
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
 
         MyBase.New(Session, ErrorLogger)
+
         Name = "Weiss WT3340"
         MinTemp = -75
         MaxTemp = 130
@@ -39,8 +37,6 @@ Public Class CTC_WEISS_WT3340
         SetpointTemp = 25
         SetpointHumidity = 0
         SetpointPressure = Single.MinValue
-        MinTemp = -75
-        MaxTemp = 130
 
         HeatGrad = 3  ' K/min
         CoolGrad = 3  ' K/min
@@ -86,7 +82,7 @@ Public Class CTC_WEISS_WT3340
 
         cmdStr = Chr(STX) & cmdStr & Checksum & Chr(ETX)
 
-        MyBase.SendCommand(cmdStr)
+        Visa.SendString(cmdStr)
     End Sub
 
 
@@ -104,9 +100,9 @@ Public Class CTC_WEISS_WT3340
 
         cmdStr = Chr(2) & cmdStr & Checksum
 
-        MyBase.SendCommand("$00I")
+        Visa.SendString("$00I")
         cHelper.Delay(1)
-        Buffer = MyBase.ReadResponse(errMsg)
+        Buffer = Visa.ReceiveString(errMsg)
 
         tempIndexStart = InStr(Buffer, "T")
         tempIndexEnd = InStr(Buffer, "F")
@@ -140,7 +136,7 @@ Public Class CTC_WEISS_WT3340
 
         cmdStr = Chr(STX) & cmdStr & Checksum & Chr(ETX)
 
-        MyBase.SendCommand(cmdStr)
+        Visa.SendString(cmdStr)
 
     End Sub
 

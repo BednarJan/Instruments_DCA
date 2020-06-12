@@ -8,8 +8,8 @@ Public Class BCTC_WEISS
     Public Const STX As Byte = 2
     Public Const ETX As Byte = 3
 
-    Private _ErrorLogger As CErrorLogger
-    Private _strVisa_Adr As String = String.Empty
+    Friend _ErrorLogger As CErrorLogger
+    Friend _strVisa_Adr As String = String.Empty
 
 #Region "Shorthand Properties"
 

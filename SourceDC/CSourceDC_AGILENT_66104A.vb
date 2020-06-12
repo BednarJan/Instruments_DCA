@@ -1,5 +1,6 @@
 ﻿'Class CSourceDC_AGILENT_66104A
 '09.04.2019, A. Zahler
+'12.06.2020, JaBe
 'Compatible Instruments:
 '- AGILENT 66000A (8 slot mainframe) & 66104A (power module)
 '- Only 1 pc. mainframe 66000A with 1 pc. module 66104A in Uster
@@ -9,6 +10,7 @@
 Imports Ivi.Visa
 
 Public Class CSourceDC_AGILENT_66104A
+    Inherits BCSourceDC
     Implements IDevice
     Implements ISource_DC
 
@@ -16,111 +18,75 @@ Public Class CSourceDC_AGILENT_66104A
     Private _strVisa_Adr As String = String.Empty
 
 #Region "Shorthand Properties"
-    Public Property Name As String Implements IDevice.Name
-    Public Property Visa As IVisaDevice Implements IDevice.Visa
-    Public ReadOnly Property VoltageMax As Single = 60 Implements ISource_DC.VoltageMax
-    Public ReadOnly Property CurrentMax As Single = 2.5 Implements ISource_DC.CurrentMax
-    Public ReadOnly Property PowerMax As Single = 150 Implements ISource_DC.PowerMax
+
 #End Region
 
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
-        _Visa = New CVisaDevice(Session, ErrorLogger)
-        _ErrorLogger = ErrorLogger
+
+        MyBase.New(Session, ErrorLogger)
+
     End Sub
 #End Region
 
 #Region "Basic Device Functions (IDevice)"
-    Public Function IDN() As String Implements IDevice.IDN
-        Dim ErrorMessages(1) As String
 
-        _Visa.SendString("*IDN?", ErrorMessages(0))
-        Return _Visa.ReceiveString(ErrorMessages(1))
-
-    End Function
-
-    Public Sub RST() Implements IDevice.RST
-        Dim ErrorMessage As String = ""
-
-        _Visa.SendString("*RST", ErrorMessage)
-
-    End Sub
-
-    Public Sub CLS() Implements IDevice.CLS
-        Dim ErrorMessage As String = ""
-
-        _Visa.SendString("*CLS", ErrorMessage)
-    End Sub
-
-    Public Sub Initialize() Implements IDevice.Initialize
-        _Visa.SendString("*RST;*CLS")
-        _Visa.SendString("CURR 0")
-        _Visa.SendString("VOLT 0")
-        _Visa.SendString(":OUTP:STAT ON")
+    Public Overrides Sub Initialize() Implements IDevice.Initialize
+        Visa.SendString("*RST;*CLS")
+        Visa.SendString("CURR 0")
+        Visa.SendString("VOLT 0")
+        Visa.SendString(":OUTP:STAT ON")
     End Sub
 #End Region
 
 #Region "Interface Methodes ISource_DC"
-    Public Sub SetOutputON() Implements ISource_DC.SetOutputON
-        _Visa.SendString("OUTP:STAT ON")
+    Public Overrides Sub SetOutputON() Implements ISource_DC.SetOutputON
+        MyBase.SetOutputON()
+        '_Visa.SendString("OUTP:STAT ON")
     End Sub
 
-    Public Sub SetOutputOFF() Implements ISource_DC.SetOutputOFF
-        _Visa.SendString("OUTP:STAT OFF")
+    Public Overrides Sub SetOutputOFF() Implements ISource_DC.SetOutputOFF
+        MyBase.SetOutputOFF()
+        '_Visa.SendString("OUTP:STAT OFF")
     End Sub
 
-    Public Sub SetSource(ByVal Voltage As Single, CurrentLim As Single, Optional SetOutON As Boolean = True) Implements ISource_DC.SetSource
-        If Voltage > _VoltageMax Then Voltage = _VoltageMax
-        If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax
+    Public Overrides Sub SetVoltage(ByVal Voltage As Single, CurrentLim As Single, Optional SetOutON As Boolean = True) Implements ISource_DC.SetVoltage
+        MyBase.SetVoltage(Voltage, CurrentLim, SetOutON)
+        'If Voltage > _VoltageMax Then Voltage = _VoltageMax
+        'If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax
 
-        If Voltage = 0 Then
-            _Visa.SendString("VOLT " & Voltage)
-            _Visa.SendString("OUTP:STAT OFF")
-        Else
-            _Visa.SendString("CURR " & CurrentLim)
-            _Visa.SendString("VOLT " & Voltage)
-            If SetOutON Then _Visa.SendString("OUTP:STAT ON")
-        End If
-
-    End Sub
-
-    Public Sub SetVoltage(Voltage As Single) Implements ISource_DC.SetVoltage
-        If Voltage > _VoltageMax Then Voltage = _VoltageMax
-
-        If Voltage = 0 Then
-            _Visa.SendString("VOLT " & Voltage)
-            _Visa.SendString("OUTP:STAT OFF")
-        Else
-            _Visa.SendString("VOLT " & Voltage)
-        End If
+        'If Voltage = 0 Then
+        '    _Visa.SendString("VOLT " & Voltage)
+        '    _Visa.SendString("OUTP:STAT OFF")
+        'Else
+        '    _Visa.SendString("CURR " & CurrentLim)
+        '    _Visa.SendString("VOLT " & Voltage)
+        '    If SetOutON Then _Visa.SendString("OUTP:STAT ON")
+        'End If
 
     End Sub
 
-    Public Sub SetCurrentLim(CurrentLim As Single) Implements ISource_DC.SetCurrentLim
-        If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax
+    Public Overrides Sub SetVoltage(Voltage As Single, Optional SetOutON As Boolean = True) Implements ISource_DC.SetVoltage
+        MyBase.SetVoltage(Voltage, SetOutON)
+        'If Voltage > _VoltageMax Then Voltage = _VoltageMax
 
-        _Visa.SendString("CURR " & CurrentLim)
+        'If Voltage = 0 Then
+        '    _Visa.SendString("VOLT " & Voltage)
+        '    _Visa.SendString("OUTP:STAT OFF")
+        'Else
+        '    _Visa.SendString("VOLT " & Voltage)
+        'End If
 
     End Sub
 
-    'Public Function GetVoltage() As Single Implements ISource_DC.GetVolt
-    '    Dim RetValue As String = String.Empty
-    '        _Visa.SendString("MEAS:VOLT?")
-    '        RetValue = _Visa.ReceiveString()
+    Public Overrides Sub SetCurrentLim(CurrentLim As Single) Implements ISource_DC.SetCurrentLim
+        MyBase.SetCurrentLim(CurrentLim)
+        'If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax
 
-    '        RetValue = RetValue.TrimEnd(" ", "V", vbLf)  'Remove ending before convert to Single
-    '        GetVoltage = cHelper.StringToSingle(RetValue)
+        '_Visa.SendString("CURR " & CurrentLim)
 
-    'End Function
+    End Sub
 
-    'Public Sub ClearProt() Implements ISource_DC.ClearProt
-    '    _Visa.SendString("OUTP:PROT:CLEar")
-    'End Sub
-
-    'Public Function GetStatus() As Single Implements ISource_DC.GetStatus
-    '        _Visa.SendString("STAT:QUES:COND?")                  '"SYST:ERR?")
-    '        GetStatus = _Visa.MyBase.ReceiveString()
-    'End Function
 #End Region
 
 End Class

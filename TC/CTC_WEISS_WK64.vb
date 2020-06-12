@@ -7,9 +7,6 @@ Public Class CTC_WEISS_WK64
     Implements ITC
     Implements IDevice
 
-    Private _ErrorLogger As CErrorLogger
-    Private _strVisa_Adr As String = String.Empty
-
 #Region "Shorthand Properties"
 
 
@@ -19,6 +16,7 @@ Public Class CTC_WEISS_WK64
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
 
         MyBase.New(Session, ErrorLogger)
+
         Name = "Weiss WK64"
 
         MinTemp = -75
@@ -40,8 +38,6 @@ Public Class CTC_WEISS_WK64
         SetpointTemp = 25
         SetpointHumidity = 0
         SetpointPressure = Single.MinValue
-        MinTemp = -75
-        MaxTemp = 130
 
         HeatGrad = 3  ' K/min
         CoolGrad = 3  ' K/min
@@ -84,7 +80,7 @@ Public Class CTC_WEISS_WK64
 
         cmdStr = Chr(36) & strg & Chr(13)
 
-        Call MyBase.SendCommand(cmdStr)
+        Visa.SendString(cmdStr)
 
     End Sub
 
@@ -102,9 +98,9 @@ Public Class CTC_WEISS_WK64
 
             ' TC returns "-075.0 -038.3 0101000000000000Z"
 
-            MyBase.SendCommand("$00I")
+            Visa.SendString("$00I")
             cHelper.Delay(1)
-            Buffer = MyBase.ReadResponse(errMsg)
+            Buffer = Visa.ReceiveString(errMsg)
             sHlp = Split(Buffer, " ")
 
             If IsNumeric(sHlp(1)) Then

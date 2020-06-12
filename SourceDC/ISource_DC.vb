@@ -10,8 +10,8 @@
     Sub SetOutputON()
     Sub SetOutputOFF()
 
-    Sub SetSource(Voltage As Single, CurrentLim As Single, Optional SetON As Boolean = True)
-    Sub SetVoltage(Voltage As Single)
+    Sub SetVoltage(Voltage As Single, CurrentLim As Single, Optional SetON As Boolean = True)
+    Sub SetVoltage(Voltage As Single, Optional SetON As Boolean = True)
     Sub SetCurrentLim(CurrentLim As Single)
 
     'Sub ClearProt()
