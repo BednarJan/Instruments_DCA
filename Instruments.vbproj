@@ -78,6 +78,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BCDevice.vb" />
     <Compile Include="DAQ\CDAQ_AGIL34980A.vb" />
     <Compile Include="frmDeviceControl.designer.vb">
       <DependentUpon>frmDeviceControl.vb</DependentUpon>

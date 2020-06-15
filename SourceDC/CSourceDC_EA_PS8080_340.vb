@@ -7,7 +7,6 @@ Imports Ivi.Visa
 
 Public Class CSourceDC_EA_PS8080_340
     Inherits BCSourceDC
-    Implements IDevice
     Implements ISource_DC
 
 #Region "Shorthand Properties"
@@ -27,7 +26,7 @@ Public Class CSourceDC_EA_PS8080_340
 
 #Region "Basic Device Functions (IDevice)"
 
-    Public Overrides Sub Initialize() Implements IDevice.Initialize
+    Public Overrides Sub Initialize()
         Visa.SendString("*CLS")
         Visa.SendString("SYST:LOCK:STAT 1")
         Visa.SendString("CURRENT 0")

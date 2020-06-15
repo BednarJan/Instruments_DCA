@@ -2,19 +2,13 @@
 Imports System.Math
 
 Public Class BCTC_WEISS
+    Inherits BCDevice
     Implements ITC
-    Implements IDevice
 
     Public Const STX As Byte = 2
     Public Const ETX As Byte = 3
 
-    Friend _ErrorLogger As CErrorLogger
-    Friend _strVisa_Adr As String = String.Empty
-
-#Region "Shorthand Properties"
-
-    Public Property Name As String Implements IDevice.Name
-    Public Property Visa As IVisaDevice Implements IDevice.Visa
+#Region "Shorthand Properties ITC"
 
     Public Property SetpointTemp As Single Implements ITC.SetpointTemp
     Public Property SetpointHumidity As Single Implements ITC.SetpointHumidity
@@ -42,27 +36,24 @@ Public Class BCTC_WEISS
 
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
-        _Visa = New CVisaDevice(Session, ErrorLogger)
-        _ErrorLogger = ErrorLogger
+        MyBase.New(Session, ErrorLogger)
     End Sub
 #End Region
 
 #Region "Basic Device Functions (IDevice)"
-    Public Overridable Function IDN() As String Implements IDevice.IDN
-
-        Return _Name
-
+    Public Overrides Function IDN() As String Implements IDevice.IDN
+        Return MyBase.Name
     End Function
 
-    Public Overridable Sub RST() Implements IDevice.RST
+    Public Overrides Sub RST() Implements IDevice.RST
+        TurnOFF()
+    End Sub
+
+    Public Overrides Sub CLS() Implements IDevice.CLS
         Throw New NotImplementedException()
     End Sub
 
-    Public Overridable Sub CLS() Implements IDevice.CLS
-        Throw New NotImplementedException()
-    End Sub
-
-    Public Overridable Sub Initialize() Implements IDevice.Initialize
+    Public Overrides Sub Initialize() Implements IDevice.Initialize
 
         SetGradients()
         TurnOFF()
@@ -70,13 +61,14 @@ Public Class BCTC_WEISS
     End Sub
 #End Region
 
+
 #Region "Interface ITC Methodes"
     Public Overridable Sub SendCommand(cmdStr As String) Implements ITC.SendCommand
-        _Visa.SendString(cmdStr)
+        Visa.SendString(cmdStr)
     End Sub
 
     Public Overridable Function ReadResponse() As String Implements ITC.ReadResponse
-        Return _Visa.ReceiveString
+        Return Visa.ReceiveString
     End Function
 
 
@@ -156,11 +148,9 @@ Public Class BCTC_WEISS
 
     End Function
 
-
     Public Overridable Sub SetGradients() Implements ITC.SetGradients
 
     End Sub
-
 
 #End Region
 

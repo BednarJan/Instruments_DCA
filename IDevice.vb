@@ -1,5 +1,6 @@
 ﻿Public Interface IDevice
-    ReadOnly Property Name As String
+
+    Property Name As String
     ReadOnly Property Visa As IVisaDevice  'IO Visa Interface
 
 #Region "Basic Device Functions"

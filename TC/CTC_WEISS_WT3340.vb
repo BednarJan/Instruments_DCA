@@ -5,8 +5,6 @@ Public Class CTC_WEISS_WT3340
 
     Inherits BCTC_WEISS
     Implements ITC
-    Implements IDevice
-
 
 #Region "Shorthand Properties"
 

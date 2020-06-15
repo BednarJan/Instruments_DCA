@@ -3,9 +3,7 @@ Imports System.Math
 
 Public Class CTC_WEISS_WK64
     Inherits BCTC_WEISS
-
     Implements ITC
-    Implements IDevice
 
 #Region "Shorthand Properties"
 

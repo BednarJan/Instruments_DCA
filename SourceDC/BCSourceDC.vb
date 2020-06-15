@@ -1,72 +1,63 @@
-﻿'Class CSourceDC_SORENSEN_60_1
+﻿'Class BCSourceDC common for all DC ources,  inherited fro the BCDevice
 '02.05.2019, J. Bednar  
 '12.06.2020, JaBe
-'Compatible Instruments:
-'- Sorensen DLM 60-10(single channel)
+'Base clase for the DC sources
 Imports Ivi.Visa
 
 Public Class BCSourceDC
-    Implements IDevice
+    Inherits BCDevice
     Implements ISource_DC
 
-    Private _ErrorLogger As CErrorLogger
-    Private _strVisa_Adr As String = String.Empty
-
 #Region "Shorthand Properties"
-    Public Property Name As String Implements IDevice.Name
-    Public Property Visa As IVisaDevice Implements IDevice.Visa
-    Public Property VoltageMax As Single = 60 Implements ISource_DC.VoltageMax
-    Public Property CurrentMax As Single = 10 Implements ISource_DC.CurrentMax
-    Public Property PowerMax As Single = 600 Implements ISource_DC.PowerMax
+
+    Public Property VoltageMax As Single Implements ISource_DC.VoltageMax
+    Public Property CurrentMax As Single Implements ISource_DC.CurrentMax
+    Public Property PowerMax As Single Implements ISource_DC.PowerMax
+
 #End Region
 
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
-        _Visa = New CVisaDevice(Session, ErrorLogger)
-        _ErrorLogger = ErrorLogger
+
+        MyBase.New(Session, ErrorLogger)
+
     End Sub
 #End Region
 
 #Region "Basic Device Functions (IDevice)"
-    Public Function IDN() As String Implements IDevice.IDN
-        Dim ErrorMessages(1) As String
 
-        _Visa.SendString("*IDN?", ErrorMessages(0))
-        Return _Visa.ReceiveString(ErrorMessages(1))
-
+    Public Overrides Function IDN() As String Implements IDevice.IDN
+        Return MyBase.IDN()
     End Function
 
-    Public Sub RST() Implements IDevice.RST
-        Dim ErrorMessage As String = ""
-
-        _Visa.SendString("*RST", ErrorMessage)
-
+    Public Overrides Sub RST() Implements IDevice.RST
+        MyBase.RST()
     End Sub
 
-    Public Sub CLS() Implements IDevice.CLS
-        Dim ErrorMessage As String = ""
-
-        _Visa.SendString("*CLS", ErrorMessage)
+    Public Overrides Sub CLS() Implements IDevice.CLS
+        MyBase.CLS()
     End Sub
 
-    Public Overridable Sub Initialize() Implements IDevice.Initialize
-        _Visa.SendString("SYST:LANG TMSL")
+    Public Overrides Sub Initialize() Implements IDevice.Initialize
+
+        Visa.SendString("SYST:LANG TMSL")
         Call cHelper.Delay(1)
-        _Visa.SendString("*RST;*CLS")
-        _Visa.SendString(":OUTPUT:STATE OFF")
-        _Visa.SendString("CURRENT 0")
-        _Visa.SendString("VOLTAGE 0")
+        Visa.SendString("*RST;*CLS")
+        Visa.SendString(":OUTPUT:STATE OFF")
+        Visa.SendString("CURRENT 0")
+        Visa.SendString("VOLTAGE 0")
+
     End Sub
 #End Region
 
 #Region "Interface Methodes ISource_DC"
 
     Public Overridable Sub SetOutputON() Implements ISource_DC.SetOutputON
-        _Visa.SendString(":OUTPUT:STATE ON")
+        Visa.SendString(":OUTPUT:STATE ON")
     End Sub
 
     Public Overridable Sub SetOutputOFF() Implements ISource_DC.SetOutputOFF
-        _Visa.SendString(":OUTPUT:STATE OFF")
+        Visa.SendString(":OUTPUT:STATE OFF")
     End Sub
 
     Public Overridable Sub SetVoltage(ByVal Voltage As Single, CurrentLim As Single, Optional SetOutON As Boolean = True) Implements ISource_DC.SetVoltage
@@ -76,12 +67,12 @@ Public Class BCSourceDC
         If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax
 
         If Voltage = 0 Then
-            _Visa.SendString("VOLTAGE " & Voltage)
-            _Visa.SendString(":OUTPUT:STATE OFF")
+            Visa.SendString("VOLTAGE " & Voltage)
+            Visa.SendString(":OUTPUT:STATE OFF")
         Else
-            _Visa.SendString("SOURCE:CURRENT " & CurrentLim)
-            _Visa.SendString("SOURCE:VOLTAGE " & Voltage)
-            If SetOutON Then _Visa.SendString(":OUTPUT:STATE ON")
+            Visa.SendString("SOURCE:CURRENT " & CurrentLim)
+            Visa.SendString("SOURCE:VOLTAGE " & Voltage)
+            If SetOutON Then Visa.SendString(":OUTPUT:STATE ON")
         End If
 
     End Sub
@@ -96,7 +87,7 @@ Public Class BCSourceDC
 
         If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax
 
-        _Visa.SendString("CURRENT " & CurrentLim)
+        Visa.SendString("CURRENT " & CurrentLim)
 
     End Sub
 

@@ -1,5 +1,5 @@
 ﻿Public Interface ITC
-
+    Inherits IDevice
 
 #Region "Properties"
 

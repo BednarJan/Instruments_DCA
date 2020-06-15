@@ -11,7 +11,6 @@ Imports Ivi.Visa
 
 Public Class CSourceDC_AGILENT_66104A
     Inherits BCSourceDC
-    Implements IDevice
     Implements ISource_DC
 
 #Region "Shorthand Properties"
@@ -28,7 +27,7 @@ Public Class CSourceDC_AGILENT_66104A
 
 #Region "Basic Device Functions (IDevice)"
 
-    Public Overrides Sub Initialize() Implements IDevice.Initialize
+    Public Overrides Sub Initialize()
         Visa.SendString("*RST;*CLS")
         Visa.SendString("CURR 0")
         Visa.SendString("VOLT 0")
@@ -39,49 +38,22 @@ Public Class CSourceDC_AGILENT_66104A
 #Region "Interface Methodes ISource_DC"
     Public Overrides Sub SetOutputON() Implements ISource_DC.SetOutputON
         MyBase.SetOutputON()
-        '_Visa.SendString("OUTP:STAT ON")
     End Sub
 
     Public Overrides Sub SetOutputOFF() Implements ISource_DC.SetOutputOFF
         MyBase.SetOutputOFF()
-        '_Visa.SendString("OUTP:STAT OFF")
     End Sub
 
     Public Overrides Sub SetVoltage(ByVal Voltage As Single, CurrentLim As Single, Optional SetOutON As Boolean = True) Implements ISource_DC.SetVoltage
         MyBase.SetVoltage(Voltage, CurrentLim, SetOutON)
-        'If Voltage > _VoltageMax Then Voltage = _VoltageMax
-        'If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax
-
-        'If Voltage = 0 Then
-        '    _Visa.SendString("VOLT " & Voltage)
-        '    _Visa.SendString("OUTP:STAT OFF")
-        'Else
-        '    _Visa.SendString("CURR " & CurrentLim)
-        '    _Visa.SendString("VOLT " & Voltage)
-        '    If SetOutON Then _Visa.SendString("OUTP:STAT ON")
-        'End If
-
     End Sub
 
     Public Overrides Sub SetVoltage(Voltage As Single, Optional SetOutON As Boolean = True) Implements ISource_DC.SetVoltage
         MyBase.SetVoltage(Voltage, SetOutON)
-        'If Voltage > _VoltageMax Then Voltage = _VoltageMax
-
-        'If Voltage = 0 Then
-        '    _Visa.SendString("VOLT " & Voltage)
-        '    _Visa.SendString("OUTP:STAT OFF")
-        'Else
-        '    _Visa.SendString("VOLT " & Voltage)
-        'End If
-
     End Sub
 
     Public Overrides Sub SetCurrentLim(CurrentLim As Single) Implements ISource_DC.SetCurrentLim
         MyBase.SetCurrentLim(CurrentLim)
-        'If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax
-
-        '_Visa.SendString("CURR " & CurrentLim)
-
     End Sub
 
 #End Region
