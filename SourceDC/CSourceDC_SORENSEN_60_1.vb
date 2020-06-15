@@ -9,8 +9,6 @@ Public Class CSourceDC_SORENSEN_60_1
     Implements IDevice
     Implements ISource_DC
 
-    Private _ErrorLogger As CErrorLogger
-    Private _strVisa_Adr As String = String.Empty
 
 #Region "Shorthand Properties"
 

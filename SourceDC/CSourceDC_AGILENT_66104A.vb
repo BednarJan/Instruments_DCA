@@ -14,9 +14,6 @@ Public Class CSourceDC_AGILENT_66104A
     Implements IDevice
     Implements ISource_DC
 
-    Private _ErrorLogger As CErrorLogger
-    Private _strVisa_Adr As String = String.Empty
-
 #Region "Shorthand Properties"
 
 #End Region
