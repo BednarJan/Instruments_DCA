@@ -1,10 +1,9 @@
 ﻿'Class CSourceDC_SORENSEN_60_1
 '12.06.2020, J. Bednar  
-'Compatible Instruments:
 '- Sorensen DLM 60-10(single channel)
 Imports Ivi.Visa
 
-Public Class CSourceDC_SORENSEN_60_1
+Public Class CSourceDC_SORENSEN_SGI500_60
     Inherits BCSourceDC
     Implements IDevice
     Implements ISource_DC
@@ -20,9 +19,9 @@ Public Class CSourceDC_SORENSEN_60_1
 
         MyBase.New(Session, ErrorLogger)
 
-        VoltageMax = 60
-        CurrentMax = 10
-        PowerMax = 600
+        VoltageMax = 500
+        CurrentMax = 60
+        PowerMax = 30000
 
     End Sub
 #End Region
