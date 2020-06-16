@@ -1,10 +1,8 @@
-﻿'Class CSourceDC_HEIDEN_9200_50
+﻿'Class CSourceDC_HEIDEN_PSB11000_80
 '16.06.2020, Jabe
-'Compatible Instruments:
-'- Agilent/HP 6030A (single channel)
 Imports Ivi.Visa
 
-Public Class CSourceDC_HEIDEN_9200_50
+Public Class CSourceDC_HEIDEN_PSB11000_80
     Inherits BCSourceDC
     Implements ISource_DC
 
@@ -16,16 +14,16 @@ Public Class CSourceDC_HEIDEN_9200_50
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
         MyBase.New(Session, ErrorLogger)
-        VoltageMax = 200
-        CurrentMax = 50
-        PowerMax = 3000
+        VoltageMax = 1000
+        CurrentMax = 80
+        PowerMax = 30000
     End Sub
 #End Region
 
 #Region "Basic Device Functions (IDevice)"
 
     Public Overrides Sub Initialize()
-        Visa.SendString("*RST;*CLS")
+        Visa.SendString("*RST")
         Visa.SendString("SYST:LOCK ON")
         Visa.SendString(":OUTPUT:STATE OFF")
         Visa.SendString("FUNC:GEN:SEL NONE")

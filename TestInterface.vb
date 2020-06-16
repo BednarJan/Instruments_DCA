@@ -29,7 +29,7 @@ Module TestInterface
 
         Dim myTC As ITC = New CTC_WEISS_WT3340(MySession, ErrorLogger)
 
-        Dim myPSU As ISource_DC = New CSourceDC_AGILENT_E4356A(MySession, ErrorLogger)
+        Dim myPSU As ISource_AC = New CSourceDC_AGILENT_E4356A(MySession, ErrorLogger)
 
 
         'myTC.HeatGrad = 1
