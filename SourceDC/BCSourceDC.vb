@@ -70,8 +70,8 @@ Public Class BCSourceDC
             Visa.SendString("VOLTAGE " & Voltage)
             Visa.SendString(":OUTPUT:STATE OFF")
         Else
-            Visa.SendString("SOURCE:CURRENT " & CurrentLim)
-            Visa.SendString("SOURCE:VOLTAGE " & Voltage)
+            Visa.SendString("SOURCE:CURRENT " & CurrentLim.ToString)
+            Visa.SendString("SOURCE:VOLTAGE " & Voltage.ToString)
             If SetOutON Then Visa.SendString(":OUTPUT:STATE ON")
         End If
 
@@ -94,7 +94,7 @@ Public Class BCSourceDC
 
         If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax
 
-        Visa.SendString("CURRENT " & CurrentLim)
+        Visa.SendString("CURRENT " & CurrentLim.ToString)
 
     End Sub
 

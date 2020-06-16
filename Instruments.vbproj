@@ -104,6 +104,9 @@
     <Compile Include="PWAN\CPWAN_Helper.vb" />
     <Compile Include="Scope\CMeas.vb" />
     <Compile Include="Scope\CScope_Helper.vb" />
+    <Compile Include="SourceAC\BCSourceAC.vb" />
+    <Compile Include="SourceAC\CSourceAC_AMETEK_CSW_5550.vb" />
+    <Compile Include="SourceAC\CSourceAC_AMETEK_BPS_30.vb" />
     <Compile Include="SourceAC\CSourceAC_CHROMA_6530.vb" />
     <Compile Include="SourceAC\ISource_AC.vb" />
     <Compile Include="SourceDC\CSourceDC_HEIDEN_PSB11000_80.vb" />

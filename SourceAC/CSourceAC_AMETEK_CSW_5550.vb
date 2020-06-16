@@ -1,11 +1,10 @@
-﻿'Class CSourceAC_CHROMA_6530
-'14.04.2019, A. Zahler
+﻿'ClassCSourceAC_AMETEK_BPS_30
 '16.04.2020, JaBe
 'Compatible Instruments:
-'- Chroma 6530 (single phase)
+'Âmetek MX-45, CSW5550
 Imports Ivi.Visa
 
-Public Class CSourceAC_CHROMA_6530
+Public Class CSourceAC_AMETEK_CSW_5550
     Inherits BCSourceAC
     Implements ISource_AC
 
@@ -16,18 +15,14 @@ Public Class CSourceAC_CHROMA_6530
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
         MyBase.New(Session, ErrorLogger)
+        CurrentMaxHi = 16
+        CurrentMaxLo = 32
 
-        CurrentMaxHi = 30
-        CurrentMaxLo = 30
+        VoltageMaxHi = 312
+        VoltageMaxLo = 156
 
-        VoltageMaxHi = 300
-        VoltageMaxLo = 300
-
-        PowerMaxHi = 3000
-        PowerMaxLo = 3000
-
-        Initialize()
-
+        PowerMaxHi = 5000
+        PowerMaxLo = 5000
     End Sub
 #End Region
 
@@ -35,23 +30,10 @@ Public Class CSourceAC_CHROMA_6530
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
-        Visa.SendString("*RST;*CLS:")
-        Visa.SendString("OUTP:PROT:CLE")
-        Visa.SendString("RANG LOW")
+        Visa.SendString("*RST;*CLS")
+        cHelper.Delay(2)
 
-        VoltageMax = VoltageMaxLo
-        CurrentMax = CurrentMaxLo
-        PowerMax = PowerMaxLo
-
-
-        Visa.SendString("SOUR:FREQ:IMM 50")
-        Visa.SendString("SOUR:FUNC:SHAP A")
-        Visa.SendString("TPH 0")
-        Visa.SendString("TPH:SYNC PHAS")
-        Visa.SendString("OREL ON")
-        Visa.SendString("SOUR:VOLT 0")
-        Visa.SendString("OUTP:STAT ON")
-        Visa.SendString("SOUR:FUNC:TRAN OFF")
+        Call SetRange(ISource_AC.ERange.LOW)
 
     End Sub
 #End Region
@@ -88,25 +70,7 @@ Public Class CSourceAC_CHROMA_6530
     End Sub
 
     Public Overrides Sub SetRange(Range As ISource_AC.ERange) Implements ISource_AC.SetRange
-
-        Select Case Range
-            Case ISource_AC.ERange.LOW
-
-                VoltageMax = VoltageMaxLo
-                CurrentMax = CurrentMaxLo
-                PowerMax = PowerMaxLo
-
-                Visa.SendString("RANG LOW")
-            Case ISource_AC.ERange.HIGH
-
-                VoltageMax = VoltageMaxHi
-                CurrentMax = CurrentMaxHi
-                PowerMax = PowerMaxHi
-
-                Visa.SendString("RANG HIGH")
-            Case Else
-                Visa.SendString("RANG AUTO")
-        End Select
+        MyBase.SetRange(Range)
     End Sub
 
     Public Overrides Sub SetPhaseMode(PhaseMode As ISource_AC.EPhaseMode) Implements ISource_AC.SetPhaseMode
