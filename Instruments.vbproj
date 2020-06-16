@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BCDevice.vb" />
+    <Compile Include="CInstrumentException.vb" />
     <Compile Include="DAQ\CDAQ_AGIL34980A.vb" />
     <Compile Include="frmDeviceControl.designer.vb">
       <DependentUpon>frmDeviceControl.vb</DependentUpon>

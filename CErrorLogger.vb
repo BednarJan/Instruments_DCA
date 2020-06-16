@@ -6,36 +6,51 @@ Imports System.Reflection
 Public Class CErrorLogger
     Private _LogFileName As String = String.Empty
     Private _LastError As String
+    Private _Fs As FileStream
+
 
     Public Property TraceLevels As UShort = 2
 
 #Region "Constructor"
     Public Sub New(sFileName As String)
+
         _LogFileName = sFileName
+        _Fs = CheckAndCreateIfLogFileNotExists(_LogFileName)
+
     End Sub
 #End Region
 
 #Region "Private Methodes"
+
+    Private Function CheckAndCreateIfLogFileNotExists(ByVal myFileName As String) As FileStream
+
+        Dim fs As FileStream
+
+        'Check for existence of logger file    
+        If Not Directory.Exists(Path.GetDirectoryName(myFileName)) Then
+            Directory.CreateDirectory(Path.GetDirectoryName(myFileName))
+        End If
+
+        If Not File.Exists(myFileName) Then
+            fs = File.Create(myFileName)
+        Else
+            fs = New FileStream(myFileName, FileMode.Append, FileAccess.Write)
+        End If
+
+        Return fs
+
+    End Function
+
+
     Private Sub Info(ByVal info As String)
-        Dim dir As String = String.Empty
-        Dim fs As FileStream = Nothing
+
         'Check for existence of logger file    
         Try
-            If Not Directory.Exists(Path.GetDirectoryName(_LogFileName)) Then
-                Directory.CreateDirectory(Path.GetDirectoryName(_LogFileName))
-            End If
 
-            If Not File.Exists(_LogFileName) Then
-                fs = File.Create(_LogFileName)
-            Else
-                fs = New FileStream(_LogFileName, FileMode.Append, FileAccess.Write)
-            End If
-
-            Dim sw As StreamWriter = New StreamWriter(fs)
+            Dim sw As StreamWriter = New StreamWriter(_Fs)
             sw.WriteLine(vbCrLf & "---------------------------------------------------------------------------------- " &
                          vbCrLf & DateTime.Now & " " & vbCrLf & info.ToString)
             sw.Close()
-            fs.Close()
 
         Catch ex As Exception
             LogInfo(ex)
@@ -74,10 +89,10 @@ Public Class CErrorLogger
     End Sub
 
     Public Sub LogException(ByVal ex As Exception, _strVisa_Adr As String)
-        Dim sLogStr As String = String.Empty
+        Dim sLogStr As String
         Dim stackTrace As StackTrace = New StackTrace()
-        Dim fullMethodName As String = String.Empty
-        Dim myMethod As Reflection.MethodBase = Nothing
+        Dim fullMethodName As String
+        Dim myMethod As Reflection.MethodBase
         Try
             myMethod = stackTrace.GetFrame(1).GetMethod()
             fullMethodName = myMethod.ReflectedType.FullName & "." & myMethod.Name

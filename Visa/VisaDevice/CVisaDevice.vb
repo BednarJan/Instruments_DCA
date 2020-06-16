@@ -24,9 +24,7 @@ Public Class CVisaDevice
             Try
                 Session.FormattedIO.WriteLine(CMD)
             Catch ex As Exception
-                ErrorMsg = ex.Message
-                _ErrorLogger.LogInfo(ex)
-                '_ErrorLogger.LogException(ex, Session.ResourceName)
+                _ErrorLogger.LogException(ex, Session.ResourceName)
             End Try
         End If
 
@@ -38,9 +36,7 @@ Public Class CVisaDevice
             Try
                 Return Session.FormattedIO.ReadLine()
             Catch ex As Exception
-                ErrorMsg = ex.Message
-                _ErrorLogger.LogInfo(ex)
-                '_ErrorLogger.LogException(ex, Session.ResourceName)
+                _ErrorLogger.LogException(ex, Session.ResourceName)
             End Try
         End If
 
@@ -54,9 +50,7 @@ Public Class CVisaDevice
             Try
                 Return Session.FormattedIO.ReadDouble()
             Catch ex As Exception
-                ErrorMsg = ex.Message
-                _ErrorLogger.LogInfo(ex)
-                '_ErrorLogger.LogException(ex, Session.ResourceName)
+                _ErrorLogger.LogException(ex, Session.ResourceName)
             End Try
         End If
 
@@ -84,9 +78,9 @@ Public Class CVisaDevice
                 _PropertyNames = Nothing
         End Select
 
-        Dim frmConfigUI As New frmSessionConfig(Me.Session, _PropertyNames)
+        'Dim frmConfigUI As New frmSessionConfig(Me.Session, _PropertyNames)
 
-        frmConfigUI.ShowDialog()
+        'frmConfigUI.ShowDialog()
 
     End Sub
 #End Region

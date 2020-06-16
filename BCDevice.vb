@@ -17,10 +17,12 @@ Public MustInherit Class BCDevice
 
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
+        Try
+            _Visa = New CVisaDevice(Session, ErrorLogger)
+            _ErrorLogger = ErrorLogger
+        Catch ex As Exception
 
-        _Visa = New CVisaDevice(Session, ErrorLogger)
-        _ErrorLogger = ErrorLogger
-
+        End Try
     End Sub
 #End Region
 
