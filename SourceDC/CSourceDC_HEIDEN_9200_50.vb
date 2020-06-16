@@ -1,44 +1,41 @@
-﻿'Class CSourceDC_SORENSEN_60_1
-'12.06.2020, J. Bednar  
+﻿'Class CSourceDC_HEIDEN_9200_50
+'16.06.2020, Jabe
 'Compatible Instruments:
-'- Sorensen DLM 60-10(single channel)
+'- Agilent/HP 6030A (single channel)
 Imports Ivi.Visa
 
-Public Class CSourceDC_SORENSEN_DLM60_10
+Public Class CSourceDC_HEIDEN_9200_50
     Inherits BCSourceDC
     Implements ISource_DC
 
 
 #Region "Shorthand Properties"
 
-
 #End Region
 
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
-
         MyBase.New(Session, ErrorLogger)
-
-        VoltageMax = 60
-        CurrentMax = 10
-        PowerMax = 600
-
+        VoltageMax = 200
+        CurrentMax = 50
+        PowerMax = 3000
     End Sub
 #End Region
 
 #Region "Basic Device Functions (IDevice)"
 
     Public Overrides Sub Initialize()
-        Visa.SendString("SYST:LANG TMSL")
-        Call cHelper.Delay(1)
         Visa.SendString("*RST;*CLS")
+        Visa.SendString("SYST:LOCK ON")
         Visa.SendString(":OUTPUT:STATE OFF")
+        Visa.SendString("FUNC:GEN:SEL NONE")
         Visa.SendString("CURRENT 0")
         Visa.SendString("VOLTAGE 0")
     End Sub
 #End Region
 
 #Region "Interface Methodes ISource_DC"
+
     Public Overrides Sub SetOutputON() Implements ISource_DC.SetOutputON
         MyBase.SetOutputON()
     End Sub

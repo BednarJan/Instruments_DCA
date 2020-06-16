@@ -83,6 +83,13 @@ Public Class BCSourceDC
 
     End Sub
 
+    Public Overridable Sub SetVoltPuls(ByVal vPulse As Single, ByVal Width As Single, ByVal vEnd As Single) Implements ISource_DC.SetVoltPuls
+        SetVoltage(vPulse, True)
+        cHelper.Delay(Width)
+        SetVoltage(vEnd, True)
+    End Sub
+
+
     Public Overridable Sub SetCurrentLim(CurrentLim As Single) Implements ISource_DC.SetCurrentLim
 
         If CurrentLim > CurrentMax Then CurrentLim = _CurrentMax

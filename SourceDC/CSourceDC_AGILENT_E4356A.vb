@@ -52,6 +52,10 @@ Public Class CSourceDC_AGILENT_E4356A
         MyBase.SetVoltage(Voltage, SetOutON)
     End Sub
 
+    Public Overrides Sub SetVoltPuls(ByVal vPulse As Single, ByVal Width As Single, ByVal vEnd As Single) Implements ISource_DC.SetVoltPuls
+        MyBase.SetVoltPuls(vPulse, Width, vEnd)
+    End Sub
+
     Public Overrides Sub SetCurrentLim(CurrentLim As Single) Implements ISource_DC.SetCurrentLim
         MyBase.SetCurrentLim(CurrentLim)
     End Sub
