@@ -91,6 +91,15 @@ Public Class CDAQ_AGIL34980A
         _Visa.SendString("*CLS;*RST")
 
     End Sub
+
+    Public Sub SndString(cmdStr As String) Implements IDevice.SendString
+        _Visa.SendString(cmdStr)
+    End Sub
+
+    Public Function RecieveString() As String Implements IDevice.ReceiveString
+        Return _Visa.ReceiveString
+    End Function
+
 #End Region
 
 #Region "Interface Methodes IDAQ"

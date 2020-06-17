@@ -8,6 +8,8 @@
     Sub RST()
     Sub CLS()
     Sub Initialize()
+    Sub SendString(ByVal myStr As String)
+    Function ReceiveString() As String
 #End Region
 
 End Interface

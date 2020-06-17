@@ -46,6 +46,15 @@ Public Class CDAQ_KTLY2000
         RST()
         CLS()
     End Sub
+
+    Public Sub SndString(cmdStr As String) Implements IDevice.SendString
+        _Visa.SendString(cmdStr)
+    End Sub
+
+    Public Function RecieveString() As String Implements IDevice.ReceiveString
+        Return _Visa.ReceiveString
+    End Function
+
 #End Region
 
     Public Function MeasDC() As Single

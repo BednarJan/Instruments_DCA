@@ -31,6 +31,10 @@ Module TestInterface
 
         Dim myPSU As ISource_AC = New CSourceDC_AGILENT_E4356A(MySession, ErrorLogger)
 
+        Dim myPSU_AC As ISource_AC = New CSourceAC_AMETEK_BPS_30(MySession, ErrorLogger)
+
+        'myPSU_AC.SetPhaseMode(ISource_AC.EPhaseMode.ThreePhase)
+        'myPSU_AC.SetRange(ISource_AC.ERange.LOW)
 
         'myTC.HeatGrad = 1
         'myTC.CoolGrad = 1

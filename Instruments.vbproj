@@ -97,9 +97,11 @@
     <Compile Include="Load\CLoad_CHROMA_63204.vb" />
     <Compile Include="Load\CLoad_ZENTRO_EL3000.vb" />
     <Compile Include="OfflineHandler\OfflineHandler.vb" />
-    <Compile Include="PWAN\CPWAN_YOKO_WT3000.vb" />
+    <Compile Include="PWAN\BCPWAN.vb" />
     <Compile Include="PWAN\CPWAN_HIOKI_PW3337.vb" />
-    <Compile Include="PWAN\CPWAN_YOKO_WT310HC.vb" />
+    <Compile Include="PWAN\CPWAN_YOKO_WT200.vb" />
+    <Compile Include="PWAN\CPWAN_YOKO_WT333.vb" />
+    <Compile Include="PWAN\CPWAN_YOKO_WT310.vb" />
     <Compile Include="PWAN\IPWAN.vb" />
     <Compile Include="PWAN\CPWAN_Helper.vb" />
     <Compile Include="Scope\CMeas.vb" />

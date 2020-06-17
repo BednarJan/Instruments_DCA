@@ -59,6 +59,18 @@ Public MustInherit Class BCDevice
 
     End Sub
 
+    Public Sub SendString(ByVal myStr As String) Implements IDevice.SendString
+
+        Dim ErrorMessage As String = ""
+
+        _Visa.SendString(myStr, ErrorMessage)
+    End Sub
+
+    Public Function ReceiveString() As String Implements IDevice.ReceiveString
+        Dim ErrorMessage As String = ""
+        Return _Visa.ReceiveString(ErrorMessage)
+    End Function
+
 
 #End Region
 

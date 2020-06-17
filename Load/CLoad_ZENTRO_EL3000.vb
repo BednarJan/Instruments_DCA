@@ -47,6 +47,14 @@ Public Class CLoad_ZENTRO_EL3000
         _Visa.SendString("*CLS", ErrorMessage)
     End Sub
 
+    Public Sub SndString(cmdStr As String) Implements IDevice.SendString
+        _Visa.SendString(cmdStr)
+    End Sub
+
+    Public Function RecieveString() As String Implements IDevice.ReceiveString
+        Return _Visa.ReceiveString
+    End Function
+
     Public Sub Initialize() Implements IDevice.Initialize
         _Visa.SendString("*RST;*CLS" & vbLf)
         _Visa.SendString("IMODE" & vbLf)
