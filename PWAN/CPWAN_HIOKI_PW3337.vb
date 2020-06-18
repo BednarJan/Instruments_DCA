@@ -47,6 +47,49 @@ Public Class CPWAN_HIOKI_PW3337
 
 #Region "Public Special Functions HIOKI PW3337"
 
+    Overrides Function CreateFunctionList() As SortedList
+
+        Visa.SendString(":NUMERIC:NORMAL:PRESET 3" & Chr(10))
+
+        'Fix item order within the preset pattern 3 
+
+        Dim fsl As New SortedList
+        fsl.Add("Voltage", "U")
+        fsl.Add("Current", "I")
+        fsl.Add("ActivePower", "P")
+        fsl.Add("ApparentPower", "S")
+        fsl.Add("ReactivPower", "Q")
+        fsl.Add("PF", "LAMBda")
+        fsl.Add("PhaseDiff", "PHI")
+        fsl.Add("FrequencyU", "FU")
+        fsl.Add("FrequencyI", "FI")
+        fsl.Add("VoltPeakPlus", "UPP")
+        fsl.Add("VoltPeakMinus", "UMP")
+        fsl.Add("CurrentPeakPlus", "IPP")
+        fsl.Add("CurrentPeakMinus", "IMP")
+        fsl.Add("PowerPeakPlus", "PPP")
+        fsl.Add("PowerPeakMinus", "PMP")
+        Return fsl
+
+    End Function
+
+    Overrides Sub PresetPattern()
+        Dim fsl As SortedList = CreateFunctionList()
+
+        For elm As Integer = 1 To InputElements
+
+            For itm As Integer = 0 To fsl.Count - 1
+
+                Dim fn As KeyValuePair(Of String, String) = fsl(itm)
+
+                SetNumericItem(fn.Value, elm, (elm - 1) * fsl.Count + itm)
+
+            Next
+        Next
+    End Sub
+
+
+
 #End Region
 
 End Class

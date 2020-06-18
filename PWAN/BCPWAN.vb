@@ -10,12 +10,16 @@ Public Class BCPWAN
     Public Property VoltageMax As Single Implements IPWAN.VoltageMax
     Public Property CurrentMax As Single Implements IPWAN.CurrentMax
     Public Property InputElements As UInteger Implements IPWAN.InputElements
+
+    Public ReadOnly Property FunctionList As SortedList
 #End Region
 
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
 
         MyBase.New(Session, ErrorLogger)
+
+        _FunctionList = CreateFunctionList()
 
     End Sub
 #End Region
@@ -36,9 +40,6 @@ Public Class BCPWAN
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
-        Dim ItemDef() As String = {"U", "I", "P", "S", "Q", "LAMB", "PHI", "FU", "FI", "UTHD", "ITHD", "NONE", "NONE", "NONE", "NONE", "NONE"}
-
-
         Visa.SendString("*RST;*CLS" & Chr(10))
         Visa.SendString(":NUMERIC:FORMAT ASCII" & Chr(10))
         Visa.SendString(":SYSTEM:COMMUNICATE:COMMAND WT300" & Chr(10))
@@ -51,14 +52,6 @@ Public Class BCPWAN
         Visa.SendString(":DISPLAY:NORMAL:ITEM2 I" & Chr(10))
         Visa.SendString(":DISPLAY:NORMAL:ITEM3 P" & Chr(10))
         Visa.SendString(":DISPLAY:NORMAL:ITEM4 LAMB" & Chr(10))
-
-        For elm As Integer = 1 To InputElements
-            For itm As Integer = 1 To IPWAN.PA_Attributes.Items
-
-                Visa.SendString(":NUMERIC:NORMAL:ITEM" & itm + (elm - 1) * IPWAN.PA_Attributes.Items & " " & ItemDef(itm - 1) & ", " & GetElement(elm))
-
-            Next itm
-        Next elm
 
     End Sub
 #End Region
@@ -106,123 +99,101 @@ Public Class BCPWAN
     End Sub
 
     Public Overridable Function GetVrms(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVrms
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.voltage, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.Voltage, elm))
+
     End Function
 
     Public Overridable Function GetVPeakPlus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVPeakPlus
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.Voltage_Peak_Plus, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.VoltPeakPlus, elm))
+
     End Function
 
     Public Overridable Function GetVPeakMinus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVPeakMinus
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.Voltage_Peak_Minus, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.VoltPeakMinus, elm))
+
     End Function
 
-
     Public Overridable Function GetIrms(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIrms
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.Current, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.Current, elm))
+
     End Function
 
     Public Overridable Function GetIPeakPlus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIPeakPlus
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.Current_Peak_Plus, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.CurrentPeakPlus, elm))
+
     End Function
 
     Public Overridable Function GetIPeakMinus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIPeakMinus
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.Current_Peak_Minus, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.CurrentPeakMinus, elm))
+
     End Function
 
     Public Overridable Function GetPactive(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPactive
-        Dim oVals(1) As Single
 
-        SetNumericItem(IPWAN.PA_Function.Active_power, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ActivePower, elm))
+
     End Function
 
     Public Overridable Function GetPapparent(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPapparent
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.Apparent_power, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ApparentPower, elm))
+
     End Function
 
     Public Overridable Function GetPreact(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPreact
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.Reactive_power, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ReactivPower, elm))
+
     End Function
 
-    Public Overridable Function GetUUTHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetUTHD
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.THD_Voltage, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+    Public Overridable Function GetUTHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetUTHD
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDvolt, elm))
+
     End Function
 
     Public Overridable Function GetITHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetITHD
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.THD_Current, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDCurr, elm))
+
     End Function
 
     Public Overridable Function GetFreqU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetFreqU
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.Freq_Voltage, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.FrequencyU, elm))
+
     End Function
 
     Public Overridable Function GetFreqI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetFreqI
-        Dim oVals(1) As Single
-        SetNumericItem(IPWAN.PA_Function.Freq_Current, elm)
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
+
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.FrequencyI, elm))
+
     End Function
 
     Public Overridable Function GetPF(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPF
-        Dim oVals(1) As Single
 
-        If elm = IPWAN.Elements.Sigma Then
-            SetNumericItem(IPWAN.PA_Function.PF_Total, elm)
-        Else
-            SetNumericItem(IPWAN.PA_Function.PF, elm)
-        End If
+        Dim oVals() As Single = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.PF, elm))
 
-        cHelper.Delay(1)
-        Call QueryNumericItems(oVals)
-        Return oVals(0)
     End Function
 
     Public Overridable Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single() Implements IPWAN.GetHarmonicsU
@@ -279,11 +250,13 @@ Public Class BCPWAN
         Visa.SendString(":NUMERIC:NORMAL:CLEAR ALL")
     End Sub
 
-    Public Overridable Sub QueryNumericItems(ByRef oVals() As Single) Implements IPWAN.QueryNumericItems
+    Public Overridable Function QueryNumericItems() As Single() Implements IPWAN.QueryNumericItems
 
-        oVals = QueryValueList(":NUMERIC:NORMAL:VALUE?")
+        Dim oVals() As Single = QueryValueList(":NUMERIC:NORMAL:VALUE?")
 
-    End Sub
+        Return oVals
+
+    End Function
 
     Public Overridable Sub SetInputVoltageRange(Optional nRangeInVolts As Single = 0, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetInputVoltageRange
         If nRangeInVolts = 0 Then
@@ -367,54 +340,35 @@ Public Class BCPWAN
 
 #Region "Help functions"
     Overridable Function GetFunction(nFn As IPWAN.PA_Function) As String
-        Dim sRet As String
+        Dim sRet As String = vbNullString
+        Dim myKeys As ICollection = FunctionList.Keys
 
-        Select Case nFn
-            Case IPWAN.PA_Function.voltage
-                sRet = "U"
-            Case IPWAN.PA_Function.Voltage_Peak_Plus
-                sRet = "UPPeak"
-            Case IPWAN.PA_Function.Voltage_Peak_Minus
-                sRet = "UMPeak"
-            Case IPWAN.PA_Function.Current
-                sRet = "I"
-            Case IPWAN.PA_Function.Current_Peak_Plus
-                sRet = "IPPeak"
-            Case IPWAN.PA_Function.Current_Peak_Minus
-                sRet = "IMPeak"
-            Case IPWAN.PA_Function.Active_power
-                sRet = "P"
-            Case IPWAN.PA_Function.Active_power_Peak_Plus
-                sRet = "PPPeak"
-            Case IPWAN.PA_Function.Active_power_Peak_Minus
-                sRet = "MPPeak"
-            Case IPWAN.PA_Function.Apparent_power
-                sRet = "S"
-            Case IPWAN.PA_Function.Reactive_power
-                sRet = "Q"
-            Case IPWAN.PA_Function.PF
-                sRet = "PF"
-            Case IPWAN.PA_Function.PF_Total
-                sRet = "LAMBDA"
-            Case IPWAN.PA_Function.THD_Voltage
-                sRet = "UTHD"
-            Case IPWAN.PA_Function.THD_Current
-                sRet = "ITHD"
-            Case IPWAN.PA_Function.Freq_Voltage
-                sRet = "FU"
-            Case IPWAN.PA_Function.Freq_Current
-                sRet = "FI"
-            Case Else
-                sRet = "U"
-        End Select
+        For i As Integer = 0 To FunctionList.Count - 1
+            If FunctionList.ContainsKey(nFn.ToString) Then
+                sRet = FunctionList.GetByIndex(i).ToString
+            End If
+        Next
 
         Return sRet
     End Function
 
+    Overridable Function GetFunctionIndex(nFn As IPWAN.PA_Function, nElm As Integer) As Integer
+        Dim nRet As Integer
+
+        For i As Integer = 0 To FunctionList.Count - 1
+
+            Dim fn As KeyValuePair(Of String, String) = FunctionList(i)
+            If fn.Key = nFn.ToString Then
+                nRet = (nElm - 1) * FunctionList.Count + i + 1
+            End If
+
+        Next
+
+        Return nRet
+
+    End Function
 
     Overridable Function getHarmonics(elm As Integer, fn As IPWAN.PA_Function, Optional nHarmCount As Integer = 50)
-
-        Dim harm() As Single
 
         Call ClearNumericItems()
         Call SetNumericItemsCount(nHarmCount)
@@ -424,20 +378,15 @@ Public Class BCPWAN
         Next i
 
         Call cHelper.Delay(1)
-
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        Call QueryNumericItems(harm)
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        Dim harm() As Single = QueryNumericItems()
 
         Return harm
     End Function
-
 
     Overridable Function GetElement(nElm As Integer) As String
         Dim sELM As String
         If nElm <> IPWAN.Elements.Element1 Then nElm = IPWAN.Elements.Element1
 
-        sELM = ""
         If nElm = IPWAN.Elements.Sigma Then
             sELM = "SIGMA"
         Else
@@ -476,6 +425,43 @@ Public Class BCPWAN
         Return oVals
 
     End Function
+
+    Overridable Function CreateFunctionList() As SortedList
+
+        Visa.SendString(":NUMERIC:NORMAL:PRESET 3" & Chr(10))
+
+        'Fix item order within the preset pattern 3 
+
+        Dim fsl As New SortedList
+
+        fsl.Add(IPWAN.PA_Function.Voltage.ToString, "U")
+        fsl.Add(IPWAN.PA_Function.Current.ToString, "I")
+        fsl.Add(IPWAN.PA_Function.ActivePower.ToString, "P")
+        fsl.Add(IPWAN.PA_Function.ApparentPower.ToString, "S")
+        fsl.Add(IPWAN.PA_Function.ReactivPower.ToString, "Q")
+        fsl.Add(IPWAN.PA_Function.PF.ToString, "LAMBda")
+        fsl.Add(IPWAN.PA_Function.PhaseDiff.ToString, "PHI")
+        fsl.Add(IPWAN.PA_Function.FrequencyU.ToString, "FU")
+        fsl.Add(IPWAN.PA_Function.FrequencyI.ToString, "FI")
+        fsl.Add(IPWAN.PA_Function.VoltPeakPlus, "UPP")
+        fsl.Add(IPWAN.PA_Function.VoltPeakMinus.ToString, "UMP")
+        fsl.Add(IPWAN.PA_Function.CurrentPeakPlus.ToString, "IPP")
+        fsl.Add(IPWAN.PA_Function.CurrentPeakMinus.ToString, "IMP")
+        fsl.Add(IPWAN.PA_Function.PowerPeakPlus.ToString, "PPP")
+        fsl.Add(IPWAN.PA_Function.PowerPeakMinus.ToString, "PMP")
+
+        Return fsl
+
+    End Function
+
+    Overridable Sub PresetPattern()
+
+        Visa.SendString(":NUMERIC:NORMAL:PRESET 3" & Chr(10))
+
+    End Sub
+
+
+
 
 
 
