@@ -34,13 +34,24 @@
         Sigma = 4
     End Enum
 
+    'Enum RectifierMode
+    '    RMS = 0
+    '    VMEAN = 1
+    '    modedc = 2
+    '    modeac = 3
+    '    fnd = 4
+    'End Enum
+
     Enum RectifierMode
-        RMS = 0
-        VMEAN = 1
-        modedc = 2
-        modeac = 3
-        fnd = 4
+        ACDC = 0
+        MN = 1
+        AC = 2
+        DC = 3
+        FND = 4
+        RMS = 5
     End Enum
+
+
 
     Enum PA_Function
         Voltage = 1
@@ -126,7 +137,7 @@
     Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
     Function QueryNumericItems() As Single()
 
-    Sub SetDisplayItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional disp As IPWAN.PA_Display = IPWAN.PA_Display.a)
+    Sub SetDisplayItem(nFn As IPWAN.PA_Function, disp As IPWAN.PA_Display, nRectMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1)
 
     Sub SetInputVoltageRange(Optional nRangeInVolts As Single = 0, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1)
     Sub SetInputCurrentRange(Optional nRangeInAmps As Single = 0, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1)

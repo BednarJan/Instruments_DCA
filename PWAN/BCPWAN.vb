@@ -82,21 +82,17 @@ Public Class BCPWAN
     End Sub
 
     Public Overridable Sub SetRectifierMode(iMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Sigma) Implements IPWAN.SetRectifierMode
-        Dim strMode As String
-        Select Case iMode
-            Case IPWAN.RectifierMode.RMS
-                strMode = "RMS"
-            Case IPWAN.RectifierMode.VMEAN
-                strMode = "VMEAN"
-            Case IPWAN.RectifierMode.modedc
-                strMode = "DC"
-            Case Else
-                strMode = "RMS"
-        End Select
 
+        Dim strMode As String = GetRectifierMode(iMode)
         Visa.SendString(":INPUT:MODE " & strMode)
 
     End Sub
+
+    Public Overridable Function GetRectifierMode(iMode As IPWAN.RectifierMode) As String
+
+        Return iMode.ToString
+
+    End Function
 
     Public Overridable Function GetVrms(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVrms
 
@@ -212,7 +208,7 @@ Public Class BCPWAN
 
     End Function
 
-    Public Overridable Sub SetDisplayItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional disp As IPWAN.PA_Display = IPWAN.PA_Display.a) Implements IPWAN.SetDisplayItem
+    Public Overridable Sub SetDisplayItem(nFn As IPWAN.PA_Function, disp As IPWAN.PA_Display, nRectMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetDisplayItem
 
         Dim sELM As String = GetElement(elm)
         Dim sFN As String = GetFunction(nFn)
@@ -394,7 +390,6 @@ Public Class BCPWAN
         End If
         Return sELM
     End Function
-
 
     Overridable Function GetIntegrationsData() As Single()
 

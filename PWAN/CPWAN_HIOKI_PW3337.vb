@@ -31,6 +31,14 @@ Public Class CPWAN_HIOKI_PW3337
         Visa.SendString("*RST;*CLS" & Chr(10))
         Visa.SendString("HEADER OFF" & Chr(10))
 
+        SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.a, IPWAN.RectifierMode.AC, "1")
+        SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.b, IPWAN.RectifierMode.AC, "1")
+        SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.c, IPWAN.RectifierMode.AC, "1")
+        SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.d, IPWAN.RectifierMode.AC, "0")
+
+
+
+
         For Element As Integer = 1 To InputElements
             For Item As Integer = 1 To IPWAN.PA_Attributes.Items
                 Visa.SendString(":NUMERIC:ITEM" & Item + (Element - 1) * CPWAN_Helper.EPWAN_Attributes.Items & " " & ItemDef(Item - 1) & Chr(10))
@@ -42,10 +50,27 @@ Public Class CPWAN_HIOKI_PW3337
 
 #Region "Interface Methodes IPWAN"
 
+    Public Overrides Sub SetDisplayItem(nFn As IPWAN.PA_Function, disp As IPWAN.PA_Display, nRectMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetDisplayItem
+
+        Dim cmdStr As String = ":DISPlay:NORMal:" & disp.ToString
+        cmdStr &= " "
+        cmdStr &= GetFunction(nFn)
+        cmdStr &= GetRectifierMode(nRectMode)
+        cmdStr &= "1"
+        Visa.SendString(cmdStr)
+
+    End Sub
 
 #End Region
 
 #Region "Public Special Functions HIOKI PW3337"
+
+    Public Overrides Function GetRectifierMode(iMode As IPWAN.RectifierMode) As String
+
+       return iMode.ToString
+
+    End Function
+
 
     Overrides Function CreateFunctionList() As SortedList
 
