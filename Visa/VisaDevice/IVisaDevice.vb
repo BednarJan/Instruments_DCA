@@ -8,7 +8,7 @@ Public Interface IVisaDevice
 
     'Communication Methods
     Sub SendString(CMD As String, Optional ByRef ErrorMsg As String = "")
-    Function ReceiveString(Optional ByRef ErrorMsg As String = "") As String
+    Function ReceiveString(Optional ByRef ErrorMsg As String = "", Optional termchar As Byte = 10) As String
     Function ReceiveValue(Optional ByRef ErrorMsg As String = "") As Double
 
     'Session Config (User Interface)

@@ -30,17 +30,24 @@ Public Class CVisaDevice
 
     End Sub
 
-    Public Function ReceiveString(Optional ByRef ErrorMsg As String = "") As String Implements IVisaDevice.ReceiveString
+    Public Function ReceiveString(Optional ByRef ErrorMsg As String = "", Optional termchar As Byte = 10) As String Implements IVisaDevice.ReceiveString
 
         If Not Session Is Nothing Then
             Try
-                Return Session.FormattedIO.ReadLine()
+
+                'original method Return Session.FormattedIO.ReadLine()
+
+                Session.TerminationCharacterEnabled = True
+                Session.TerminationCharacter = termchar
+
+                Return Session.FormattedIO.ReadUntilMatch(Chr(termchar))
+
             Catch ex As Exception
                 _ErrorLogger.LogException(ex, Session.ResourceName)
             End Try
         End If
 
-        Return Double.NaN
+        Return vbNullString
 
     End Function
 

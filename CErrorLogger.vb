@@ -6,8 +6,6 @@ Imports System.Reflection
 Public Class CErrorLogger
     Private _LogFileName As String = String.Empty
     Private _LastError As String
-    Private _Fs As FileStream
-
 
     Public Property TraceLevels As UShort = 2
 
@@ -15,7 +13,6 @@ Public Class CErrorLogger
     Public Sub New(sFileName As String)
 
         _LogFileName = sFileName
-        _Fs = CheckAndCreateIfLogFileNotExists(_LogFileName)
 
     End Sub
 #End Region
@@ -47,10 +44,12 @@ Public Class CErrorLogger
         'Check for existence of logger file    
         Try
 
-            Dim sw As StreamWriter = New StreamWriter(_Fs)
-            sw.WriteLine(vbCrLf & "---------------------------------------------------------------------------------- " &
-                         vbCrLf & DateTime.Now & " " & vbCrLf & info.ToString)
+            Dim fs As FileStream = CheckAndCreateIfLogFileNotExists(_LogFileName)
+            Dim sw As StreamWriter = New StreamWriter(fs)
+
+            sw.WriteLine(vbCrLf & "--- " + vbCrLf + DateTime.Now + " " + info.ToString)
             sw.Close()
+            fs.Close()
 
         Catch ex As Exception
             LogInfo(ex)
@@ -82,7 +81,7 @@ Public Class CErrorLogger
     Public Sub LogInfo(ByVal Message As String)
         Try
             'Write string message to the log file       
-            Info("Error Message: " & Message & vbCrLf)
+            Info("AVT Message: " + Message)
         Catch genEx As Exception
             Info(genEx.Message)
         End Try

@@ -119,14 +119,14 @@ Public Class BCTC_WEISS
 
     Public Overridable Function RegTemp(ByVal mySetVal As Single, Optional ByVal accu As Single = 1) As Boolean Implements ITC.RegTemp
 
-        Dim EndTime
+        Dim EndTime As DateTime
         Dim actTemp As Single
         Dim NotFinished As Boolean
 
         NotFinished = True
 
         Call SetTemp(mySetVal)
-        EndTime = Now() + TimeSerial(1, 1, 0)
+        EndTime = Now().AddHours(1)
         cHelper.Delay(3)           ' wait 3 sec
 
         Do While NotFinished        ' condition for waiting till Chamber will sets a temp

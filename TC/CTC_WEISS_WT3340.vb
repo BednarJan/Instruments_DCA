@@ -86,36 +86,44 @@ Public Class CTC_WEISS_WT3340
 
     Overrides Function GetTempAndHumidity(ByRef hum As Single) As Single
 
-        Dim cmdStr As String, Buffer As String, bRet As Boolean, Checksum As String
-        Dim temp As Single
+        Dim cmdStr As String, Buffer As String, Checksum As String
+        Dim actTemp As Single
         Dim tempIndexStart As Integer
-        Dim tempIndexEnd As Integer
+        Dim humiIndexStart As Integer
         Dim humiIndexEnd As Integer
         Dim errMsg As String = vbNullString
+
+
 
         cmdStr = "1?"
         Checksum = Calc_Checksum(cmdStr)
 
-        cmdStr = Chr(2) & cmdStr & Checksum
+        cmdStr = Chr(STX) & cmdStr & Checksum & Chr(ETX)
 
-        Visa.SendString("$00I")
-        cHelper.Delay(1)
-        Buffer = Visa.ReceiveString(errMsg)
+        Visa.SendString(cmdStr)
 
-        tempIndexStart = InStr(Buffer, "T")
-        tempIndexEnd = InStr(Buffer, "F")
-        humiIndexEnd = InStr(Buffer, "P")
+        cHelper.Delay(0.5)
 
-        bRet = IsNumeric(Mid(Buffer, tempIndexStart + 1, tempIndexEnd - tempIndexStart - 1))
+        Buffer = Visa.ReceiveString(errMsg, ETX)
 
-        temp = Single.MinValue
+        actTemp = Single.MinValue
         hum = Single.MinValue
-        If bRet Then
-            temp = Convert.ToSingle(Mid(Buffer, tempIndexStart + 1, tempIndexEnd - tempIndexStart - 1))
-            hum = Convert.ToSingle(Mid(Buffer, tempIndexEnd + 1, humiIndexEnd - tempIndexEnd - 1))
+
+        If Not Buffer Is Nothing Then
+            tempIndexStart = InStr(Buffer, "T")
+            humiIndexStart = InStr(Buffer, "F")
+            humiIndexEnd = InStr(Buffer, "P")
+
+            Dim strTemp As String = Mid(Buffer, tempIndexStart + 1, humiIndexStart - tempIndexStart - 1)
+            Dim strHum As String = Mid(Buffer, humiIndexStart + 1, humiIndexEnd - humiIndexStart - 1)
+
+            If IsNumeric(strTemp) AndAlso IsNumeric(strHum) Then
+                actTemp = Convert.ToSingle(strTemp)
+                hum = Convert.ToSingle(strHum)
+            End If
         End If
 
-        Return temp
+        Return actTemp
 
     End Function
 
