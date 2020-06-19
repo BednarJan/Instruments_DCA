@@ -110,7 +110,8 @@
 
 #Region "Methods (Sub & Functions)"
     Sub SetWiring(iWir As Wiring)
-    Sub SetRectifierMode(iMode As RectifierMode, Optional elm As Elements = Elements.Sigma)
+
+
     Function GetVrms(Optional elm As Elements = Elements.Element1) As Single
     Function GetVPeakPlus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single
     Function GetVPeakMinus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single
@@ -135,6 +136,9 @@
     Sub ClearNumericItems()
     Sub SetNumericItemsCount(nCount As Integer)
     Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
+    Sub SetTHDNorm(nTHDNorm As IPWAN.THDNorm)
+    Sub SetInputMode(iMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional fn As IPWAN.PA_Function = IPWAN.PA_Function.Voltage)
+
     Function QueryNumericItems() As Single()
 
     Sub SetDisplayItem(nFn As IPWAN.PA_Function, disp As IPWAN.PA_Display, nRectMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1)

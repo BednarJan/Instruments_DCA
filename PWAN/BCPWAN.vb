@@ -58,30 +58,39 @@ Public Class BCPWAN
 
 #Region "Interface Methodes IPWAN"
     Public Overridable Sub SetWiring(iWir As IPWAN.Wiring) Implements IPWAN.SetWiring
-        Dim wirType As String = vbNullString
-
+        Dim cmdStr As String = ":INPUT:WIRING"
         Select Case iWir
-            Case IPWAN.Wiring.P1W2x3
-                wirType = "1"
-            Case IPWAN.Wiring.P1W3, IPWAN.Wiring.P1W3AndP1W2
-                wirType = "2"
-            Case IPWAN.Wiring.P3W3, IPWAN.Wiring.P3W3AndP1W2
-                wirType = "3"
-            Case IPWAN.Wiring.P3W3M2
-                wirType = "4"
-            Case IPWAN.Wiring.V3A3
-                wirType = "5"
-            Case IPWAN.Wiring.P3W3M3
-                wirType = "6"
+            Case IPWAN.Wiring.P1W3
+                cmdStr &= " P1W3"
+            Case IPWAN.Wiring.P3W3
+                cmdStr &= " P3W3"
             Case IPWAN.Wiring.P3W4
-                wirType = "7"
+                cmdStr &= " P3W4"
+            Case IPWAN.Wiring.V3A3
+                cmdStr &= " V3A3"
+            Case Else
+                cmdStr &= " P1W3"
         End Select
 
-        Visa.SendString(":WIRING TYPE" & wirType)
+        Visa.SendString(cmdStr)
 
     End Sub
 
-    Public Overridable Sub SetRectifierMode(iMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Sigma) Implements IPWAN.SetRectifierMode
+    Public Overridable Sub SetTHDNorm(nTHDNorm As IPWAN.THDNorm) Implements IPWAN.SetTHDNorm
+
+        Select Case nTHDNorm
+            Case IPWAN.THDNorm.CSA
+                Visa.SendString(":HARMONICS:THD TOT")         'CSA norm
+            Case IPWAN.THDNorm.IEC
+                Visa.SendString(":HARMONICS:THD FUND")         'CSA norm
+        End Select
+
+    End Sub
+
+    '''SetInputMode(iMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional fn As IPWAN.PA_Function = IPWAN.PA_Function.Voltage) Implements IPWAN.SetInputMode
+    '''Set rectifier mode for all input elements and measurements. Unable set it separatelly for the input channel
+    '''
+    Public Overridable Sub SetInputMode(iMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional fn As IPWAN.PA_Function = IPWAN.PA_Function.Voltage) Implements IPWAN.SetInputMode
 
         Dim strMode As String = GetRectifierMode(iMode)
         Visa.SendString(":INPUT:MODE " & strMode)
@@ -216,7 +225,6 @@ Public Class BCPWAN
         Visa.SendString(":DISPLAY:NORMAL:ITEM" & disp & " " & sFN & "," & sELM)
 
     End Sub
-
 
     Public Overridable Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
         Dim cmdStr As String
@@ -425,7 +433,7 @@ Public Class BCPWAN
 
         Visa.SendString(":NUMERIC:NORMAL:PRESET 3" & Chr(10))
 
-        'Fix item order within the preset pattern 3 
+        'this is the fix item order within the preset pattern 3 
 
         Dim fsl As New SortedList
 
