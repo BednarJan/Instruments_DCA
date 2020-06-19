@@ -139,6 +139,7 @@
     Sub SetTHDNorm(nTHDNorm As IPWAN.THDNorm)
     Sub SetInputMode(iMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional fn As IPWAN.PA_Function = IPWAN.PA_Function.Voltage)
 
+
     Function QueryNumericItems() As Single()
 
     Sub SetDisplayItem(nFn As IPWAN.PA_Function, disp As IPWAN.PA_Display, nRectMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1)
