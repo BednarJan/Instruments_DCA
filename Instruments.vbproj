@@ -126,6 +126,8 @@
     <Compile Include="SourceDC\CSourceDC_EA_PS9080_200.vb" />
     <Compile Include="SourceDC\CSourceDC_EA_PS9600_25.vb" />
     <Compile Include="TC\BCTC_WEISS.vb" />
+    <Compile Include="TC\CTC_VOETSCH_VC4060.vb" />
+    <Compile Include="TC\CTC_WEISS_VK1000.vb" />
     <Compile Include="TC\CTC_WEISS_WT3340.vb" />
     <Compile Include="TC\CTC_WEISS_WK64.vb" />
     <Compile Include="TestInterface.vb" />
