@@ -89,11 +89,15 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="IDevice.vb" />
+    <Compile Include="Load\BCLoad.vb" />
+    <Compile Include="Load\CLoad_CHROMA_6314.vb" />
     <Compile Include="Load\CLoad_CHROMA_63203.vb" />
     <Compile Include="Load\CLoad_CHROMA_63209.vb" />
     <Compile Include="Load\CLoad_CHROMA_63210E_600_700.vb" />
     <Compile Include="Load\CLoad_CHROMA_63212E_150_1200.vb" />
-    <Compile Include="Load\CLoad_CHROMA_6314.vb" />
+    <Compile Include="Load\CLoad_HEIDEN_PSB11000_80.vb" />
+    <Compile Include="Load\CLoad_HK_ZSACRV_9826.vb" />
+    <Compile Include="Load\CLoad_CHROMA_63804.vb" />
     <Compile Include="Load\CLoad_HP_6050A.vb" />
     <Compile Include="Load\CLoad_CHROMA_63204.vb" />
     <Compile Include="Load\CLoad_ZENTRO_EL3000.vb" />
