@@ -36,7 +36,13 @@ Public Class BCTC_WEISS
 
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
+
         MyBase.New(Session, ErrorLogger)
+        HeatGrad = 0
+        CoolGrad = 0
+        HumiGrad = 0
+        DeHumiGrad = 0
+
     End Sub
 #End Region
 
@@ -55,7 +61,7 @@ Public Class BCTC_WEISS
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
-        SetGradients()
+        'SetGradients()
         TurnOFF()
 
     End Sub
@@ -152,16 +158,43 @@ Public Class BCTC_WEISS
         Dim cmdStr As String
         Dim Checksum As String = vbNullString
 
-        cmdStr = "1U" & Format(HeatGrad, "0000.0") & " "
-        cmdStr &= Format(CoolGrad, "0000.0") & " "
-        cmdStr &= Format(HumiGrad, "0000.0") & " "
-        cmdStr &= Format(DeHumiGrad, "0000.0")
-
+        cmdStr = "01U" & Format(HeatGrad, "0000.0") & " "
+        cmdStr &= Format(0, "0000.0") & " "
+        cmdStr &= Format(0, "0000.0") & " "
+        cmdStr &= Format(0, "0000.0")
         Checksum = Calc_Checksum(cmdStr)
-
         cmdStr = Chr(STX) & cmdStr & Checksum & Chr(ETX)
-
         Visa.SendString(cmdStr)
+        cHelper.Delay(1)
+
+        cmdStr = "01U" & Format(0, "0000.0") & " "
+        cmdStr &= Format(CoolGrad, "0000.0") & " "
+        cmdStr &= Format(0, "0000.0") & " "
+        cmdStr &= Format(0, "0000.0")
+        Checksum = Calc_Checksum(cmdStr)
+        cmdStr = Chr(STX) & cmdStr & Checksum & Chr(ETX)
+        Visa.SendString(cmdStr)
+        cHelper.Delay(1)
+
+        cmdStr = "01U" & Format(0, "0000.0") & " "
+        cmdStr &= Format(0, "0000.0") & " "
+        cmdStr &= Format(HumiGrad, "0000.0") & " "
+        cmdStr &= Format(0, "0000.0")
+        Checksum = Calc_Checksum(cmdStr)
+        cmdStr = Chr(STX) & cmdStr & Checksum & Chr(ETX)
+        Visa.SendString(cmdStr)
+        cHelper.Delay(1)
+
+        cmdStr = "01U" & Format(0, "0000.0") & " "
+        cmdStr &= Format(0, "0000.0") & " "
+        cmdStr &= Format(0, "0000.0") & " "
+        cmdStr &= Format(DeHumiGrad, "0000.0")
+        Checksum = Calc_Checksum(cmdStr)
+        cmdStr = Chr(STX) & cmdStr & Checksum & Chr(ETX)
+        Visa.SendString(cmdStr)
+        cHelper.Delay(1)
+
+
     End Sub
 
 #End Region
