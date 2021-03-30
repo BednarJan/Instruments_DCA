@@ -5,6 +5,7 @@ Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Xml.Serialization
 Imports Ivi.Visa
 
+
 Module TestInterface
 
     Public Sub main()

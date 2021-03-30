@@ -110,7 +110,9 @@
     <Compile Include="PWAN\IPWAN.vb" />
     <Compile Include="PWAN\CPWAN_Helper.vb" />
     <Compile Include="Scope\CMeas.vb" />
+    <Compile Include="Scope\CScopeChannel.vb" />
     <Compile Include="Scope\CScope_Helper.vb" />
+    <Compile Include="Scope\IScope.vb" />
     <Compile Include="SourceAC\BCSourceAC.vb" />
     <Compile Include="SourceAC\CSourceAC_AMETEK_CSW_5550.vb" />
     <Compile Include="SourceAC\CSourceAC_AMETEK_BPS_30.vb" />
