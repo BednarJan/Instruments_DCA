@@ -1,187 +1,90 @@
 ﻿Imports Ivi.Visa
-Imports Ivi.Visa.FormattedIO
-
 Public Class BCScope
-    Inherits BCVisaDev
+    Inherits BCDevice
     Implements IScope
 
-    Private _ErrorLogger As CErrorLogger
-    Private _strVisa_Adr As String = String.Empty
-    Private _strFile2SavePicture As String = String.Empty
-    'Private _FormattedIO As FormattedIO.MessageBasedFormattedIO = Nothing
 
-    Public ReadOnly Property VoltageMax As Single Implements IScope.VoltageMax
-        Get
-            Throw New NotImplementedException()
-        End Get
-    End Property
+#Region "Shorthand Properties"
 
-    Public Property File2SavePicture As String Implements IScope.File2SavePicture
-        Get
-            Return _strFile2SavePicture
-        End Get
-        Set(value As String)
-            _strFile2SavePicture = value
-        End Set
-    End Property
+    Property CountOfChannels As Integer
+    Property HardcopyFullFileName As String Implements IScope.HardcopyFullFileName
+    Property Channels As List(Of CScopeChannel) Implements IScope.Channels
+    Property TimeBase As Single Implements IScope.TimeBase
+    Property Trigger As CScopeTrigger Implements IScope.Trigger
+    Property HardcopyFileFormat As UInteger Implements IScope.HardcopyFileFormat
 
-    Public Sub New(strVisa_Adr As String, oErrorLogger As CErrorLogger)
-        MyBase.New(strVisa_Adr, oErrorLogger)
-        _ErrorLogger = oErrorLogger
-        _strVisa_Adr = strVisa_Adr
+#End Region
+
+#Region "Constructor"
+    Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger, nChanCount As Integer)
+
+        MyBase.New(Session, ErrorLogger)
+
+        Dim myChan As CScopeChannel
+
+        _CountOfChannels = nChanCount
+
+        'Default settings
+
+        'Create List of 4 channels with default settings
+        For i As Integer = 1 To CountOfChannels
+
+            myChan = New CScopeChannel(ErrorLogger) With {
+            .Name = "CH" & CStr(i),
+            .State = CScopeChannel.ChanState.STATE_OFF,
+            .Bandwidth = CScopeChannel.ChanBandwidth.B20,
+            .Coupling = CScopeChannel.ChanCoupling.DC,
+            .Polarity = CScopeChannel.ChanPolarity.NORMAL,
+            .Position = 0,
+            .Offset = 0
+            }
+
+            _Channels.Insert(i, myChan)
+        Next
+
+        'Create Trigger with default settings
+
+        _Trigger = New CScopeTrigger(ErrorLogger) With {
+         .Slope = CScopeTrigger.TriggerSlope.RISE,
+        .Source = CScopeTrigger.TriggerSource.Ch1,
+        .Coupling = CScopeTrigger.TriggerCoupling.AC_HFReject,
+        .Mode = CScopeTrigger.TriggerMode.SIGNL
+        }
+
+
+
+
+
     End Sub
+#End Region
 
-    Private Sub iScope_RST() Implements IScope.RST
-        MyBase.RST()
-    End Sub
+#Region "Basic Device Functions (IDevice)"
 
-    Private Sub iScope_CLS() Implements IScope.CLS
-        MyBase.CLS()
-    End Sub
-
-    Private Function iScope_IDN() As String Implements IScope.IDN
+    Public Overrides Function IDN() As String Implements IDevice.IDN
         Return MyBase.IDN()
     End Function
 
-    'Public Function Initialize() As Integer Implements IScope.Initialize
-    '    Dim nOK As Integer = 0
-    '    Try
-    '        MyBase.RST()
-    '        MyBase.CLS()
-    '    Catch ex As Exception
-    '        nOK += 1
-    '    End Try
-    '    Return nOK
-    'End Function
+    Public Overrides Sub RST() Implements IDevice.RST
+        MyBase.RST()
+    End Sub
 
+    Public Overrides Sub CLS() Implements IDevice.CLS
+        MyBase.CLS()
+    End Sub
 
-    Public Overridable Function Meas_Delay(MeasNr As Integer, Source1 As Integer, edge1 As String, Source2 As Integer, Edge2 As String) As Single Implements IScope.Meas_Delay
-        Dim sRet As Single = Single.MinValue
-        Try
-            MyBase.Send("MEASUrement:METHod MINMax")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":TYPe DELAY")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":SOURCE1 CH" & Source1)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":SOURCE2 CH" & Source2)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":DEL:EDGE1 " & edge1)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":DEL:EDGE2 " & Edge2)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":DEL:DIRECTION FORW")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":INDI:STATE " & MeasNr)
-            MyBase.Send("MEASUrement:REFLevel:PERCent:MID 90")
-            MyBase.Send("MEASUrement:REFLevel:PERCent:MID2 90")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":STATE on")
-            MyBase.Send("MEASUrement:INDICators:State Meas" & MeasNr)
+    Public Overrides Sub Initialize() Implements IDevice.Initialize
 
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":VALue?")
-
-            sRet = MyBase.ReceiveString
-        Catch ex As Exception
-            _ErrorLogger.LogException(ex, _strVisa_Adr)
-        End Try
-        Return sRet
-    End Function
-
-    Public Overridable Function Meas_Freq(MeasNr As Integer, Source As Integer) As Single Implements IScope.Meas_Freq
-        Dim sRet As Single = Single.MinValue
-        Try
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":SOURCE CH" & Source)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":TYPe Frequency")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":STATE ON")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":VALue?")
-            sRet = MyBase.ReceiveString
-        Catch ex As Exception
-            _ErrorLogger.LogException(ex, _strVisa_Adr)
-        End Try
-        Return sRet
-    End Function
-
-    Public Overridable Function Meas_Pk2Pk(MeasNr As Integer, Source As Integer) As Single Implements IScope.Meas_Pk2Pk
-        Dim sRet As Single = Single.MinValue
-        Try
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":SOURCE CH" & Source)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":STATE on")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":TYPe PK2pk")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":VALue?")
-            sRet = MyBase.ReceiveString
-        Catch ex As Exception
-            _ErrorLogger.LogException(ex, _strVisa_Adr)
-        End Try
-        Return sRet
-    End Function
-
-    Public Overridable Function Meas_RMS(MeasNr As Integer, Source As Integer) As Single Implements IScope.Meas_RMS
-        Dim sRet As Single = Single.MinValue
-        Try
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":SOURCE CH" & Source)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":STATE on")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":TYPe RMS")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":VALue?")
-            sRet = MyBase.ReceiveString
-        Catch ex As Exception
-            _ErrorLogger.LogException(ex, _strVisa_Adr)
-        End Try
-        Return sRet
-    End Function
-
-    Public Overridable Function Meas_Povershoot(MeasNr As Integer, Source As Integer) As Single Implements IScope.Meas_Povershoot
-        Dim sRet As Single = Single.MinValue
-        Try
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":SOURCE CH" & Source)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":STATE on")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":TYPe POV")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":VALue?")
-            sRet = MyBase.ReceiveString
-        Catch ex As Exception
-            _ErrorLogger.LogException(ex, _strVisa_Adr)
-        End Try
-        Return sRet
-    End Function
-
-    Public Overridable Function Meas_Novershoot(MeasNr As Integer, Source As Integer) As Single Implements IScope.Meas_Novershoot
-        Dim sRet As Single = Single.MinValue
-        Try
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":SOURCE CH" & Source)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":STATE on")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":TYPe NOV")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":VALue?")
-            sRet = MyBase.ReceiveString
-        Catch ex As Exception
-            _ErrorLogger.LogException(ex, _strVisa_Adr)
-        End Try
-        Return sRet
-    End Function
-
-    Public Overridable Function Meas_Imax(MeasNr As Integer, Source As Integer) As Single Implements IScope.Meas_Imax
-        Dim sRet As Single = Single.MinValue
-        Try
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":SOURCE CH" & Source)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":STATE on")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":TYPe MAX")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":VALue?")
-            sRet = MyBase.ReceiveString
-        Catch ex As Exception
-            _ErrorLogger.LogException(ex, _strVisa_Adr)
-        End Try
-        Return sRet
-    End Function
-
-    Public Overridable Function Meas_Imin(MeasNr As Integer, Source As Integer) As Single Implements IScope.Meas_Imin
-        Dim sRet As Single = Single.MinValue
-        Try
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":SOURCE CH" & Source)
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":STATE on")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":TYPe MINI")
-            MyBase.Send("MEASUrement:MEAS" & MeasNr & ":VALue?")
-            sRet = MyBase.ReceiveString
-        Catch ex As Exception
-            _ErrorLogger.LogException(ex, _strVisa_Adr)
-        End Try
-        Return sRet
-    End Function
-
-    Public Overridable Sub Print_Display_to_File() Implements IScope.Print_Display_to_File
-
+        Visa.SendString("*RST;*CLS" & Chr(10))
 
     End Sub
+#End Region
+
+#Region "Interface Methodes IScope"
+
+
+
+
+#End Region
 
 
 End Class

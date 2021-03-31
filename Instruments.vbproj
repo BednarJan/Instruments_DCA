@@ -109,8 +109,10 @@
     <Compile Include="PWAN\CPWAN_YOKO_WT310.vb" />
     <Compile Include="PWAN\IPWAN.vb" />
     <Compile Include="PWAN\CPWAN_Helper.vb" />
+    <Compile Include="Scope\BCScope.vb" />
     <Compile Include="Scope\CMeas.vb" />
     <Compile Include="Scope\CScopeChannel.vb" />
+    <Compile Include="Scope\CScopeTrigger.vb" />
     <Compile Include="Scope\CScope_Helper.vb" />
     <Compile Include="Scope\IScope.vb" />
     <Compile Include="SourceAC\BCSourceAC.vb" />
