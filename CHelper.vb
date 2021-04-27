@@ -40,6 +40,10 @@ Public Class cHelper
         ss = iSpan.Seconds
     End Sub
 
+
+
+
+
 #Region "Timing Functions"
     Public Shared Sub Delay(ByVal Seconds As Single)
         System.Threading.Thread.Sleep(Seconds * 1000)
