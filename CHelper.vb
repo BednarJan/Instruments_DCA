@@ -41,13 +41,34 @@ Public Class cHelper
     End Sub
 
 
-
-
-
 #Region "Timing Functions"
     Public Shared Sub Delay(ByVal Seconds As Single)
         System.Threading.Thread.Sleep(Seconds * 1000)
     End Sub
 #End Region
+
+    Public Shared Function HexToBytes(ByVal HexString As String) As Byte()
+        Dim retBytes As Byte() = BitConverter.GetBytes(Long.Parse(HexString, NumberStyles.AllowHexSpecifier))
+        Return retBytes
+    End Function
+
+    Public Shared Function String2ByteArraySpecial(ByVal myString As String) As Byte()
+        Dim iLen As Integer
+        Dim lIndx As Integer
+        Dim retBytes As Byte() = New Byte() {}
+
+        If myString <> vbNullString Then
+
+            iLen = Len(myString) - 1
+
+            For lIndx = 0 To iLen
+                retBytes(lIndx) = Asc(Mid$(myString, lIndx + 1, 1))
+            Next lIndx
+
+        End If
+
+        Return retBytes
+    End Function
+
 
 End Class
