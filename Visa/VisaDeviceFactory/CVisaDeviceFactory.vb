@@ -4,42 +4,62 @@ Imports Keysight.Visa
 Public Class CVisaDeviceFactory
     Implements IVisaDeviceFactory
 
-
     Public Function CreateDevice(ResourceName As String) As IMessageBasedSession Implements IVisaDeviceFactory.CreateDevice
         Dim _Session As MessageBasedSession
 
         Try
-            If InStr(ResourceName, "INSTR") Then
-
-                Select Case True
-                    Case InStr(ResourceName, "GPIB",)
-                        _Session = New GpibSession(ResourceName)
-                    Case InStr(ResourceName, "ASRL")
-                        _Session = New SerialSession(ResourceName)
-                    Case InStr(ResourceName, "USB")
-                        _Session = New UsbSession(ResourceName)
-                    Case InStr(ResourceName, "TCPIP")
-                        _Session = New TcpipSession(ResourceName)
-                    Case Else
-                        _Session = Nothing
-                End Select
-            ElseIf InStr(ResourceName, "SOCKET") Then
-                _Session = New Keysight.Visa.TcpipSocketSession(ResourceName)
-            Else
-                _Session = Nothing
-            End If
+            _Session = Ivi.Visa.GlobalResourceManager.Open(ResourceName)
 
         Catch ex As Exception
 
             Dim myEx As New CInstrumentException(ex, ResourceName)
 
             Throw myEx
+
         End Try
 
 
         Return _Session
 
     End Function
+
+    'Public Function CreateDevice(ResourceName As String) As IMessageBasedSession Implements IVisaDeviceFactory.CreateDevice
+    '    Dim _Session As MessageBasedSession
+
+    '    Try
+    '        If InStr(ResourceName, "INSTR") Then
+
+    '            Return Ivi.Visa.GlobalResourceManager.Open(ResourceName)
+
+    '            Select Case True
+    '                Case InStr(ResourceName, "GPIB",)
+    '                    _Session = New GpibSession(ResourceName)
+    '                Case InStr(ResourceName, "ASRL")
+    '                    _Session = New SerialSession(ResourceName)
+    '                Case InStr(ResourceName, "USB")
+    '                    _Session = New UsbSession(ResourceName)
+    '                Case InStr(ResourceName, "TCPIP")
+    '                    _Session = New TcpipSession(ResourceName)
+    '                Case Else
+    '                    _Session = Nothing
+    '            End Select
+    '        ElseIf InStr(ResourceName, "SOCKET") Then
+    '            _Session = New Keysight.Visa.TcpipSocketSession(ResourceName)
+    '        Else
+    '            _Session = Nothing
+    '        End If
+
+    '    Catch ex As Exception
+
+    '        Dim myEx As New CInstrumentException(ex, ResourceName)
+
+    '        Throw myEx
+    '    End Try
+
+
+    '    Return _Session
+
+    'End Function
 
     Sub SetSerialPort(sesion As IMessageBasedSession, params As String) Implements IVisaDeviceFactory.SetSerialPort
         Dim serial As Ivi.Visa.ISerialSession = sesion

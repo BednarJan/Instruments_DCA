@@ -13,6 +13,7 @@ Public Class CPapouch_SB485
     Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
 
         MyBase.New(Session, ErrorLogger)
+        MyBase.Name = "Papouch"
 
     End Sub
 #End Region

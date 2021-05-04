@@ -50,7 +50,7 @@ Public Class CSourceAC_CHROMA_61512
         Visa.SendString("TPH:SYNC PHAS")
         Visa.SendString("OREL ON")
         Visa.SendString("SOUR:VOLT 0")
-        Visa.SendString("OUTP:STAT ON")
+        Visa.SendString("OUTP:STAT OFF")
         Visa.SendString("SOUR:FUNC:TRAN OFF")
 
     End Sub

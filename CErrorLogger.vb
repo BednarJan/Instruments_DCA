@@ -87,6 +87,10 @@ Public Class CErrorLogger
         End Try
     End Sub
 
+    Public Sub LogException(ByVal ex As CInstrumentException)
+        LogException(CType(ex, Exception), ex.VisaAdr)
+    End Sub
+
     Public Sub LogException(ByVal ex As Exception, _strVisa_Adr As String)
         Dim sLogStr As String
         Dim stackTrace As StackTrace = New StackTrace()
