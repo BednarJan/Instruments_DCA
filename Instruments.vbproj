@@ -111,10 +111,13 @@
     <Compile Include="PWAN\IPWAN.vb" />
     <Compile Include="PWAN\CPWAN_Helper.vb" />
     <Compile Include="Scope\BCScope.vb" />
+    <Compile Include="Scope\BCScopeTEK.vb" />
     <Compile Include="Scope\CMeas.vb" />
     <Compile Include="Scope\CScopeChannel.vb" />
+    <Compile Include="Scope\CScopeChannels.vb" />
     <Compile Include="Scope\CScopeTrigger.vb" />
     <Compile Include="Scope\CScope_Helper.vb" />
+    <Compile Include="Scope\CScope_Tektronix_TDS3014B.vb" />
     <Compile Include="Scope\IScope.vb" />
     <Compile Include="SourceAC\BCSourceAC.vb" />
     <Compile Include="SourceAC\CSourceAC_AMETEK_CSW_5550.vb" />

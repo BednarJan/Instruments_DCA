@@ -3,44 +3,44 @@ Public Class BCScope
     Inherits BCDevice
     Implements IScope
 
-
 #Region "Shorthand Properties"
 
     Property CountOfChannels As Integer
-    Property HardcopyFullFileName As String Implements IScope.HardcopyFullFileName
-    Property Channels As List(Of CScopeChannel) Implements IScope.Channels
-    Property TimeBase As Single Implements IScope.TimeBase
-    Property Trigger As CScopeTrigger Implements IScope.Trigger
-    Property HardcopyFileFormat As UInteger Implements IScope.HardcopyFileFormat
+
+    Public Property Channel(_ChanNr As Integer) As CScopeChannel Implements IScope.Channel
+        Get
+            Return _Channels.Channel(_ChanNr)
+        End Get
+        Set(value As CScopeChannel)
+            _Channels.Channel(_ChanNr) = value
+        End Set
+    End Property
+
+    Public Property HardcopyFullFileName As String Implements IScope.HardcopyFullFileName
+
+    Public Property Channels As CScopeChannels Implements IScope.Channels
+
+    Public Property TimeBase As Single Implements IScope.TimeBase
+
+    Public Property Trigger As CScopeTrigger Implements IScope.Trigger
+
+    Public Property HardcopyFileFormat As UInteger Implements IScope.HardcopyFileFormat
+
 
 #End Region
 
 #Region "Constructor"
-    Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger, nChanCount As Integer)
+    Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger, Optional myCountOfChannels As Integer = 4)
 
         MyBase.New(Session, ErrorLogger)
 
-        Dim myChan As CScopeChannel
-
-        _CountOfChannels = nChanCount
+        _Channels = New CScopeChannels
 
         'Default settings
 
-        'Create List of 4 channels with default settings
-        For i As Integer = 1 To CountOfChannels
+        _CountOfChannels = myCountOfChannels
 
-            myChan = New CScopeChannel(ErrorLogger) With {
-            .Name = "CH" & CStr(i),
-            .State = CScopeChannel.ChanState.STATE_OFF,
-            .Bandwidth = CScopeChannel.ChanBandwidth.B20,
-            .Coupling = CScopeChannel.ChanCoupling.DC,
-            .Polarity = CScopeChannel.ChanPolarity.NORMAL,
-            .Position = 0,
-            .Offset = 0
-            }
-
-            _Channels.Insert(i, myChan)
-        Next
+        CreateChannels()
 
         'Create Trigger with default settings
 
@@ -52,11 +52,10 @@ Public Class BCScope
         }
 
 
-
-
-
     End Sub
+
 #End Region
+
 
 #Region "Basic Device Functions (IDevice)"
 
@@ -74,13 +73,219 @@ Public Class BCScope
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
-        Visa.SendString("*RST;*CLS" & Chr(10))
+        Visa.SendString("*RST")
+        Visa.SendString("*CLS")
+
+        InitChannels()
+
+        SetChannels()
 
     End Sub
+
 #End Region
 
 #Region "Interface Methodes IScope"
 
+    Public Sub SetChannel(Chan As CScopeChannel) Implements IScope.SetChannel
+
+        SetChannel(Chan.ChanNr)
+
+    End Sub
+
+
+
+    Public Sub SetChannel(Nr As Integer) Implements IScope.SetChannel
+
+        Dim _Chan As CScopeChannel = Me.Channel(Nr)
+
+        If _Chan IsNot Nothing Then
+
+            With _Chan
+
+                If .State = CScopeChannel.ChanState.STATE_ON Then
+
+                    Select Case .Bandwidth
+                        Case CScopeChannel.ChanBandwidth.B20
+                            Call Visa.SendString(.Name & ":Bandwidth TWEnty")
+                        Case CScopeChannel.ChanBandwidth.B100
+                            Call Visa.SendString(.Name & ":Bandwidth HUNdred")
+                    End Select
+
+                    Select Case .Coupling
+                        Case CScopeChannel.ChanCoupling.DC
+                            Call Visa.SendString(.Name & ":Coupling DC")
+                        Case CScopeChannel.ChanCoupling.AC
+                            Call Visa.SendString(.Name & ":Coupling AC")
+                    End Select
+
+                    Select Case .Impedance
+                        Case CScopeChannel.InputImpedance.INPUT_IMPEDANCE_MEG
+                            Call Visa.SendString(.Name & ":IMPEDANCE MEG")
+                        Case CScopeChannel.InputImpedance.INPUT_IMPEDANCE_FIFTY
+                            Call Visa.SendString(.Name & ":IMPEDANCE FIFTY")
+                    End Select
+
+                    Select Case .Polarity
+                        Case CScopeChannel.ChanPolarity.NORMAL
+                            Call Visa.SendString(.Name & ":INVert Off")
+                        Case CScopeChannel.ChanPolarity.INVERT
+                            Call Visa.SendString(.Name & ":INVert On")
+                    End Select
+
+                    Call Visa.SendString(.Name & ":POSition " & FormatNumber(.Position, 2))
+                    Call Visa.SendString(.Name & ":YUnit " & Chr(34) & .DispUnit & Chr(34))
+
+                    Select Case .DispUnit
+                        Case "V"
+                            Call Visa.SendString(.Name & ":PRObe " & FormatNumber(.Probe, 2))
+                        Case "A"
+                            Call Visa.SendString(.Name & ":PRObe " & FormatNumber(1000 / .Probe, 2))
+                    End Select
+
+                    Call Visa.SendString(.Name & ":VOLts " & FormatNumber(.VertVolt))
+                    Call Visa.SendString(.Name & ":OFFSet " & FormatNumber(.Offset))
+
+                    Call Visa.SendString("SELect:" & .Name & " ON")
+                Else
+                    Call Visa.SendString("SELect:" & .Name & " OFF")
+
+                End If
+
+            End With
+
+        End If
+
+    End Sub
+
+    Public Overridable Sub SetChannels() Implements IScope.SetChannels
+
+        For Each _chan As CScopeChannel In _Channels
+
+            SetChannel(_chan)
+
+        Next
+
+    End Sub
+
+    Public Overridable Sub InitChannel(Nr As Integer) Implements IScope.InitChannel
+
+        Me.Channel(Nr).InitChannel(Nr)
+
+    End Sub
+
+    Public Overridable Sub InitChannel(Chan As CScopeChannel) Implements IScope.InitChannel
+
+        InitChannel(Chan.ChanNr)
+
+    End Sub
+
+
+    '''Initialization the scope channels 
+
+    Public Overridable Sub InitChannels() Implements IScope.InitChannels
+
+        For Each _chan As CScopeChannel In _Channels
+
+            InitChannel(_chan)
+
+        Next
+
+    End Sub
+
+
+    Public Overridable Sub PrintDisplay2File() Implements IScope.PrintDisplay2File
+        Throw New NotImplementedException()
+    End Sub
+
+
+    Public Overridable Sub SetHorizontal() Implements IScope.SetHorizontal
+        Throw New NotImplementedException()
+    End Sub
+
+    Public Overridable Sub SetTrigger() Implements IScope.SetTrigger
+        Throw New NotImplementedException()
+    End Sub
+
+    Public Overridable Sub Acquire(acqState As Integer) Implements IScope.Acquire
+        Throw New NotImplementedException()
+    End Sub
+
+    Public Overridable Sub ClearScreen() Implements IScope.ClearScreen
+        Throw New NotImplementedException()
+    End Sub
+
+    Public Overridable Sub LoadReferenceCurve(sFileName As String, nRef As Integer) Implements IScope.LoadReferenceCurve
+        Throw New NotImplementedException()
+    End Sub
+
+    Public Overridable Sub RefCurveOn(refNr As Integer) Implements IScope.RefCurveOn
+        Throw New NotImplementedException()
+    End Sub
+
+    Public Overridable Sub RefCurveOff(refNr As Integer) Implements IScope.RefCurveOff
+        Throw New NotImplementedException()
+    End Sub
+
+    Public Overridable Function MeasDelay(MeasNr As Integer, Source1 As String, slope1 As Integer, Source2 As String, slope2 As Integer) As Single Implements IScope.MeasDelay
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasEdge(MeasNr As Integer, SOURCE As String, lowRefLevel As Integer, highRefLevel As Integer, slope As Integer) As Single Implements IScope.MeasEdge
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasFreq(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasFreq
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasPK2PK(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPK2PK
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasRMS(MeasNr As Integer, sSource1 As String, Optional waitTime As Integer = 1) As Single Implements IScope.MeasRMS
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasPOVERSHOOT(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasPOVERSHOOT
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasNOVERSHOOT(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasNOVERSHOOT
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasIMAX(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasIMAX
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasIMIN(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasIMIN
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasHIGH(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasHIGH
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasLOW(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasLOW
+        Throw New NotImplementedException()
+    End Function
+
+#End Region
+
+
+#Region "Help functions"
+
+    Private Sub CreateChannels()
+        'Create List of 4 channels with default settings
+        Dim myChan As CScopeChannel
+        For i As Integer = 0 To _CountOfChannels - 1
+
+            myChan = New CScopeChannel(_ErrorLogger, i + 1)
+
+            _Channels.Insert(i, myChan)
+
+        Next
+    End Sub
 
 
 

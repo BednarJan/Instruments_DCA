@@ -64,6 +64,31 @@ Public Class CVisaDevice
         Return Double.NaN
 
     End Function
+
+    Public Sub ReadStringToFileRAW(ByVal HardcopyFullFileName As String, Optional termchar As Byte = 10) Implements IVisaDevice.ReadStringToFileRAW
+
+        Dim _data As Byte()
+
+        If Session IsNot Nothing Then
+            Try
+
+                Session.TerminationCharacterEnabled = False
+                Session.TerminationCharacter = termchar
+
+                Session.FormattedIO.DiscardBuffers()
+                _data = Session.RawIO.Read(1000000)
+
+                System.IO.File.WriteAllBytes(HardcopyFullFileName, _data)
+
+
+
+            Catch ex As Exception
+                _ErrorLogger.LogException(ex, Session.ResourceName)
+            End Try
+        End If
+
+    End Sub
+
 #End Region
 
 #Region "Session Configuration via User Interface"
