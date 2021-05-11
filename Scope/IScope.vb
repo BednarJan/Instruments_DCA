@@ -26,7 +26,7 @@
     Sub SetChannels()
     Sub SetHorizontal()
     Sub SetTrigger()
-    Sub Acquire(acqState As Integer)
+    Sub Acquire(acqState As CScopeTrigger.Acquire)
     Sub ClearScreen()
     Sub LoadReferenceCurve(sFileName As String, nRef As Integer)
     Sub RefCurveOn(refNr As Integer)

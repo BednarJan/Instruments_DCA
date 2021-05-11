@@ -40,7 +40,7 @@
 
     Enum Acquire
         STATE_STOP = 0
-        STATE_SINGL = 1
+        STATE_SINGLE = 1
         STATE_RUN = 2
     End Enum
 

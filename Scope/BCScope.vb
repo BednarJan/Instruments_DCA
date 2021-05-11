@@ -206,7 +206,7 @@ Public Class BCScope
         Throw New NotImplementedException()
     End Sub
 
-    Public Overridable Sub Acquire(acqState As Integer) Implements IScope.Acquire
+    Public Overridable Sub Acquire(acqState As CScopeTrigger.Acquire) Implements IScope.Acquire
         Throw New NotImplementedException()
     End Sub
 
@@ -286,6 +286,56 @@ Public Class BCScope
 
         Next
     End Sub
+
+    Public Function GetTriggerMode(nTriggerMode As Integer) As String
+        Dim sRet As String = String.Empty
+
+        Select Case nTriggerMode
+            Case CScopeTrigger.TriggerMode.AUTO
+                sRet = "auto"
+            Case CScopeTrigger.TriggerMode.NORMAL
+                sRet = "normal"
+            Case CScopeTrigger.TriggerMode.SIGNL
+                sRet = "signl"
+        End Select
+
+        Return sRet
+
+    End Function
+
+    Public Function GetTriggerCoupling(nCoupling As Integer) As String
+        Dim sRet As String = String.Empty
+
+        Select Case nCoupling
+            Case CScopeTrigger.TriggerCoupling.AC
+                sRet = "AC"
+            Case CScopeTrigger.TriggerCoupling.DC
+                sRet = "DC"
+            Case CScopeTrigger.TriggerCoupling.AC_HFReject, CScopeTrigger.TriggerCoupling.DC_HFReject
+                sRet = "HFRej"
+            Case CScopeTrigger.TriggerCoupling.LFReject
+                sRet = "LFRej"
+            Case CScopeTrigger.TriggerCoupling.AC_NREJect, CScopeTrigger.TriggerCoupling.DC_NREJect
+                sRet = "NOISErej"
+        End Select
+
+        Return sRet
+
+    End Function
+
+    Public Function GetSlope(nSlope As Integer) As String
+        Dim sRet As String = String.Empty
+
+        Select Case nSlope
+            Case CScopeTrigger.TriggerSlope.RISE
+                sRet = "rise"
+            Case CScopeTrigger.TriggerSlope.FALL
+                sRet = "fall"
+        End Select
+
+        Return sRet
+    End Function
+
 
 
 

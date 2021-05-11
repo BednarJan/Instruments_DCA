@@ -52,77 +52,219 @@ Public Class BCScopeTEK
     End Sub
 
     Public Overrides Sub SetHorizontal() Implements IScope.SetHorizontal
-        Throw New NotImplementedException()
+        Call Visa.SendString("HORizontal:RESOlution high")
+        Call Visa.SendString("HORizontal:Delay:State off")
+        Call Visa.SendString("HORizontal:SCALe " & FormatNumber(MyBase.TimeBase))
     End Sub
 
     Public Overrides Sub SetTrigger() Implements IScope.SetTrigger
-        Throw New NotImplementedException()
+        Call Visa.SendString("MEASUrement:MEAS1:STATE OFF")
+        Call Visa.SendString("MEASUrement:MEAS2:STATE OFF")
+        Call Visa.SendString("MEASUrement:MEAS3:STATE OFF")
+        Call Visa.SendString("MEASUrement:MEAS4:STATE OFF")
+
+        Call Visa.SendString("Trigger:A:MODe " & GetTriggerMode(MyBase.Trigger.Mode))
+
+        Call Visa.SendString("Trigger:A:EDGe:COUPling " & GetTriggerCoupling(MyBase.Trigger.Coupling))
+
+        Select Case MyBase.Trigger.Source
+            Case CScopeTrigger.TriggerSource.Ext
+
+                Call Visa.SendString("Trigger:A:EDGe:SOUrce EXT10")
+                Call Visa.SendString("Trigger:A:Level TTL")
+
+            Case Else
+
+                'Call Visa.SendString("Trigger:A:EDGe:SOUrce CH" & MyBase.Trigger.TriggerSource)
+                Call Visa.SendString("Trigger:A:EDGe:SOUrce " & UCase(MyBase.Trigger.Source.ToString))
+                Call Visa.SendString("Trigger:A:Level " & FormatNumber(MyBase.Trigger.Level))
+        End Select
+
+        Call cHelper.Delay(1)
+        Call Visa.SendString("Trigger:A:EDGe:SLOpe " & GetSlope(MyBase.Trigger.Slope))
+
+        Call Visa.SendString("HORizontal:TRIGger:Position " & FormatNumber(MyBase.Trigger.Position))
+
     End Sub
 
-    Public Overrides Sub Acquire(acqState As Integer) Implements IScope.Acquire
-        Throw New NotImplementedException()
+    Public Overrides Sub Acquire(acqState As CScopeTrigger.Acquire) Implements IScope.Acquire
+        Call Visa.SendString("ACQuire:MODe SAMple")
+        Call Visa.SendString("ACQuire:STOPAfter SEQuence")
+        Select Case acqState
+            Case MyBase.Trigger.Acquire.STATE_RUN
+                Call Visa.SendString("ACQuire:STATE RUN")
+            Case Else
+                Call Visa.SendString("ACQuire:STATE " & acqState)
+        End Select
+
+        cHelper.Delay(0.5)
     End Sub
 
     Public Overrides Sub ClearScreen() Implements IScope.ClearScreen
-        Throw New NotImplementedException()
+        MyBase.ClearScreen()
     End Sub
 
     Public Overrides Sub LoadReferenceCurve(sFileName As String, nRef As Integer) Implements IScope.LoadReferenceCurve
-        Throw New NotImplementedException()
+        Dim CmdString As String
+
+        CmdString = "RECAll:WAWEform " & Chr(34) & sFileName & Chr(34) & ",REF" & nRef
+
+        Call Visa.SendString(CmdString)
     End Sub
 
     Public Overrides Sub RefCurveOn(refNr As Integer) Implements IScope.RefCurveOn
-        Throw New NotImplementedException()
+
+        Call Visa.SendString("SELect:REF" & refNr & " On")
+
     End Sub
 
     Public Overrides Sub RefCurveOff(refNr As Integer) Implements IScope.RefCurveOff
-        Throw New NotImplementedException()
+
+        Call Visa.SendString("SELect:REF" & refNr & " Off")
+
     End Sub
 
     Public Overrides Function MeasDelay(MeasNr As Integer, Source1 As String, slope1 As Integer, Source2 As String, slope2 As Integer) As Single Implements IScope.MeasDelay
-        Throw New NotImplementedException()
+        Dim edge1 As String
+        Dim edge2 As String
+
+
+        Call Visa.SendString("MEASUrement:METHod MINMax")
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":TYPe DELAY")
+
+
+        If InStr(Source1, "Ref") Then
+            Call Visa.SendString("SELect:" & Source1 & " On")
+        End If
+
+        edge1 = GetSlope(slope1)
+        edge2 = GetSlope(slope2)
+
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE1 " & Source1)
+
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE2 " & Source2)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":DEL:EDGE1 " & edge1)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":DEL:EDGE2 " & edge2)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":DEL:DIRECTION FORW")
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":INDI:STATE " & MeasNr)
+        Call Visa.SendString("MEASUrement:REFLevel:PERCent:MID 45")
+        Call Visa.SendString("MEASUrement:REFLevel:PERCent:MID2 90")
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":STATE on")
+        Call Visa.SendString("MEASUrement:INDICators:State Meas" & MeasNr)
+
+        Call cHelper.Delay(3)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
+        Dim Buffer As String = Visa.ReceiveString()
+
+        Return cHelper.StringToDecimal(Buffer)
+
     End Function
 
-    Public Overrides Function MeasEdge(MeasNr As Integer, SOURCE As String, lowRefLevel As Integer, highRefLevel As Integer, slope As Integer) As Single Implements IScope.MeasEdge
-        Throw New NotImplementedException()
+    Public Overrides Function MeasEdge(MeasNr As Integer, Source As String, LowRefLevel As Integer, HighRefLevel As Integer, Slope As Integer) As Single Implements IScope.MeasEdge
+
+        Dim edge As String = GetSlope(Slope)
+
+        Call Visa.SendString("MEASUrement:REFlevel:METHod PERCent")
+        Call Visa.SendString("MEASUrement:REFLevel:PERCent:LOW " & FormatNumber(LowRefLevel))
+        Call Visa.SendString("MEASUrement:REFLevel:PERCent:HIGH " & FormatNumber(HighRefLevel))
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE " & Source)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":STATE ON")
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":TYPe " & edge)
+
+        Call cHelper.Delay(3)
+
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
+        Dim Buffer As String = Visa.ReceiveString()
+
+        Return cHelper.StringToDecimal(Buffer)
+
+
     End Function
 
-    Public Overrides Function MeasFreq(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasFreq
-        Throw New NotImplementedException()
+    Public Overrides Function MeasFreq(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasFreq
+
+        Return MeasIt(MeasNr, Source1, "FREQ")
+
     End Function
 
     Public Overrides Function MeasPK2PK(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPK2PK
-        Throw New NotImplementedException()
+
+        Return MeasIt(MeasNr, Source1, "PK2PK")
+
     End Function
 
-    Public Overrides Function MeasRMS(MeasNr As Integer, sSource1 As String, Optional waitTime As Integer = 1) As Single Implements IScope.MeasRMS
-        Throw New NotImplementedException()
+    Public Overrides Function MeasRMS(MeasNr As Integer, Source1 As String, Optional waitTime As Integer = 1) As Single Implements IScope.MeasRMS
+
+        Return MeasIt(MeasNr, Source1, "RMS")
+
     End Function
 
-    Public Overrides Function MeasPOVERSHOOT(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasPOVERSHOOT
-        Throw New NotImplementedException()
+    Public Overrides Function MeasPOVERSHOOT(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPOVERSHOOT
+
+        Return MeasIt(MeasNr, Source1, "POV")
+
     End Function
 
-    Public Overrides Function MeasNOVERSHOOT(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasNOVERSHOOT
-        Throw New NotImplementedException()
+    Public Overrides Function MeasNOVERSHOOT(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasNOVERSHOOT
+
+        Return MeasIt(MeasNr, Source1, "NOV")
+
     End Function
 
-    Public Overrides Function MeasIMAX(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasIMAX
-        Throw New NotImplementedException()
+    Public Overrides Function MeasIMAX(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasIMAX
+
+        Return MeasIt(MeasNr, Source1, "MAXI")
+
     End Function
 
-    Public Overrides Function MeasIMIN(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasIMIN
-        Throw New NotImplementedException()
+    Public Overrides Function MeasIMIN(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasIMIN
+
+        Return MeasIt(MeasNr, Source1, "MINI")
+
     End Function
 
-    Public Overrides Function MeasHIGH(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasHIGH
-        Throw New NotImplementedException()
+    Public Overrides Function MeasHIGH(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasHIGH
+
+        Return MeasIt(MeasNr, Source1, "HIGH")
+
     End Function
 
-    Public Overrides Function MeasLOW(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasLOW
-        Throw New NotImplementedException()
+    Public Overrides Function MeasLOW(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasLOW
+
+        Return MeasIt(MeasNr, Source1, "LOW")
+
     End Function
+
 
 #End Region
+
+#Region "Help Meas Functions"
+
+    Private Function MeasIt(MeasNr As Integer, Source1 As String, cmd As String) As Single
+
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE " & Source1)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":TYPe " & UCase(cmd))
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":STATE on")
+
+        Call cHelper.Delay(1)
+
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
+        Dim Buffer As String = Visa.ReceiveString()
+
+        Return cHelper.StringToDecimal(Buffer)
+
+
+    End Function
+
+
+
+#End Region
+
+
+
+
+
+
+
 
 End Class

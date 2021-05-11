@@ -19,19 +19,43 @@ Public Class cHelper
     End Function
 
     Public Shared Function StringToSingle(ByVal str) As Single
+
         Dim Separator As String = String.Empty
 
         Separator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator
 
         str = str.Replace("."c, Separator).Replace(","c, Separator)
 
-        If IsNumeric(str) Then
-            Return Convert.ToSingle(str)
-        Else
-            Return Single.NaN
-        End If
+        Try
+            Return Single.Parse(str, CultureInfo.InvariantCulture)
+        Catch ex As Exception
+            Return Single.MinValue
+        End Try
 
     End Function
+
+    Public Shared Function StringToDouble(ByVal str) As Double
+        Dim Separator As String = String.Empty
+
+        Separator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator
+
+        str = str.Replace("."c, Separator).Replace(","c, Separator)
+
+        Try
+            Return Double.Parse(str, CultureInfo.InvariantCulture)
+        Catch ex As Exception
+            Return Double.MinValue
+        End Try
+
+    End Function
+
+    Public Shared Function StringToDecimal(ByVal str) As Decimal
+
+        Return CDec(StringToDouble(str))
+
+    End Function
+
+
 
     Public Shared Sub Seconds_2_hh_mm_ss(ByVal iSecond As Long, ByRef hh As Integer, ByRef mm As Integer, ByRef ss As Integer)
         Dim iSpan As TimeSpan = TimeSpan.FromSeconds(iSecond)
