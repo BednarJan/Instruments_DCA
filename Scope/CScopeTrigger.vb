@@ -17,6 +17,7 @@
         Ch6 = 6
         Ch7 = 7
         Ch8 = 8
+        Aux = 9
         Ext = 99
     End Enum
 

@@ -24,7 +24,12 @@ Public Class BCScope
 
     Public Property Trigger As CScopeTrigger Implements IScope.Trigger
 
-    Public Property HardcopyFileFormat As UInteger Implements IScope.HardcopyFileFormat
+    Public ReadOnly Property HardcopyFileFormat As UInteger Implements IScope.HardcopyFileFormat
+        Get
+            Dim fi As New IO.FileInfo(_HardcopyFullFileName)
+            Return fi.Extension
+        End Get
+    End Property
 
 
 #End Region
@@ -86,7 +91,7 @@ Public Class BCScope
 
 #Region "Interface Methodes IScope"
 
-    Public Sub SetChannel(Chan As CScopeChannel) Implements IScope.SetChannel
+    Public Overridable Sub SetChannel(Chan As CScopeChannel) Implements IScope.SetChannel
 
         SetChannel(Chan.ChanNr)
 
@@ -94,7 +99,7 @@ Public Class BCScope
 
 
 
-    Public Sub SetChannel(Nr As Integer) Implements IScope.SetChannel
+    Public Overridable Sub SetChannel(Nr As Integer) Implements IScope.SetChannel
 
         Dim _Chan As CScopeChannel = Me.Channel(Nr)
 
@@ -184,6 +189,12 @@ Public Class BCScope
 
     Public Overridable Sub InitChannels() Implements IScope.InitChannels
 
+        'Call Visa.SendString("*RST")
+        'Call cHelper.Delay(1)
+
+        Call Visa.SendString("CLEARMenu")
+        Call Visa.SendString("Cursor:function OFF")
+
         For Each _chan As CScopeChannel In _Channels
 
             InitChannel(_chan)
@@ -192,8 +203,7 @@ Public Class BCScope
 
     End Sub
 
-
-    Public Overridable Sub PrintDisplay2File() Implements IScope.PrintDisplay2File
+    Public Overridable Sub CaptureScreen2File() Implements IScope.CaptureScreen2File
         Throw New NotImplementedException()
     End Sub
 

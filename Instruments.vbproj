@@ -103,6 +103,7 @@
     <Compile Include="Load\CLoad_CHROMA_63204.vb" />
     <Compile Include="Load\CLoad_ZENTRO_EL3000.vb" />
     <Compile Include="OfflineHandler\OfflineHandler.vb" />
+    <Compile Include="PWAN\BCPWAN_YOKO.vb" />
     <Compile Include="PWAN\BCPWAN.vb" />
     <Compile Include="PWAN\CPWAN_HIOKI_PW3337.vb" />
     <Compile Include="PWAN\CPWAN_YOKO_WT200.vb" />
@@ -117,6 +118,7 @@
     <Compile Include="Scope\CScopeChannels.vb" />
     <Compile Include="Scope\CScopeTrigger.vb" />
     <Compile Include="Scope\CScope_Helper.vb" />
+    <Compile Include="Scope\CScope_Tektronix_MSO3014.vb" />
     <Compile Include="Scope\CScope_Tektronix_TDS3014B.vb" />
     <Compile Include="Scope\IScope.vb" />
     <Compile Include="SourceAC\BCSourceAC.vb" />

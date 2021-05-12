@@ -9,6 +9,7 @@ Public Class CPWAN_HIOKI_PW3337
     Inherits BCPWAN
     Implements IPWAN
 
+
 #Region "Shorthand Properties"
 
 #End Region
@@ -36,17 +37,49 @@ Public Class CPWAN_HIOKI_PW3337
         SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.c, IPWAN.RectifierMode.AC, "1")
         SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.d, IPWAN.RectifierMode.AC, "0")
 
-
-        For Element As Integer = 1 To InputElements
-            For Item As Integer = 1 To IPWAN.PA_Attributes.Items
-                Visa.SendString(":NUMERIC:ITEM" & Item + (Element - 1) * CPWAN_Helper.EPWAN_Attributes.Items & " " & ItemDef(Item - 1) & Chr(10))
-            Next Item
-        Next Element
+        Dim nItemsCount As Integer = CreateNumericItemsList()
 
     End Sub
 #End Region
 
 #Region "Interface Methodes IPWAN"
+
+    Public Overrides Function QueryNumericItems() As Double() Implements IPWAN.QueryNumericItems
+
+        Return QueryValueList(": MEASURE?")
+
+    End Function
+
+    Public Overrides Sub ClearNumericItems() Implements IPWAN.ClearNumericItems
+
+        Call Visa.SendString(":MEAS:ITEM:ALLC")
+
+    End Sub
+
+    Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+        Dim cmdStr As String
+        Dim sELM As String
+        Dim sFN As String
+
+        sELM = GetElement(elm)
+        sFN = GetFunction(nFn)
+
+        cmdStr = ":MEAS:ITEM:" & itm.ToString & " " & sFN & "," & sELM
+        If ordHarm > 0 Then
+            cmdStr = cmdStr & "," & ordHarm
+        End If
+
+        Visa.SendString(cmdStr)
+
+    End Sub
+
+    Overrides Function CreateNumericItemsList() As Integer Implements IPWAN.CreateNumericItemsList
+
+        Return MyBase.CreateNumericItemsList
+
+    End Function
+
+
 
     Public Overrides Sub SetDisplayItem(nFn As IPWAN.PA_Function, disp As IPWAN.PA_Display, nRectMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetDisplayItem
 
@@ -59,54 +92,87 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Sub
 
-    Public Overrides Sub SetInputCurrentRange(Optional nRangeInAmps As Single = 0, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetInputCurrentRange
-        Dim cmdStr As String
-        If elm = IPWAN.Elements.Sigma Then
-            cmdStr = ":CURRENT:"
-        Else
-            cmdStr = ":CURRENT" & CStr(elm) & ":"
-        End If
-        If nRangeInAmps = 0 Then
-            cmdStr &= "AUTO ON"
-        Else
-            cmdStr &= "RANGE " & FormatNumber(nRangeInAmps)
-        End If
-        Visa.SendString(cmdStr)
+    Public Overrides Sub PresetCurrentTransformer(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentTransformer
+
+        MyBase.PresetCurrentTransformer(sRatio, elm)
+
+        'Visa.SendString(":INPUT:SCALING:STATE OFF")
+        'Visa.SendString(":INPUT:RCONFIG ON")
+        'Visa.SendString(":INPUT:SCALING:CT:ELEMENT" & elm & " " & FormatNumber(sRatio))
+        'Visa.SendString(":INPUT:SCALING:STATE ON")
 
     End Sub
 
-    Public Overrides Sub SetInputVoltageRange(Optional nRangeInVolts As Single = 0, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetInputVoltageRange
-        Dim cmdStr As String
-        If elm = IPWAN.Elements.Sigma Then
-            cmdStr = ":VOLTAGE:"
-        Else
-            cmdStr = ":VOLTAGE" & CStr(elm) & ":"
-        End If
+    Public Overrides Sub PresetVoltDivider(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetVoltDivider
 
+        MyBase.PresetVoltDivider(sRatio, elm)
+        'Visa.SendString(":INPUT:SCALING:STATE OFF")
+        'Visa.SendString(":INPUT:SCALING:VT:ELEMENT" & elm & " " & FormatNumber(sRatio))
+        'Visa.SendString(":INPUT:SCALING:STATE ON")
+
+    End Sub
+
+    Public Overrides Sub PresetCurrentShunt(shuntRes As Single, sRange As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentShunt
+
+        MyBase.PresetCurrentShunt(shuntRes, sRange, elm)
+
+        'Visa.SendString(":INPUT:CURRENT:RANGE EXTERNAL," & FormatNumber(sRange) & "V")
+        'Visa.SendString(":INPUT:CURRENT:SRATIO:ELEMENT" & elm & " " & FormatNumber(shuntRes))
+
+    End Sub
+
+    Public Overrides Sub PresetIntegrationPower(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetIntegrationPower
+
+        Call SetDisplayItem(IPWAN.PA_Function.Voltage, elm, IPWAN.PA_Display.a)
+        Call SetDisplayItem(IPWAN.PA_Function.Current, elm, IPWAN.PA_Display.b)
+        Call SetDisplayItem(IPWAN.PA_Function.ActivePower, elm, IPWAN.PA_Display.c)
+        Call SetDisplayItem(IPWAN.PA_Function.IntegratedActivePower, elm, IPWAN.PA_Display.d)
+        Call ClearNumericItems()
+        Call SetNumericItem(IPWAN.PA_Function.IntegratedActivePower, elm)
+
+    End Sub
+
+    Public Overrides Sub PresetIntegrationCurrent(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetIntegrationCurrent
+
+        Call SetDisplayItem(IPWAN.PA_Function.Voltage, elm, IPWAN.PA_Display.a)
+        Call SetDisplayItem(IPWAN.PA_Function.Current, elm, IPWAN.PA_Display.b)
+        Call SetDisplayItem(IPWAN.PA_Function.ActivePower, elm, IPWAN.PA_Display.c)
+        Call SetDisplayItem(IPWAN.PA_Function.IntegratedCurrent, elm, IPWAN.PA_Display.d)
+        Call ClearNumericItems()
+        Call SetNumericItem(IPWAN.PA_Function.IntegratedCurrent, elm)
+
+    End Sub
+
+
+
+
+
+    Public Overrides Sub SetInputVoltageRange(Optional nRangeInVolts As Single = 0, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetInputVoltageRange
         If nRangeInVolts = 0 Then
-            cmdStr &= "AUTO ON"
+            Visa.SendString(":INPUT:VOLTAGE:AUTO ON")
         Else
-            cmdStr &= "RANGE " & FormatNumber(nRangeInVolts)
+            Visa.SendString(":INPUT:VOLTAGE:RANGE " & FormatNumber(nRangeInVolts, 2) & " V")
         End If
-        Visa.SendString(cmdStr)
+    End Sub
+
+    Public Overrides Sub SetInputCurrentRange(Optional nRangeInAmps As Single = 0, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetInputCurrentRange
+        If nRangeInAmps = 0 Then
+            Visa.SendString(":INPUT:CURRENT:AUTO ON")
+        Else
+            Visa.SendString(":INPUT:CURRENT:RANGE " & FormatNumber(nRangeInAmps, 2) & " A")
+        End If
     End Sub
 
     Public Overrides Sub SetWiring(iWir As IPWAN.Wiring) Implements IPWAN.SetWiring
         Dim wirType As String = vbNullString
 
         Select Case iWir
-            Case IPWAN.Wiring.P1W2x3
-                wirType = "1"
-            Case IPWAN.Wiring.P1W3, IPWAN.Wiring.P1W3AndP1W2
+            Case IPWAN.Wiring.P1W3
                 wirType = "2"
-            Case IPWAN.Wiring.P3W3, IPWAN.Wiring.P3W3AndP1W2
+            Case IPWAN.Wiring.P3W3
                 wirType = "3"
-            Case IPWAN.Wiring.P3W3M2
-                wirType = "4"
             Case IPWAN.Wiring.V3A3
                 wirType = "5"
-            Case IPWAN.Wiring.P3W3M3
-                wirType = "6"
             Case IPWAN.Wiring.P3W4
                 wirType = "7"
         End Select
@@ -129,129 +195,132 @@ Public Class CPWAN_HIOKI_PW3337
     '''SetInputMode(iMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional fn As IPWAN.PA_Function = IPWAN.PA_Function.Voltage) Implements IPWAN.SetInputMode
     '''Set rectifier mode for the specified input element and measurement
     '''
-    Public Overrides Sub SetInputMode(iMode As IPWAN.RectifierMode, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional fn As IPWAN.PA_Function = IPWAN.PA_Function.Voltage) Implements IPWAN.SetInputMode
+    Public Overrides Sub SetInputMode(iMode As IPWAN.RectifierMode) Implements IPWAN.SetInputMode
 
-        Dim cmdStr As String = ":MEAS:ITEM:U:CH"
-        Dim strMode As String = GetRectifierMode(iMode)
-
-        cmdStr &= elm.ToString
-        cmdStr &= " "
-        cmdStr &= GetRectifierMode(iMode)
-        Visa.SendString(cmdStr)
-
-    End Sub
-
-
-    Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
-        Dim cmdStr As String
-        Dim sELM As String
-        Dim sFN As String
-
-        sELM = GetElement(elm)
-        sFN = GetFunction(nFn)
-
-        cmdStr = ":MEAS:ITEM:" & itm.ToString & " " & sFN & "," & sELM
-        If ordHarm > 0 Then
-            cmdStr = cmdStr & "," & ordHarm
-        End If
-
-        Visa.SendString(cmdStr)
+        Throw New NotImplementedException
 
     End Sub
 
     Public Overrides Function GetVrms(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVrms
 
-        Return QueryNumericItem(IPWAN.PA_Function.Voltage, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.Voltage, elm))
 
     End Function
 
     Public Overrides Function GetVPeakPlus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVPeakPlus
 
-        Return QueryNumericItem(IPWAN.PA_Function.VoltPeakPlus, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.VoltPeakPlus, elm))
 
     End Function
 
     Public Overrides Function GetVPeakMinus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVPeakMinus
 
-        Return QueryNumericItem(IPWAN.PA_Function.VoltPeakMinus, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.VoltPeakMinus, elm))
 
     End Function
 
     Public Overrides Function GetIrms(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIrms
 
-        Return QueryNumericItem(IPWAN.PA_Function.Current, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.Current, elm))
 
     End Function
 
     Public Overrides Function GetIPeakPlus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIPeakPlus
 
-        Return QueryNumericItem(IPWAN.PA_Function.CurrentPeakPlus, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.CurrentPeakPlus, elm))
 
     End Function
 
     Public Overrides Function GetIPeakMinus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIPeakMinus
 
-        Return QueryNumericItem(IPWAN.PA_Function.CurrentPeakMinus, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.CurrentPeakMinus, elm))
 
     End Function
 
     Public Overrides Function GetPactive(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPactive
 
-        Return QueryNumericItem(IPWAN.PA_Function.ActivePower, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ActivePower, elm))
 
     End Function
 
     Public Overrides Function GetPapparent(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPapparent
 
-        Return QueryNumericItem(IPWAN.PA_Function.ApparentPower, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ApparentPower, elm))
 
     End Function
 
     Public Overrides Function GetPreact(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPreact
 
-        Return QueryNumericItem(IPWAN.PA_Function.ReactivPower, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ReactivPower, elm))
 
     End Function
 
     Public Overrides Function GetUTHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetUTHD
 
-        Return QueryNumericItem(IPWAN.PA_Function.THDvolt, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDvolt, elm))
 
     End Function
 
     Public Overrides Function GetITHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetITHD
 
-        Return QueryNumericItem(IPWAN.PA_Function.THDCurr, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDCurr, elm))
 
     End Function
 
     Public Overrides Function GetFreqU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetFreqU
 
-        Return QueryNumericItem(IPWAN.PA_Function.FrequencyU, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.FrequencyU, elm))
 
     End Function
 
     Public Overrides Function GetFreqI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetFreqI
 
-        Return QueryNumericItem(IPWAN.PA_Function.FrequencyI, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.FrequencyI, elm))
 
     End Function
 
     Public Overrides Function GetPF(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPF
 
-        Return QueryNumericItem(IPWAN.PA_Function.PF, elm)
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(IPWAN.PA_Function.PF, elm))
 
     End Function
+
+    Public Overrides Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single() Implements IPWAN.GetHarmonicsU
+
+        Call PresetHarmonics(IPWAN.PA_Function.Voltage, elm)
+
+        Return getHarmonics(elm, IPWAN.PA_Function.Voltage)
+
+    End Function
+
+    Public Overrides Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single() Implements IPWAN.GetHarmonicsI
+
+        Call PresetHarmonics(IPWAN.PA_Function.Current, elm)
+
+        Return getHarmonics(elm, IPWAN.PA_Function.Current)
+
+    End Function
+
 
 #End Region
 
 #Region "Public Special Functions HIOKI PW3337"
 
-    Public Overrides Function GetRectifierMode(iMode As IPWAN.RectifierMode) As String
 
-       return iMode.ToString
-
-    End Function
 
     Overrides Function CreateFunctionList() As SortedList
 
@@ -292,23 +361,67 @@ Public Class CPWAN_HIOKI_PW3337
         Next
     End Sub
 
+    Public Overrides Sub SetNumericItemsCount(nCount As Integer)
+
+        Throw New NotImplementedException
+
+    End Sub
+
 #End Region
 
 #Region "PPrivate  Functions HIOKI PW3337"
-    Private Function QueryNumericItem(nFn As IPWAN.PA_Function, nElm As IPWAN.Elements) As Single
+    'Private Function QueryNumericItem(nFn As IPWAN.PA_Function, nElm As IPWAN.Elements) As Single
 
 
-        Visa.SendString(":MEASURE? " & GetFunction(nFn) & nElm.ToString)
+    '    Visa.SendString(":MEASURE? " & GetFunction(nFn) & nElm.ToString)
 
-        Dim Buffer As String = Visa.ReceiveString()
+    '    Dim Buffer As String = Visa.ReceiveString()
 
-        If IsNumeric(Buffer) Then
-            Return CSng(Buffer)
-        Else
-            Return Single.MinValue
-        End If
+    '    If IsNumeric(Buffer) Then
+    '        Return CSng(Buffer)
+    '    Else
+    '        Return Single.MinValue
+    '    End If
+
+    'End Function
+
+    Private Function QueryValueList(ByVal cmdStr As String) As Double()
+
+        Visa.SendString(cmdStr)
+        cHelper.Delay(1)
+        Return Visa.ReceiveValueList()
 
     End Function
+
+
+    Private Sub PresetHarmonics(nFn As IPWAN.PA_Function)
+
+        PresetHarmonics(nFn, IPWAN.Elements.Element1)
+
+    End Sub
+
+    Private Sub PresetHarmonics(nFn As IPWAN.PA_Function, nElm As IPWAN.Elements)
+
+        Call Visa.SendString(":MEASURE:HARMONIC:ITEM:ALLC")
+        Call Visa.SendString(":MEASURE:HARMONIC:ITEM:LIST 1,0,0,0,0,0")
+        Call Visa.SendString(":MEASURE:HARMONIC:ITEM:ORDER 0," & CStr(_HarmCount) & ",ALL")
+
+        Select Case nFn
+            Case IPWAN.PA_Function.Current
+                Call Visa.SendString(":MEASURE:HARMONIC:ITEM:I:CH" & nElm & " 1")
+                Call Visa.SendString(":MEASURE:HARMONIC:ITEM:U:CH" & nElm & " 0")
+            Case IPWAN.PA_Function.Voltage
+                Call Visa.SendString(":MEASURE:HARMONIC:ITEM:I:CH" & nElm & " 0")
+                Call Visa.SendString(":MEASURE:HARMONIC:ITEM:U:CH" & nElm & " 1")
+            Case Else
+                Call Visa.SendString(":MEASURE:HARMONIC:ITEM:I:CH" & nElm & " 0")
+                Call Visa.SendString(":MEASURE:HARMONIC:ITEM:U:CH" & nElm & " 1")
+        End Select
+
+    End Sub
+
+
+
 #End Region
 
 End Class

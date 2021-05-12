@@ -9,14 +9,14 @@
     Property Channels As CScopeChannels
     Property TimeBase As Single
     Property Trigger As CScopeTrigger
-    Property HardcopyFileFormat As UInteger
+    ReadOnly Property HardcopyFileFormat As UInteger
 
 #End Region
 
 #Region "Methods (Sub & Functions)"
 
 
-    Sub PrintDisplay2File()
+    Sub CaptureScreen2File()
     Sub InitChannel(Nr As Integer)
     Sub InitChannel(Chan As CScopeChannel)
 

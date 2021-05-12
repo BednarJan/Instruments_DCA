@@ -10,7 +10,7 @@ Public Class BCScopeTEK
 
     End Sub
 
-#Region "Interface Methodes IScope"
+#Region "Interface Methodes IDevice"
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
@@ -34,7 +34,7 @@ Public Class BCScopeTEK
 
 #Region "Interface Methodes IScope"
 
-    Public Overrides Sub PrintDisplay2File() Implements IScope.PrintDisplay2File
+    Public Overrides Sub CaptureScreen2File() Implements IScope.CaptureScreen2File
 
         Call Visa.SendString("HARDCOPY START")
         Call cHelper.Delay(2)
@@ -49,6 +49,18 @@ Public Class BCScopeTEK
 
     Public Overrides Sub InitChannels() Implements IScope.InitChannels
         MyBase.InitChannels()
+    End Sub
+
+    Public Overrides Sub SetChannel(Chan As CScopeChannel) Implements IScope.SetChannel
+
+        MyBase.SetChannel(Chan)
+
+    End Sub
+
+    Public Overrides Sub SetChannel(Nr As Integer) Implements IScope.SetChannel
+
+        MyBase.SetChannel(Nr)
+
     End Sub
 
     Public Overrides Sub SetHorizontal() Implements IScope.SetHorizontal

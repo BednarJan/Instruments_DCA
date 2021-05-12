@@ -28,12 +28,28 @@ Public Class CPWAN_YOKO_WT310
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
+        Visa.SendString("*RST;*CLS" & Chr(10))
+        Visa.SendString(":NUMERIC:FORMAT ASCII" & Chr(10))
+        Visa.SendString(":DISPLAY:NUMERIC:NORMAL:FORMAT VAL16" & Chr(10))
+        Visa.SendString(":INPUT:VOLTAGE:AUTO ON" & Chr(10))
+        Visa.SendString(":INPUT:CURRENT:AUTO ON" & Chr(10))
+        Visa.SendString(":HARMONICS:THD TOT" & Chr(10))
+
+        Visa.SendString(":DISPLAY:NORMAL:ITEM1 U" & Chr(10))
+        Visa.SendString(":DISPLAY:NORMAL:ITEM2 I" & Chr(10))
+        Visa.SendString(":DISPLAY:NORMAL:ITEM3 P" & Chr(10))
 
     End Sub
 
 #End Region
 
 #Region "Interface Methodes IPWAN"
+
+    Public Overrides Sub SetWiring(iWir As IPWAN.Wiring) Implements IPWAN.SetWiring
+
+        Throw New NotImplementedException
+
+    End Sub
 
 #End Region
 
