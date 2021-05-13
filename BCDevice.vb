@@ -57,6 +57,8 @@ Public MustInherit Class BCDevice
 
         _Visa.SendString("*RST", ErrorMessage)
 
+        _Visa.SendString("HEADER OFF", ErrorMessage)
+
     End Sub
 
     Public Sub SendString(ByVal myStr As String) Implements IDevice.SendString

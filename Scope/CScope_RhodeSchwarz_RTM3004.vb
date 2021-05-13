@@ -274,55 +274,55 @@ Public Class CScope_RhodeSchwarz_RTM3004
 
     Public Overrides Function MeasFreq(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasFreq
 
-        Return MeasIt(MeasNr, Source1, "FREQ")
+        Return MeasSource(MeasNr, Source1, "FREQ")
 
     End Function
 
     Public Overrides Function MeasPK2PK(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPK2PK
 
-        Return MeasIt(MeasNr, Source1, "PEAK")
+        Return MeasSource(MeasNr, Source1, "PEAK")
 
     End Function
 
     Public Overrides Function MeasRMS(MeasNr As Integer, Source1 As String, Optional waitTime As Integer = 1) As Single Implements IScope.MeasRMS
 
-        Return MeasIt(MeasNr, Source1, "RMS")
+        Return MeasSource(MeasNr, Source1, "RMS")
 
     End Function
 
     Public Overrides Function MeasPOVERSHOOT(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPOVERSHOOT
 
-        Return MeasIt(MeasNr, Source1, "POV")
+        Return MeasSource(MeasNr, Source1, "POV")
 
     End Function
 
     Public Overrides Function MeasNOVERSHOOT(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasNOVERSHOOT
 
-        Return MeasIt(MeasNr, Source1, "NOV")
+        Return MeasSource(MeasNr, Source1, "NOV")
 
     End Function
 
     Public Overrides Function MeasIMAX(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasIMAX
 
-        Return MeasIt(MeasNr, Source1, "UPEakvalue")
+        Return MeasSource(MeasNr, Source1, "UPEakvalue")
 
     End Function
 
     Public Overrides Function MeasIMIN(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasIMIN
 
-        Return MeasIt(MeasNr, Source1, "LPEakvalue")
+        Return MeasSource(MeasNr, Source1, "LPEakvalue")
 
     End Function
 
     Public Overrides Function MeasHIGH(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasHIGH
 
-        Return MeasIt(MeasNr, Source1, "HIGH")
+        Return MeasSource(MeasNr, Source1, "HIGH")
 
     End Function
 
     Public Overrides Function MeasLOW(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasLOW
 
-        Return MeasIt(MeasNr, Source1, "LOW")
+        Return MeasSource(MeasNr, Source1, "LOW")
 
     End Function
 
@@ -331,14 +331,16 @@ Public Class CScope_RhodeSchwarz_RTM3004
 
 #Region "Help Meas Functions"
 
-    Overrides Function MeasIt(MeasNr As Integer, Source1 As String, cmd As String) As Single
+    Overrides Function MeasSource(MeasNr As Integer, Source As String, MeasType As String) As Single
 
-        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":MAIN " & UCase(cmd))
-        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE " & Source1)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":MAIN " & UCase(MeasType))
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE " & Source)
 
         Call cHelper.Delay(1)
 
-        Return MeasDecimalValue(MeasNr)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":RESult?")
+
+        Return CDec(Visa.ReceiveValue)
 
     End Function
 
@@ -348,12 +350,9 @@ Public Class CScope_RhodeSchwarz_RTM3004
 
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":RESult?")
 
-        Dim Buffer As String = Visa.ReceiveString()
-
-        Return cHelper.StringToDecimal(Buffer)
+        Return cHelper.StringToDecimal(Visa.ReceiveValue)
 
     End Function
-
 
 
     Overrides Function GetSlope(nSlope As Integer) As String

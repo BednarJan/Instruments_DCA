@@ -163,6 +163,7 @@ Public Class BCScopeTEK
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":STATE on")
         Call Visa.SendString("MEASUrement:INDICators:State Meas" & MeasNr)
 
+
         Call cHelper.Delay(3)
 
         Return MeasDecimalValue(MeasNr)
@@ -188,55 +189,55 @@ Public Class BCScopeTEK
 
     Public Overrides Function MeasFreq(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasFreq
 
-        Return MeasIt(MeasNr, Source1, "FREQ")
+        Return MeasSource(MeasNr, Source1, "FREQ")
 
     End Function
 
     Public Overrides Function MeasPK2PK(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPK2PK
 
-        Return MeasIt(MeasNr, Source1, "PK2PK")
+        Return MeasSource(MeasNr, Source1, "PK2PK")
 
     End Function
 
     Public Overrides Function MeasRMS(MeasNr As Integer, Source1 As String, Optional waitTime As Integer = 1) As Single Implements IScope.MeasRMS
 
-        Return MeasIt(MeasNr, Source1, "RMS")
+        Return MeasSource(MeasNr, Source1, "RMS")
 
     End Function
 
     Public Overrides Function MeasPOVERSHOOT(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPOVERSHOOT
 
-        Return MeasIt(MeasNr, Source1, "POV")
+        Return MeasSource(MeasNr, Source1, "POV")
 
     End Function
 
     Public Overrides Function MeasNOVERSHOOT(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasNOVERSHOOT
 
-        Return MeasIt(MeasNr, Source1, "NOV")
+        Return MeasSource(MeasNr, Source1, "NOV")
 
     End Function
 
     Public Overrides Function MeasIMAX(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasIMAX
 
-        Return MeasIt(MeasNr, Source1, "MAXI")
+        Return MeasSource(MeasNr, Source1, "MAXI")
 
     End Function
 
     Public Overrides Function MeasIMIN(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasIMIN
 
-        Return MeasIt(MeasNr, Source1, "MINI")
+        Return MeasSource(MeasNr, Source1, "MINI")
 
     End Function
 
     Public Overrides Function MeasHIGH(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasHIGH
 
-        Return MeasIt(MeasNr, Source1, "HIGH")
+        Return MeasSource(MeasNr, Source1, "HIGH")
 
     End Function
 
     Public Overrides Function MeasLOW(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasLOW
 
-        Return MeasIt(MeasNr, Source1, "LOW")
+        Return MeasSource(MeasNr, Source1, "LOW")
 
     End Function
 
@@ -245,19 +246,25 @@ Public Class BCScopeTEK
 
 #Region "Help Meas Functions"
 
-    Private Function MeasIt(MeasNr As Integer, Source1 As String, cmd As String) As Single
+    Overrides Function MeasSource(MeasNr As Integer, Source As String, MeasType As String) As Single
 
-        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE " & Source1)
-        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":TYPe " & UCase(cmd))
-        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":STATE on")
-
-        Call cHelper.Delay(1)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE " & Source)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":STATE ON")
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":TYPe " & MeasType)
 
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
-        Dim Buffer As String = Visa.ReceiveString()
 
-        Return cHelper.StringToDecimal(Buffer)
+        Return CDec(Visa.ReceiveValue)
 
+    End Function
+
+
+    Overrides Function MeasDecimalValue(MeasNr As Integer) As Decimal
+
+
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
+
+        Return CDec(Visa.ReceiveValue)
 
     End Function
 

@@ -350,7 +350,7 @@ Public Class BCScope
 
     End Function
 
-    Overridable Function MeasIt(MeasNr As Integer, Source1 As String, cmd As String) As Single
+    Overridable Function MeasSource(MeasNr As Integer, Source1 As String, cmd As String) As Single
 
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE " & Source1)
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":TYPe " & UCase(cmd))
@@ -366,9 +366,7 @@ Public Class BCScope
 
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
 
-        Dim Buffer As String = Visa.ReceiveString()
-
-        Return cHelper.StringToDecimal(Buffer)
+        Return CDec(Visa.ReceiveValue)
 
     End Function
 
