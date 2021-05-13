@@ -16,6 +16,7 @@
         DC_NREJect = 5
         AC_HFReject = 6
         AC_NREJect = 7
+        GND = 99
     End Enum
 
     Public Enum ChanPolarity

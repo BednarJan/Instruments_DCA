@@ -42,7 +42,6 @@ Public Class BCScopeTEK
 
     End Sub
 
-
     Public Overrides Sub SetChannels() Implements IScope.SetChannels
         MyBase.SetChannels()
     End Sub
@@ -165,10 +164,8 @@ Public Class BCScopeTEK
         Call Visa.SendString("MEASUrement:INDICators:State Meas" & MeasNr)
 
         Call cHelper.Delay(3)
-        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
-        Dim Buffer As String = Visa.ReceiveString()
 
-        Return cHelper.StringToDecimal(Buffer)
+        Return MeasDecimalValue(MeasNr)
 
     End Function
 
@@ -185,11 +182,7 @@ Public Class BCScopeTEK
 
         Call cHelper.Delay(3)
 
-        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
-        Dim Buffer As String = Visa.ReceiveString()
-
-        Return cHelper.StringToDecimal(Buffer)
-
+        Return MeasDecimalValue(MeasNr)
 
     End Function
 
@@ -268,6 +261,18 @@ Public Class BCScopeTEK
 
     End Function
 
+    Overrides Function GetSlope(nSlope As Integer) As String
+        Dim sRet As String = String.Empty
+
+        Select Case nSlope
+            Case CScopeTrigger.TriggerSlope.RISE
+                sRet = "rise"
+            Case CScopeTrigger.TriggerSlope.FALL
+                sRet = "fall"
+        End Select
+
+        Return sRet
+    End Function
 
 
 #End Region

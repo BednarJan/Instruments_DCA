@@ -3,6 +3,8 @@ Public Class BCScope
     Inherits BCDevice
     Implements IScope
 
+    Private _HardcopyFileFormat As String = "PNG"
+
 #Region "Shorthand Properties"
 
     Property CountOfChannels As Integer
@@ -26,11 +28,20 @@ Public Class BCScope
 
     Public ReadOnly Property HardcopyFileFormat As UInteger Implements IScope.HardcopyFileFormat
         Get
-            Dim fi As New IO.FileInfo(_HardcopyFullFileName)
-            Return fi.Extension
+
+            If Not String.IsNullOrEmpty(_HardcopyFullFileName) Then
+
+                Dim fi As New IO.FileInfo(_HardcopyFullFileName)
+
+                Return fi.Extension
+            Else
+
+                Return _HardcopyFileFormat
+
+            End If
+
         End Get
     End Property
-
 
 #End Region
 
@@ -55,7 +66,6 @@ Public Class BCScope
         .Coupling = CScopeTrigger.TriggerCoupling.AC_HFReject,
         .Mode = CScopeTrigger.TriggerMode.SIGNL
         }
-
 
     End Sub
 
@@ -109,6 +119,8 @@ Public Class BCScope
 
                 If .State = CScopeChannel.ChanState.STATE_ON Then
 
+                    Call Visa.SendString("SELect:" & .Name & " ON")
+
                     Select Case .Bandwidth
                         Case CScopeChannel.ChanBandwidth.B20
                             Call Visa.SendString(.Name & ":Bandwidth TWEnty")
@@ -150,7 +162,6 @@ Public Class BCScope
                     Call Visa.SendString(.Name & ":VOLts " & FormatNumber(.VertVolt))
                     Call Visa.SendString(.Name & ":OFFSet " & FormatNumber(.Offset))
 
-                    Call Visa.SendString("SELect:" & .Name & " ON")
                 Else
                     Call Visa.SendString("SELect:" & .Name & " OFF")
 
@@ -333,21 +344,33 @@ Public Class BCScope
 
     End Function
 
-    Public Function GetSlope(nSlope As Integer) As String
-        Dim sRet As String = String.Empty
+    Overridable Function GetSlope(nSlope As Integer) As String
 
-        Select Case nSlope
-            Case CScopeTrigger.TriggerSlope.RISE
-                sRet = "rise"
-            Case CScopeTrigger.TriggerSlope.FALL
-                sRet = "fall"
-        End Select
+        Throw New NotImplementedException
 
-        Return sRet
     End Function
 
+    Overridable Function MeasIt(MeasNr As Integer, Source1 As String, cmd As String) As Single
 
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE " & Source1)
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":TYPe " & UCase(cmd))
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":STATE on")
 
+        Call cHelper.Delay(1)
+
+        Return MeasDecimalValue(MeasNr)
+
+    End Function
+
+    Overridable Function MeasDecimalValue(MeasNr As Integer) As Decimal
+
+        Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
+
+        Dim Buffer As String = Visa.ReceiveString()
+
+        Return cHelper.StringToDecimal(Buffer)
+
+    End Function
 
 #End Region
 

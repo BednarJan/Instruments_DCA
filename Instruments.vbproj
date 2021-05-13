@@ -118,6 +118,7 @@
     <Compile Include="Scope\CScopeChannels.vb" />
     <Compile Include="Scope\CScopeTrigger.vb" />
     <Compile Include="Scope\CScope_Helper.vb" />
+    <Compile Include="Scope\CScope_RhodeSchwarz_RTM3004.vb" />
     <Compile Include="Scope\CScope_Tektronix_MSO3014.vb" />
     <Compile Include="Scope\CScope_Tektronix_TDS3014B.vb" />
     <Compile Include="Scope\IScope.vb" />
