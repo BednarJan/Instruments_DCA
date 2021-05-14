@@ -94,5 +94,62 @@ Public Class cHelper
         Return retBytes
     End Function
 
+    Public Shared Function CSVString2DoubleArray(ByVal myString As String) As Double()
+
+        Return CSVString2DoubleArray(myString, ";")
+
+    End Function
+
+    Public Shared Function CSVString2DoubleArray(ByVal myString As String, separ As Char) As Double()
+
+        Dim retVals As List(Of Double) = New List(Of Double)
+
+        If Not String.IsNullOrEmpty(myString) Then
+
+            Dim strVal() As String = myString.Split(separ)
+
+            For i As Integer = 0 To strVal.Count - 1
+
+                Dim hlpVal As Double = StringToDouble(strVal(i))
+
+                retVals.Add(hlpVal)
+
+            Next
+
+        End If
+
+        Return retVals.ToArray
+
+    End Function
+
+    Public Shared Function CSVString2DecimalArray(ByVal myString As String) As Decimal()
+
+        Return CSVString2DecimalArray(myString, ";")
+
+    End Function
+
+
+    Public Shared Function CSVString2DecimalArray(ByVal myString As String, separ As Char) As Decimal()
+
+        Dim retVals As List(Of Decimal) = New List(Of Decimal)
+
+        If Not String.IsNullOrEmpty(myString) Then
+
+            Dim strVal() As String = myString.Split(separ)
+
+            For i As Integer = 0 To strVal.Count - 1
+
+                Dim hlpVal As Decimal = StringToDecimal(strVal(i))
+
+                retVals.Add(hlpVal)
+
+            Next
+
+        End If
+
+        Return retVals.ToArray
+
+    End Function
+
 
 End Class

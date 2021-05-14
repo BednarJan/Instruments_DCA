@@ -23,6 +23,9 @@
 #End Region
 
 #Region "Methods (Sub & Functions)"
+
+    Property ScanList As CScanList
+
     Function Get_Volt_DC(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
     Function Get_Volt_AC(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
     Function Get_Curr_DC(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
@@ -32,6 +35,8 @@
     Function Get_FReq(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
 
     Function Get_Sample_Volt_DC(ByVal Chan As Integer, ByVal Sample As Integer) As Single
+
+    'Function ScanChannels(ChanList As Integer(), Funct As IDAQ.DAQ_Function) As Decimal()
 
 #End Region
 

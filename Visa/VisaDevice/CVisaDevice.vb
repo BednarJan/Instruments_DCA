@@ -65,18 +65,39 @@ Public Class CVisaDevice
 
     End Function
 
+    'Public Function ReceiveValueList(Optional ByRef ErrorMsg As String = "") As Double() Implements IVisaDevice.ReceiveValueList
+    '    If Not Session Is Nothing Then
+    '        Try
+    '            'Return Session.FormattedIO.ReadLineBinaryBlockOfDouble
+    '            Return CType(Session.FormattedIO.ReadListOfDouble, Array)
+    '        Catch ex As Exception
+    '            _ErrorLogger.LogException(ex, Session.ResourceName)
+    '            Return New Double() {}
+    '        End Try
+    '    End If
+
+    'End Function
+
     Public Function ReceiveValueList(Optional ByRef ErrorMsg As String = "") As Double() Implements IVisaDevice.ReceiveValueList
-        If Not Session Is Nothing Then
+
+        Dim str As String = String.Empty
+        Dim retVal() As Double = New Double() {}
+
+        If Session IsNot Nothing Then
             Try
-                Return Session.FormattedIO.ReadLineBinaryBlockOfDouble
+
+                str = ReceiveString()
+                retVal = cHelper.CSVString2DoubleArray(str)
+
             Catch ex As Exception
                 _ErrorLogger.LogException(ex, Session.ResourceName)
-                Return New Double() {}
             End Try
+
+            Return retVal
+
         End If
 
     End Function
-
 
 
     Public Sub ReadStringToFileRAW(ByVal HardcopyFullFileName As String, Optional termchar As Byte = 10) Implements IVisaDevice.ReadStringToFileRAW

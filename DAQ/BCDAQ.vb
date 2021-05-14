@@ -4,10 +4,10 @@ Public Class BCDAQ
     Inherits BCDevice
     Implements IDAQ
 
-
 #Region "Shorthand Properties"
     Public Property VoltageMax As Single Implements IDAQ.VoltageMax
     Public Property CurrentMax As Single Implements IDAQ.CurrentMax
+    Public Property ScanList As CScanList Implements IDAQ.ScanList
 
     Public ReadOnly Property FunctionList As SortedList
 
@@ -21,6 +21,8 @@ Public Class BCDAQ
         MyBase.New(Session, ErrorLogger)
 
         _FunctionList = CreateFunctionList()
+
+        _ScanList = New CScanList
 
         _MeasModul = 1
 
@@ -183,7 +185,7 @@ Public Class BCDAQ
 
     End Function
 
-    Overridable Function GetScanList(chlist() As Integer, Optional nModul As Integer = 1) As String
+    Overridable Function GetScanList(Optional nModul As Integer = 1) As String
 
         Const sStartStr As String = "(@"
         Const sEndStr As String = ")"
@@ -191,28 +193,35 @@ Public Class BCDAQ
         Dim nDAQChan As Integer = 1000 * nModul
         Dim sRet As String = sStartStr
 
-        For i As Integer = 0 To UBound(chlist)
+        If _ScanList IsNot Nothing Then
 
-            sRet &= (chlist(i) + nDAQChan)
-            If (UBound(chlist) > 1) And (i < UBound(chlist)) Then
-                'more items
-                sRet &= ","
-            End If
-        Next i
+            _ScanList.Sort(AddressOf CompareScanListASC)
 
-        sRet &= sEndStr
+            For i As Integer = 0 To _ScanList.Count - 1
 
-        GetScanList = sRet
+                sRet &= (CInt(_ScanList(i)) + nDAQChan).ToString
+                If (_ScanList.Count > 1) And (i < _ScanList.Count) Then
+                    'more items
+                    sRet &= ","
+                End If
+
+            Next
+        End If
+        Return sRet & sEndStr
     End Function
 
     Overridable Function GetScanList(Chan As Integer, Optional nModul As Integer = 1) As String
 
-        Dim chList As List(Of Integer) = New List(Of Integer)
-        chList.Add(Chan)
+        _ScanList.Add(Chan)
 
-        Return GetScanList(chList.ToArray, nModul)
+        Return GetScanList(nModul)
 
     End Function
+
+    Private Function CompareScanListASC(x As Integer, y As Integer) As Integer
+        Return y.CompareTo(x)
+    End Function
+
 
 #End Region
 

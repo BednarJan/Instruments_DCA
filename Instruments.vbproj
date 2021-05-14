@@ -84,6 +84,7 @@
     <Compile Include="CPapouch_SB485.vb" />
     <Compile Include="DAQ\BCDAQ.vb" />
     <Compile Include="DAQ\CDAQ_AGIL34980A.vb" />
+    <Compile Include="DAQ\CScanList.vb" />
     <Compile Include="frmDeviceControl.designer.vb">
       <DependentUpon>frmDeviceControl.vb</DependentUpon>
     </Compile>

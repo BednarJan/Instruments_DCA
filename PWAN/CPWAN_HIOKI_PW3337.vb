@@ -46,7 +46,7 @@ Public Class CPWAN_HIOKI_PW3337
 
     Public Overrides Function QueryNumericItems() As Double() Implements IPWAN.QueryNumericItems
 
-        Return QueryValueList(": MEASURE?")
+        Return QueryValueList(":MEASURE?")
 
     End Function
 
