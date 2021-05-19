@@ -203,99 +203,86 @@ Public Class CPWAN_HIOKI_PW3337
 
     Public Overrides Function GetVrms(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVrms
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.Voltage, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.Voltage, elm)
 
     End Function
 
     Public Overrides Function GetVPeakPlus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVPeakPlus
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.VoltPeakPlus, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.VoltPeakPlus, elm)
 
     End Function
 
     Public Overrides Function GetVPeakMinus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVPeakMinus
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.VoltPeakMinus, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.VoltPeakMinus, elm)
 
     End Function
 
     Public Overrides Function GetIrms(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIrms
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.Current, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.Current, elm)
 
     End Function
 
     Public Overrides Function GetIPeakPlus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIPeakPlus
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.CurrentPeakPlus, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.CurrentPeakPlus, elm)
 
     End Function
 
     Public Overrides Function GetIPeakMinus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIPeakMinus
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.CurrentPeakMinus, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.CurrentPeakMinus, elm)
 
     End Function
 
     Public Overrides Function GetPactive(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPactive
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ActivePower, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.ActivePower, elm)
+
 
     End Function
 
     Public Overrides Function GetPapparent(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPapparent
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ApparentPower, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.ApparentPower, elm)
 
     End Function
 
     Public Overrides Function GetPreact(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPreact
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ReactivPower, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.ReactivPower, elm)
 
     End Function
 
     Public Overrides Function GetUTHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetUTHD
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDvolt, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.THDvolt, elm)
 
     End Function
 
     Public Overrides Function GetITHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetITHD
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDCurr, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.THDCurr, elm)
 
     End Function
 
     Public Overrides Function GetFreqU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetFreqU
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.FrequencyU, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.FrequencyU, elm)
 
     End Function
 
     Public Overrides Function GetFreqI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetFreqI
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.FrequencyI, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.FrequencyI, elm)
 
     End Function
 
     Public Overrides Function GetPF(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPF
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.PF, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.PF, elm)
 
     End Function
 
@@ -342,6 +329,12 @@ Public Class CPWAN_HIOKI_PW3337
         fsl.Add(IPWAN.PA_Function.CurrentPeakMinus.ToString, "I_MIN")
         fsl.Add(IPWAN.PA_Function.PowerPeakPlus.ToString, "P_MAX")
         fsl.Add(IPWAN.PA_Function.PowerPeakMinus.ToString, "P_MIN")
+        fsl.Add(IPWAN.PA_Function.THDvolt.ToString, "UTHD")
+        fsl.Add(IPWAN.PA_Function.THDCurr.ToString, "ITHD")
+        fsl.Add(IPWAN.PA_Function.IntegratedActivePower.ToString, "WP")
+        fsl.Add(IPWAN.PA_Function.IntegratedCurrent.ToString, "IH")
+
+
         Return fsl
 
     End Function
@@ -370,20 +363,14 @@ Public Class CPWAN_HIOKI_PW3337
 #End Region
 
 #Region "PPrivate  Functions HIOKI PW3337"
-    'Private Function QueryNumericItem(nFn As IPWAN.PA_Function, nElm As IPWAN.Elements) As Single
+    Private Function QueryNumericItem(nFn As IPWAN.PA_Function, nElm As IPWAN.Elements) As Single
 
 
-    '    Visa.SendString(":MEASURE? " & GetFunction(nFn) & nElm.ToString)
+        Visa.SendString(":MEASURE? " & GetFunction(nFn) & nElm)
 
-    '    Dim Buffer As String = Visa.ReceiveString()
+        Return Visa.ReceiveValue
 
-    '    If IsNumeric(Buffer) Then
-    '        Return CSng(Buffer)
-    '    Else
-    '        Return Single.MinValue
-    '    End If
-
-    'End Function
+    End Function
 
     Private Function QueryValueList(ByVal cmdStr As String) As Double()
 

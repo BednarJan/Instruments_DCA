@@ -65,6 +65,26 @@ Public Class CVisaDevice
 
     End Function
 
+    'Public Function ReceiveValue(Optional ByRef ErrorMsg As String = "") As Double Implements IVisaDevice.ReceiveValue
+    '    Dim str As String = String.Empty
+    '    Dim retVal As Double = New Double
+
+    '    If Session IsNot Nothing Then
+    '        Try
+
+    '            str = ReceiveString()
+    '            retVal = cHelper.StringToDouble(str)
+
+    '        Catch ex As Exception
+    '            _ErrorLogger.LogException(ex, Session.ResourceName)
+    '        End Try
+    '    End If
+
+    '    Return retVal
+
+    'End Function
+
+
     'Public Function ReceiveValueList(Optional ByRef ErrorMsg As String = "") As Double() Implements IVisaDevice.ReceiveValueList
     '    If Not Session Is Nothing Then
     '        Try

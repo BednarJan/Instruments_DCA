@@ -43,7 +43,7 @@ Public Class BCPWAN
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
-        Throw New NotImplementedException
+        MyBase.Initialize()
 
     End Sub
 #End Region
@@ -349,35 +349,29 @@ Public Class BCPWAN
     End Sub
 
 
-
-
     Overridable Function GetFunction(nFn As IPWAN.PA_Function) As String
 
         Dim sRet As String = String.Empty
 
-        Dim myKeys As ICollection = FunctionList.Keys
+        If FunctionList.ContainsKey(nFn.ToString) Then
 
-        For i As Integer = 0 To FunctionList.Count - 1
-            If FunctionList.ContainsKey(nFn.ToString) Then
-                sRet = FunctionList.GetByIndex(i).ToString
-            End If
-        Next
+            sRet = FunctionList.Item(nFn.ToString).ToString
+
+        End If
+
 
         Return sRet
     End Function
 
     Overridable Function GetFunctionIndex(nFn As IPWAN.PA_Function, nElm As Integer) As Integer
 
-        Dim nRet As Integer = 0
+        Dim nRet As Integer = Integer.MinValue
 
-        For i As Integer = 0 To FunctionList.Count - 1
+        If FunctionList.ContainsKey(nFn.ToString) Then
 
-            Dim fn As KeyValuePair(Of String, String) = FunctionList(i)
-            If fn.Key = nFn.ToString Then
-                nRet = (nElm - 1) * FunctionList.Count + i + 1
-            End If
+            nRet = FunctionList.IndexOfKey(nFn.ToString)
 
-        Next
+        End If
 
         Return nRet
 

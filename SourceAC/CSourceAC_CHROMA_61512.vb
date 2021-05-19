@@ -110,7 +110,15 @@ Public Class CSourceAC_CHROMA_61512
     End Sub
 
     Public Overrides Sub SetPhaseMode(PhaseMode As ISource_AC.EPhaseMode) Implements ISource_AC.SetPhaseMode
-        MyBase.SetPhaseMode(PhaseMode)
+        Dim sPhases As String = String.Empty
+        Select Case PhaseMode
+            Case ISource_AC.EPhaseMode.SinglePhase
+                sPhases = "SINGLE"
+            Case ISource_AC.EPhaseMode.ThreePhase
+                sPhases = "THREE"
+
+        End Select
+        Visa.SendString("INSTrument:PHASe " & sPhases)
     End Sub
 
     Public Overrides Function GetStatus() As Single Implements ISource_AC.GetStatus

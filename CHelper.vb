@@ -35,16 +35,18 @@ Public Class cHelper
     End Function
 
     Public Shared Function StringToDouble(ByVal str) As Double
-        Dim Separator As String = String.Empty
+        Dim Separator As String = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator
 
-        Separator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator
+        If Not String.IsNullOrEmpty(str) Then
 
-        str = str.Replace("."c, Separator).Replace(","c, Separator)
+            str = str.Replace("."c, Separator).Replace(","c, Separator)
+
+        End If
 
         Try
             Return Double.Parse(str, CultureInfo.InvariantCulture)
         Catch ex As Exception
-            Return Double.MinValue
+            Return Double.NaN
         End Try
 
     End Function
