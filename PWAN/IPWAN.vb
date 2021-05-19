@@ -117,8 +117,14 @@
     Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single()
     Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single()
 
+    Function GetFunctionIndex(nFn As IPWAN.PA_Function, nElm As Integer) As Integer
+
+
     Sub ClearNumericItems()
     Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
+    Sub SetNumericItem(nFn As String, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
+    Sub SetNumericItem(nFn As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
+
     Function CreateNumericItemsList() As Integer
 
     Sub SetTHDNorm(nTHDNorm As IPWAN.THDNorm)

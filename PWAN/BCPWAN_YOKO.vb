@@ -95,14 +95,29 @@ Public Class BCPWAN_YOKO
     End Sub
 
     Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
-        Dim cmdStr As String
-        Dim sELM As String
+
         Dim sFN As String
 
-        sELM = GetElement(elm)
         sFN = GetFunction(nFn)
 
-        cmdStr = ":NUMERIC:NORMAL:ITEM" & itm.ToString & " " & sFN & "," & sELM
+        Call SetNumericItem(sFN, CInt(elm), itm, ordHarm)
+
+    End Sub
+
+    Public Overrides Sub SetNumericItem(nFn As String, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+
+        Dim sFN As String
+
+        sFN = GetFunction(nFn)
+
+        SetNumericItem(sFN, CInt(elm), itm, ordHarm)
+
+    End Sub
+
+    Public Overrides Sub SetNumericItem(sFn As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+        Dim cmdStr As String
+
+        cmdStr = ":NUMERIC:NORMAL:ITEM" & itm.ToString & " " & sFn & "," & elm.ToString
         If ordHarm > 0 Then
             cmdStr = cmdStr & "," & ordHarm
         End If
@@ -378,7 +393,7 @@ Public Class BCPWAN_YOKO
         Call SetNumericItemsCount(_HarmCount)
 
         For i As Integer = 1 To _HarmCount
-            Call SetNumericItem(fn, elm, i, i)
+            Call SetNumericItem(GetFunction(fn), elm, i, i)
         Next i
 
         Call cHelper.Delay(1)
@@ -416,7 +431,7 @@ Public Class BCPWAN_YOKO
 
     End Function
 
-    Overrides Function CreateFunctionList() As SortedList
+    Overrides Function CreateFunctionList() As SortedList(Of String, String)
 
         Return MyBase.CreateFunctionList
 

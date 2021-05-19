@@ -27,7 +27,7 @@ Public Class CPWAN_HIOKI_PW3337
 
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
-        Dim ItemDef() As String = {"U", "I", "P", "S", "Q", "LAMB", "PHI", "FU", "FI", "UTHD", "ITHD", "NONE", "NONE", "NONE", "NONE", "NONE"}
+
 
         Visa.SendString("*RST;*CLS" & Chr(10))
         Visa.SendString("HEADER OFF" & Chr(10))
@@ -36,6 +36,8 @@ Public Class CPWAN_HIOKI_PW3337
         SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.b, IPWAN.RectifierMode.AC, "1")
         SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.c, IPWAN.RectifierMode.AC, "1")
         SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.d, IPWAN.RectifierMode.AC, "0")
+
+        ClearNumericItems()
 
         Dim nItemsCount As Integer = CreateNumericItemsList()
 
@@ -57,14 +59,21 @@ Public Class CPWAN_HIOKI_PW3337
     End Sub
 
     Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+
+        MyBase.SetNumericItem(nFn, elm, itm)
+
+    End Sub
+
+    Public Overrides Sub SetNumericItem(nFn As String, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+
+        SetNumericItem(nFn, elm, itm, ordHarm)
+
+    End Sub
+
+    Public Overrides Sub SetNumericItem(sFN As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
         Dim cmdStr As String
-        Dim sELM As String
-        Dim sFN As String
 
-        sELM = GetElement(elm)
-        sFN = GetFunction(nFn)
-
-        cmdStr = ":MEAS:ITEM:" & itm.ToString & " " & sFN & "," & sELM
+        cmdStr = ":MEASURE:NORMAL:ITEM:" & sFN & ":" & elm.ToString & " 1" & "," & itm.ToString
         If ordHarm > 0 Then
             cmdStr = cmdStr & "," & ordHarm
         End If
@@ -309,11 +318,11 @@ Public Class CPWAN_HIOKI_PW3337
 
 
 
-    Overrides Function CreateFunctionList() As SortedList
+    Overrides Function CreateFunctionList() As SortedList(Of String, String)
 
         'Fix item order analogical the Yokogawa preset pattern 3 
 
-        Dim fsl As New SortedList
+        Dim fsl As New SortedList(Of String, String)
         fsl.Add(IPWAN.PA_Function.Voltage.ToString, "U")
         fsl.Add(IPWAN.PA_Function.Current.ToString, "I")
         fsl.Add(IPWAN.PA_Function.ActivePower.ToString, "P")
@@ -340,18 +349,19 @@ Public Class CPWAN_HIOKI_PW3337
     End Function
 
     Overrides Sub PresetPattern()
-        Dim fsl As SortedList = CreateFunctionList()
+        'Dim fsl As SortedList(Of String, String) = CreateFunctionList()
 
-        For elm As Integer = 1 To InputElements
+        'For elm As Integer = 1 To InputElements
 
-            For itm As Integer = 0 To fsl.Count - 1
+        '    For Each kvp As KeyValuePair(Of String, String) In fsl
 
-                Dim fn As KeyValuePair(Of String, String) = fsl(itm)
+        '        SetNumericItem(kvp.Value, elm, (elm - 1) * fsl.Count + itm)
 
-                SetNumericItem(fn.Value, elm, (elm - 1) * fsl.Count + itm)
+        '    Next
+        'Next
 
-            Next
-        Next
+        Throw New NotImplementedException
+
     End Sub
 
     Public Overrides Sub SetNumericItemsCount(nCount As Integer)
@@ -373,7 +383,7 @@ Public Class CPWAN_HIOKI_PW3337
     End Function
 
     Private Function QueryValueList(ByVal cmdStr As String) As Double()
-
+        Visa.SendString("HEADER OFF")
         Visa.SendString(cmdStr)
         cHelper.Delay(1)
         Return Visa.ReceiveValueList()

@@ -11,7 +11,7 @@ Public Class BCPWAN
     Public Property CurrentMax As Single Implements IPWAN.CurrentMax
     Public Property InputElements As UInteger Implements IPWAN.InputElements
 
-    Public ReadOnly Property FunctionList As SortedList
+    Public ReadOnly Property FunctionList As SortedList(Of String, String)
 
     Public ReadOnly Property _HarmCount As Integer = 50
 
@@ -86,14 +86,14 @@ Public Class BCPWAN
 
     Overridable Function CreateNumericItemsList() As Integer Implements IPWAN.CreateNumericItemsList
 
-        Dim sfl As SortedList = CreateFunctionList()
+        Dim sfl As SortedList(Of String, String) = CreateFunctionList()
         Dim nCount As Integer = 0
 
         For elm As Integer = 1 To 3
 
-            For Each kvp As KeyValuePair(Of String, String) In sfl.Values
+            For Each kvp As KeyValuePair(Of String, String) In sfl
 
-                SetNumericItem(kvp.Value, elm, kvp.Key)
+                SetNumericItem(kvp.Value, elm, sfl.IndexOfKey(kvp.Key))
 
                 nCount += 1
 
@@ -220,12 +220,33 @@ Public Class BCPWAN
 
     End Sub
 
+
     Public Overridable Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+
+        Dim sFN As String
+
+        sFN = GetFunction(nFn)
+
+        Call SetNumericItem(sFN, CInt(elm), itm, ordHarm)
+
+    End Sub
+
+    Public Overridable Sub SetNumericItem(nFn As String, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+
+        Dim sFN As String
+
+        sFN = GetFunction(nFn)
+
+        SetNumericItem(sFN, CInt(elm), itm, ordHarm)
+
+    End Sub
+
+
+    Public Overridable Sub SetNumericItem(nFn As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
 
         Throw New NotImplementedException
 
     End Sub
-
 
     Public Overridable Sub PresetCurrentTransformer(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentTransformer
 
@@ -281,6 +302,20 @@ Public Class BCPWAN
 
     End Function
 
+    Public Overridable Function GetFunctionIndex(nFn As IPWAN.PA_Function, nElm As Integer) As Integer Implements IPWAN.GetFunctionIndex
+
+        Dim nRet As Integer = Integer.MinValue
+
+        If FunctionList.ContainsKey(nFn.ToString) Then
+
+            nRet = FunctionList.IndexOfKey(nFn.ToString)
+
+        End If
+
+        Return nRet
+
+    End Function
+
 
 #End Region
 
@@ -314,13 +349,12 @@ Public Class BCPWAN
 
     End Function
 
-    Overridable Function CreateFunctionList() As SortedList
+    Overridable Function CreateFunctionList() As SortedList(Of String, String)
 
-        Visa.SendString(":NUMERIC:NORMAL:PRESET 3" & Chr(10))
 
         'this is the fix item order within the preset pattern 3 
 
-        Dim fsl As New SortedList
+        Dim fsl As New SortedList(Of String, String)
 
         fsl.Add(IPWAN.PA_Function.Voltage.ToString, "U")
         fsl.Add(IPWAN.PA_Function.Current.ToString, "I")
@@ -361,20 +395,6 @@ Public Class BCPWAN
 
 
         Return sRet
-    End Function
-
-    Overridable Function GetFunctionIndex(nFn As IPWAN.PA_Function, nElm As Integer) As Integer
-
-        Dim nRet As Integer = Integer.MinValue
-
-        If FunctionList.ContainsKey(nFn.ToString) Then
-
-            nRet = FunctionList.IndexOfKey(nFn.ToString)
-
-        End If
-
-        Return nRet
-
     End Function
 
 
