@@ -84,20 +84,31 @@ Public Class BCPWAN
     End Sub
 
 
-    Overridable Function CreateNumericItemsList() As Integer Implements IPWAN.CreateNumericItemsList
+    Overridable Function PresetNumericItemsList() As Integer Implements IPWAN.PresetNumericItemsList
 
         Dim sfl As SortedList(Of String, String) = CreateFunctionList()
         Dim nCount As Integer = 0
 
-        For elm As Integer = 1 To 3
+        Dim paFunctions As Array = System.Enum.GetValues(GetType(IPWAN.PA_Function))
 
-            For Each kvp As KeyValuePair(Of String, String) In sfl
 
-                SetNumericItem(kvp.Value, elm, sfl.IndexOfKey(kvp.Key))
+        For i As Integer = 0 To paFunctions.Length - 1
 
-                nCount += 1
+                Dim fnKey As String = paFunctions(i).ToString
 
-            Next
+                If sfl.ContainsKey(fnKey) Then
+
+                For elm As Integer = 1 To 3
+
+                    SetNumericItem(sfl.Item(fnKey), elm, i)
+
+                    cHelper.Delay(0.2)
+
+                    nCount += 1
+
+                Next
+
+            End If
 
         Next
 
@@ -304,15 +315,7 @@ Public Class BCPWAN
 
     Public Overridable Function GetFunctionIndex(nFn As IPWAN.PA_Function, nElm As Integer) As Integer Implements IPWAN.GetFunctionIndex
 
-        Dim nRet As Integer = Integer.MinValue
-
-        If FunctionList.ContainsKey(nFn.ToString) Then
-
-            nRet = FunctionList.IndexOfKey(nFn.ToString)
-
-        End If
-
-        Return nRet
+        Throw New NotImplementedException
 
     End Function
 
@@ -361,8 +364,7 @@ Public Class BCPWAN
         fsl.Add(IPWAN.PA_Function.ActivePower.ToString, "P")
         fsl.Add(IPWAN.PA_Function.ApparentPower.ToString, "S")
         fsl.Add(IPWAN.PA_Function.ReactivPower.ToString, "Q")
-        fsl.Add(IPWAN.PA_Function.PF.ToString, "LAMBda")
-        fsl.Add(IPWAN.PA_Function.PhaseDiff.ToString, "PHI")
+        fsl.Add(IPWAN.PA_Function.PF.ToString, "PF")
         fsl.Add(IPWAN.PA_Function.FrequencyU.ToString, "FU")
         fsl.Add(IPWAN.PA_Function.FrequencyI.ToString, "FI")
         fsl.Add(IPWAN.PA_Function.VoltPeakPlus, "UPP")

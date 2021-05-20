@@ -40,25 +40,24 @@
 
     Enum PA_Function
         Voltage = 1
-        Current = 2
-        ActivePower = 3
-        ApparentPower = 4
-        ReactivPower = 5
-        PF = 6
-        PhaseDiff = 7
-        FrequencyU = 8
-        FrequencyI = 9
-        VoltPeakPlus = 10
-        VoltPeakMinus = 11
-        CurrentPeakPlus = 12
-        CurrentPeakMinus = 13
-        PowerPeakPlus = 14
-        PowerPeakMinus = 15
-        PFtot = 16
-        THDvolt = 17
-        THDCurr = 18
-        IntegratedActivePower = 19
-        IntegratedCurrent = 20
+        VoltPeakPlus = 2
+        VoltPeakMinus = 3
+        Current = 4
+        CurrentPeakPlus = 5
+        CurrentPeakMinus = 6
+        ActivePower = 7
+        PowerPeakPlus = 8
+        PowerPeakMinus = 9
+        ApparentPower = 10
+        ReactivPower = 11
+        PF = 12
+        PFtot = 13
+        FrequencyU = 14
+        FrequencyI = 15
+        THDvolt = 16
+        THDCurr = 17
+        IntegratedActivePower = 18
+        IntegratedCurrent = 19
     End Enum
 
     Enum PA_Attributes
@@ -125,7 +124,7 @@
     Sub SetNumericItem(nFn As String, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
     Sub SetNumericItem(nFn As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
 
-    Function CreateNumericItemsList() As Integer
+    Function PresetNumericItemsList() As Integer
 
     Sub SetTHDNorm(nTHDNorm As IPWAN.THDNorm)
     Sub SetInputMode(iMode As IPWAN.RectifierMode)

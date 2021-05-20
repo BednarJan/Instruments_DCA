@@ -33,13 +33,13 @@ Public Class CPWAN_HIOKI_PW3337
         Visa.SendString("HEADER OFF" & Chr(10))
 
         SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.a, IPWAN.RectifierMode.AC, "1")
-        SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.b, IPWAN.RectifierMode.AC, "1")
-        SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.c, IPWAN.RectifierMode.AC, "1")
-        SetDisplayItem(IPWAN.PA_Function.Voltage, IPWAN.PA_Display.d, IPWAN.RectifierMode.AC, "0")
+        SetDisplayItem(IPWAN.PA_Function.Current, IPWAN.PA_Display.b, IPWAN.RectifierMode.AC, "1")
+        SetDisplayItem(IPWAN.PA_Function.ActivePower, IPWAN.PA_Display.c, IPWAN.RectifierMode.AC, "1")
+        SetDisplayItem(IPWAN.PA_Function.PF, IPWAN.PA_Display.d, IPWAN.RectifierMode.AC, "1")
 
         ClearNumericItems()
 
-        Dim nItemsCount As Integer = CreateNumericItemsList()
+        Dim nItemsCount As Integer = PresetNumericItemsList()
 
     End Sub
 #End Region
@@ -73,7 +73,7 @@ Public Class CPWAN_HIOKI_PW3337
     Public Overrides Sub SetNumericItem(sFN As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
         Dim cmdStr As String
 
-        cmdStr = ":MEASURE:NORMAL:ITEM:" & sFN & ":" & elm.ToString & " 1" & "," & itm.ToString
+        cmdStr = ":MEASURE:NORMAL:ITEM:" & sFN & ":CH" & elm.ToString & " 1"
         If ordHarm > 0 Then
             cmdStr = cmdStr & "," & ordHarm
         End If
@@ -82,9 +82,9 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Sub
 
-    Overrides Function CreateNumericItemsList() As Integer Implements IPWAN.CreateNumericItemsList
+    Overrides Function PresetNumericItemsList() As Integer Implements IPWAN.PresetNumericItemsList
 
-        Return MyBase.CreateNumericItemsList
+        Return MyBase.PresetNumericItemsList
 
     End Function
 
@@ -311,12 +311,16 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Function
 
+    Public Overrides Function GetFunctionIndex(nFn As IPWAN.PA_Function, nElm As Integer) As Integer Implements IPWAN.GetFunctionIndex
+
+        Return 3 * (CInt(nFn) - 1) + nElm - 1
+
+    End Function
+
 
 #End Region
 
 #Region "Public Special Functions HIOKI PW3337"
-
-
 
     Overrides Function CreateFunctionList() As SortedList(Of String, String)
 
@@ -329,7 +333,6 @@ Public Class CPWAN_HIOKI_PW3337
         fsl.Add(IPWAN.PA_Function.ApparentPower.ToString, "S")
         fsl.Add(IPWAN.PA_Function.ReactivPower.ToString, "Q")
         fsl.Add(IPWAN.PA_Function.PF.ToString, "PF")
-        fsl.Add(IPWAN.PA_Function.PhaseDiff.ToString, "DEG")
         fsl.Add(IPWAN.PA_Function.FrequencyU.ToString, "FREQU")
         fsl.Add(IPWAN.PA_Function.FrequencyI.ToString, "FREQI")
         fsl.Add(IPWAN.PA_Function.VoltPeakPlus.ToString, "U_MAX")

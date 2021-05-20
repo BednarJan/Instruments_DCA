@@ -35,7 +35,7 @@ Public Class BCPWAN_YOKO
         Visa.SendString(":DISPLAY:NORMAL:ITEM3 P" & Chr(10))
         Visa.SendString(":DISPLAY:NORMAL:ITEM4 LAMB" & Chr(10))
 
-        Dim nItemsCount As Integer = CreateNumericItemsList()
+        Dim nItemsCount As Integer = PresetNumericItemsList()
         SetNumericItemsCount(nItemsCount)
 
     End Sub
@@ -126,9 +126,9 @@ Public Class BCPWAN_YOKO
 
     End Sub
 
-    Overrides Function CreateNumericItemsList() As Integer Implements IPWAN.CreateNumericItemsList
+    Overrides Function PresetNumericItemsList() As Integer Implements IPWAN.PresetNumericItemsList
 
-        Return MyBase.CreateNumericItemsList
+        Return MyBase.PresetNumericItemsList
 
     End Function
 
