@@ -427,7 +427,7 @@ Public Class BCPWAN_YOKO
 
         Visa.SendString(cmdStr)
         cHelper.Delay(1)
-        Return Visa.ReceiveValueList()
+        Return Visa.ReceiveValueList(";")
 
     End Function
 

@@ -1,4 +1,5 @@
 ﻿Public Interface IDAQ
+    Inherits IDevice
 
 #Region "Properties (Set & Get)"
 
@@ -24,19 +25,14 @@
 
 #Region "Methods (Sub & Functions)"
 
-    Property ScanList As CScanList
+    Property ScanList As List(Of CDAQChannel)
 
-    Function Get_Volt_DC(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
-    Function Get_Volt_AC(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
-    Function Get_Curr_DC(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
-    Function Get_Curr_AC(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
-    Function Get_Res(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
-    Function Get_FRes(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
-    Function Get_FReq(ByVal Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single
+    Function MeasChannel(Chan As CDAQChannel, Optional Sample As Integer = 1) As Single
 
-    Function Get_Sample_Volt_DC(ByVal Chan As Integer, ByVal Sample As Integer) As Single
+    Function QueryNumericItems() As Double()
 
-    'Function ScanChannels(ChanList As Integer(), Funct As IDAQ.DAQ_Function) As Decimal()
+    Sub RouteClose(ByVal nModul As Integer, ByVal Chan As Integer)
+    Sub RouteOpen(ByVal nModul As Integer, ByVal Chan As Integer)
 
 #End Region
 

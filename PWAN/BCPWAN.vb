@@ -259,6 +259,13 @@ Public Class BCPWAN
 
     End Sub
 
+    Public Overridable Sub PresetCurrentProbe(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentProbe
+
+        Throw New NotImplementedException
+
+    End Sub
+
+
     Public Overridable Sub PresetCurrentTransformer(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentTransformer
 
         Throw New NotImplementedException
@@ -328,7 +335,7 @@ Public Class BCPWAN
 
         Visa.SendString(":MEAS:HARM:VALUE?")
         cHelper.Delay(1)
-        Return Visa.ReceiveValueList()
+        Return Visa.ReceiveValueList(";")
 
     End Function
 

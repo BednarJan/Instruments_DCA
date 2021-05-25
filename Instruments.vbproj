@@ -83,8 +83,10 @@
     <Compile Include="CInstrumentException.vb" />
     <Compile Include="CPapouch_SB485.vb" />
     <Compile Include="DAQ\BCDAQ.vb" />
-    <Compile Include="DAQ\CDAQ_AGIL34980A.vb" />
-    <Compile Include="DAQ\CScanList.vb" />
+    <Compile Include="DAQ\CDAQChannel.vb" />
+    <Compile Include="DAQ\CDAQ_AGIL34980A_org.vb" />
+    <Compile Include="DAQ\CDAQ_AGIL_34980A.vb" />
+    <Compile Include="DAQ\CDAQ_AGIL_34970A.vb" />
     <Compile Include="frmDeviceControl.designer.vb">
       <DependentUpon>frmDeviceControl.vb</DependentUpon>
     </Compile>

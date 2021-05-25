@@ -5,11 +5,13 @@ Public Class BCDAQ
     Implements IDAQ
 
 #Region "Shorthand Properties"
+
     Public Property VoltageMax As Single Implements IDAQ.VoltageMax
     Public Property CurrentMax As Single Implements IDAQ.CurrentMax
-    Public Property ScanList As CScanList Implements IDAQ.ScanList
+    Public Property ScanList As List(Of CDAQChannel) Implements IDAQ.ScanList
 
-    Public ReadOnly Property FunctionList As SortedList
+    Public ReadOnly Property FunctionList As SortedList(Of String, String)
+    Overridable Property ModuleFacor As Integer
 
     Public Property MeasModul As Integer
 
@@ -22,63 +24,99 @@ Public Class BCDAQ
 
         _FunctionList = CreateFunctionList()
 
-        _ScanList = New CScanList
-
-        _MeasModul = 1
+        _ScanList = New List(Of CDAQChannel)
 
     End Sub
 #End Region
 
+#Region "Basic Device Functions (IDevice)"
+
+    Public Overrides Function IDN() As String Implements IDevice.IDN
+        MyBase.IDN()
+    End Function
+
+    Public Overrides Sub RST() Implements IDevice.RST
+        MyBase.RST()
+    End Sub
+
+    Public Overrides Sub CLS() Implements IDevice.CLS
+        MyBase.CLS()
+    End Sub
+
+    Public Overrides Sub Initialize() Implements IDevice.Initialize
+
+        RST()
+        CLS()
+
+    End Sub
+#End Region
 
 #Region "Interface Methodes IDAQ"
 
-    Public Function Get_Volt_DC(Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single Implements IDAQ.Get_Volt_DC
+    Public Overridable Function MeasChannel(Chan As CDAQChannel, Optional Sample As Integer = 1) As Single Implements IDAQ.MeasChannel
 
-        Return MeasChannel(Chan, IDAQ.DAQ_Function.VOLT_DC, sRange, _MeasModul)
-
-    End Function
-
-    Public Function Get_Volt_AC(Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single Implements IDAQ.Get_Volt_AC
-
-        Return MeasChannel(Chan, IDAQ.DAQ_Function.VOLT_AC, sRange, _MeasModul)
+        Throw New NotImplementedException
 
     End Function
 
-    Public Function Get_Curr_DC(Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single Implements IDAQ.Get_Curr_DC
 
-        Return MeasChannel(Chan, IDAQ.DAQ_Function.CURRENT_DC, sRange, _MeasModul)
+    Public Overridable Function QueryNumericItems() As Double() Implements IDAQ.QueryNumericItems
 
-    End Function
+        If _ScanList.Count > 0 AndAlso GetRouteScanSize() <> _ScanList.Count Then
 
-    Public Function Get_Curr_AC(Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single Implements IDAQ.Get_Curr_AC
+            ConfigureChannels()
+            RouteChannels()
 
-        Return MeasChannel(Chan, IDAQ.DAQ_Function.CURRENT_AC, sRange, _MeasModul)
+        End If
 
-    End Function
+        Call Visa.SendString("READ?")
 
-    Public Function Get_Res(Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single Implements IDAQ.Get_Res
+        'cHelper.Delay(2)
 
-        Return MeasChannel(Chan, IDAQ.DAQ_Function.RES, sRange, _MeasModul)
-
-    End Function
-
-    Public Function Get_FRes(Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single Implements IDAQ.Get_FRes
-
-        Return MeasChannel(Chan, IDAQ.DAQ_Function.FRES, sRange, _MeasModul)
+        Return Visa.ReceiveValueList(",")
 
     End Function
 
-    Public Function Get_FReq(Chan As Integer, Optional ByVal sRange As String = "AUTO") As Single Implements IDAQ.Get_FReq
+    Public Sub RouteClose(ByVal nModul As Integer, ByVal Chan As Integer) Implements IDAQ.RouteClose
+        Call SetRelais(nModul, Chan, 1)
+    End Sub
 
-        Return MeasChannel(Chan, IDAQ.DAQ_Function.FREQ, sRange, _MeasModul)
+    Public Sub RouteOPEN(ByVal nModul As Integer, ByVal Chan As Integer) Implements IDAQ.RouteOpen
+        Call SetRelais(nModul, Chan, 0)
+    End Sub
 
-    End Function
+    Public Overridable Sub ConfigureChannels()
 
-    Public Function Get_Sample_Volt_DC(Chan As Integer, Sample As Integer) As Single Implements IDAQ.Get_Sample_Volt_DC
+        For Each Chan As CDAQChannel In _ScanList
 
-        Return GetDAQSample(Chan, IDAQ.DAQ_Function.VOLT_DC, Sample)
+            ConfigureChannel(Chan)
 
-    End Function
+        Next
+
+    End Sub
+
+
+
+    Public Overridable Sub RouteChannel(Chan As CDAQChannel)
+
+        Dim Cmd As String = "ROUTE:SCAN "
+        Cmd &= "(@" & CStr(Chan.Modul * ModuleFacor + Chan.Nr) & ")"
+        Call Visa.SendString(Cmd)
+
+    End Sub
+
+
+    Public Overridable Sub RouteChannels()
+
+        Dim CmdString As String = "ROUTE:SCAN "
+
+        CmdString &= GetScanList()
+
+        Call Visa.SendString(CmdString)
+
+    End Sub
+
+
 
 
 #End Region
@@ -86,15 +124,39 @@ Public Class BCDAQ
 
 #Region "Help functions"
 
-    Private Function QueryValueList(ByVal cmdStr As String) As Single()
+    Overridable Sub SetRelais(ByVal nModul As Integer, ByVal Chan As Integer, State As Boolean)
+        Dim CmdString As String
 
-        Throw New NotImplementedException
+        If State Then CmdString = "ROUT:CLOS " Else CmdString = "ROUT:OPEN "
 
-    End Function
+        CmdString = CmdString & "(@" & (nModul * ModuleFacor + Chan).ToString & ")"
+
+        Visa.SendString(CmdString)
 
 
-    Overridable Function CreateFunctionList() As SortedList
-        Dim fsl As New SortedList From {
+    End Sub
+
+    Overridable Sub ConfigureChannel(Chan As CDAQChannel)
+
+        Dim Cmd As String = "CONF:"
+        Cmd &= GetFunction(Chan.DAQFn) & " "
+
+        If Chan.Range = 0 Then
+            Cmd &= "AUTO"
+        Else
+            Cmd &= Chan.Range.ToString
+        End If
+
+        Cmd &= ", "
+        Cmd &= "(@" & CStr(Chan.Modul * ModuleFacor + Chan.Nr) & ")"
+
+        Call Visa.SendString(Cmd)
+
+    End Sub
+
+
+    Overridable Function CreateFunctionList() As SortedList(Of String, String)
+        Dim fsl As New SortedList(Of String, String) From {
             {IDAQ.DAQ_Function.VOLT_DC.ToString, "VOLT:DC"},
             {IDAQ.DAQ_Function.VOLT_AC.ToString, "VOLT:AC"},
             {IDAQ.DAQ_Function.CURRENT_DC.ToString, "CURR:DC"},
@@ -113,26 +175,32 @@ Public Class BCDAQ
 
         Dim sRet As String = String.Empty
 
-        Dim myKeys As ICollection = FunctionList.Keys
+        If FunctionList.ContainsKey(nFn.ToString) Then
 
-        For i As Integer = 0 To FunctionList.Count - 1
-            If FunctionList.ContainsKey(nFn.ToString) Then
-                sRet = FunctionList.GetByIndex(i).ToString
-            End If
-        Next
+            sRet = FunctionList.Item(nFn.ToString).ToString
+
+        End If
 
         Return sRet
     End Function
 
     Overridable Function GetFunctionIndex(nFn As IDAQ.DAQ_Function, nElm As Integer) As Integer
 
-        Dim nRet As Integer = 0
+        Return CInt(nFn)
 
-        For i As Integer = 0 To FunctionList.Count - 1
+    End Function
 
-            Dim fn As KeyValuePair(Of String, String) = FunctionList(i)
-            If fn.Key = nFn.ToString Then
-                nRet = (nElm - 1) * FunctionList.Count + i + 1
+    Overridable Function GetChannelIndex(ByVal Chan As CDAQChannel) As Integer
+
+        Dim nRet As Integer = Integer.MinValue
+
+        For i As Integer = 0 To _ScanList.Count - 1
+
+            If CInt(_ScanList(i).Nr) = Chan.Nr Then
+
+                nRet = i
+                Exit For
+
             End If
 
         Next
@@ -141,80 +209,62 @@ Public Class BCDAQ
 
     End Function
 
-    Private Function MeasChannel(Chan As Integer, nFn As IDAQ.DAQ_Function, sRange As String, Optional nModul As Integer = 1) As Decimal
-
-        Dim CmdString As String
-        Dim channel As Integer = Chan + nModul * 1000
-
-        CmdString = "CONF:" & GetFunction(nFn) & " " & sRange & ","
-        CmdString &= GetScanList(Chan)
-
-        Call Visa.SendString(CmdString)
-        cHelper.Delay(1)
-
-        Return MeasDecimalValue()
+    Overridable Function GetScanChanne() As String
 
     End Function
 
-    Overridable Function MeasDecimalValue() As Decimal
 
-        Call Visa.SendString("READ?")
+    Overridable Function GetScanList() As String
 
-        Return CDec(Visa.ReceiveValue)
-
-    End Function
-
-    Public Function GetDAQSample(ByVal Chan As Integer, nFn As IDAQ.DAQ_Function, ByVal Sample As Integer) As Single
-
-        Dim ChList As String = GetScanList(Chan)
-
-        Dim CmdString As String = "CONF:"
-        CmdString &= GetFunction(nFn)
-        CmdString &= "AUTO ,DEF, "
-        CmdString &= ChList
-        Visa.SendString(CmdString)
-
-        Visa.SendString("ROUTe:SCAN (@)")
-        Visa.SendString("ROUTe:SCAN " & ChList)
-        Visa.SendString("SAMPle:COUNt " & Sample)
-        Visa.SendString("INITiate")
-        cHelper.Delay(1)
-        Visa.SendString("CALC:AVER:AVER? " & ChList)
-
-        Return Visa.ReceiveValue
-
-    End Function
-
-    Overridable Function GetScanList(Optional nModul As Integer = 1) As String
-
-        Const sStartStr As String = "(@"
-        Const sEndStr As String = ")"
-
-        Dim nDAQChan As Integer = 1000 * nModul
-        Dim sRet As String = sStartStr
+        Dim sRet As String = "(@"
 
         If _ScanList IsNot Nothing Then
 
-            _ScanList.Sort(AddressOf CompareScanListASC)
-
             For i As Integer = 0 To _ScanList.Count - 1
 
-                sRet &= (CInt(_ScanList(i)) + nDAQChan).ToString
-                If (_ScanList.Count > 1) And (i < _ScanList.Count) Then
+                Dim _myChan As CDAQChannel = _ScanList(i)
+
+                sRet &= (_myChan.Modul * ModuleFacor + _myChan.Nr).ToString
+                If (_ScanList.Count > 1) And (i < _ScanList.Count - 1) Then
                     'more items
                     sRet &= ","
                 End If
 
             Next
         End If
-        Return sRet & sEndStr
+        Return sRet & ")"
     End Function
 
-    Overridable Function GetScanList(Chan As Integer, Optional nModul As Integer = 1) As String
+    Private Sub AddChane2ScanList(Chan As CDAQChannel)
 
-        _ScanList.Add(Chan)
+        If Not IsInScanList(Chan) AndAlso Chan IsNot Nothing Then
+            _ScanList.Add(Chan)
+        End If
 
-        Return GetScanList(nModul)
+    End Sub
+
+
+    Private Function IsInScanList(Chan As CDAQChannel) As Boolean
+
+        Dim bRet As Boolean = False
+
+        For Each itm As CDAQChannel In _ScanList
+
+            If itm.Nr = Chan.Nr Then
+                bRet = True
+            End If
+
+        Next
+
+        Return bRet
+
+    End Function
+
+    Overridable Function GetRouteScanSize() As Integer
+
+        Visa.SendString("ROUTE:SCAN:SIZE?")
+
+        Return CInt(Visa.ReceiveValue)
 
     End Function
 

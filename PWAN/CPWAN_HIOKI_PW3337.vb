@@ -101,14 +101,20 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Sub
 
+    Public Overrides Sub PresetCurrentProbe(sRatioInMamps As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentProbe
+
+        Visa.SendString(":CURRENT" & elm & ":EXTRANGE C" & sRatioInMamps)
+        'Visa.SendString(":SCALE" & elm & ":CT " & FormatNumber(1, 2))
+        Visa.SendString(":CURRENT" & elm & ":TYPE TYPE1")
+        SetInputCurrentRange(0)
+
+    End Sub
+
     Public Overrides Sub PresetCurrentTransformer(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentTransformer
 
-        MyBase.PresetCurrentTransformer(sRatio, elm)
-
-        'Visa.SendString(":INPUT:SCALING:STATE OFF")
-        'Visa.SendString(":INPUT:RCONFIG ON")
-        'Visa.SendString(":INPUT:SCALING:CT:ELEMENT" & elm & " " & FormatNumber(sRatio))
-        'Visa.SendString(":INPUT:SCALING:STATE ON")
+        Visa.SendString(":CURRENT" & elm & ":TYPE OFF")
+        Visa.SendString(":SCALE" & elm & ":CT " & FormatNumber(sRatio, 4))
+        SetInputCurrentRange(0)
 
     End Sub
 
@@ -123,10 +129,7 @@ Public Class CPWAN_HIOKI_PW3337
 
     Public Overrides Sub PresetCurrentShunt(shuntRes As Single, sRange As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentShunt
 
-        MyBase.PresetCurrentShunt(shuntRes, sRange, elm)
-
-        'Visa.SendString(":INPUT:CURRENT:RANGE EXTERNAL," & FormatNumber(sRange) & "V")
-        'Visa.SendString(":INPUT:CURRENT:SRATIO:ELEMENT" & elm & " " & FormatNumber(shuntRes))
+        Throw New NotImplementedException
 
     End Sub
 
@@ -152,23 +155,23 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Sub
 
-
-
-
-
     Public Overrides Sub SetInputVoltageRange(Optional nRangeInVolts As Single = 0, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetInputVoltageRange
         If nRangeInVolts = 0 Then
-            Visa.SendString(":INPUT:VOLTAGE:AUTO ON")
+            'Visa.SendString(":VOLTAGE" & elm.ToString & ":AUTO ON")
+            Visa.SendString(":VOLTAGE" & ":AUTO ON")
         Else
-            Visa.SendString(":INPUT:VOLTAGE:RANGE " & FormatNumber(nRangeInVolts, 2) & " V")
+            'Visa.SendString(":VOLTAGE" & elm.ToString & ":RANGE " & FormatNumber(nRangeInVolts, 2))
+            Visa.SendString(":VOLTAGE" & ":RANGE " & FormatNumber(nRangeInVolts, 2))
         End If
     End Sub
 
     Public Overrides Sub SetInputCurrentRange(Optional nRangeInAmps As Single = 0, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.SetInputCurrentRange
         If nRangeInAmps = 0 Then
-            Visa.SendString(":INPUT:CURRENT:AUTO ON")
+            'Visa.SendString(":CURRENT" & elm.ToString & ":AUTO ON")
+            Visa.SendString(":CURRENT" & ":AUTO ON")
         Else
-            Visa.SendString(":INPUT:CURRENT:RANGE " & FormatNumber(nRangeInAmps, 2) & " A")
+            'Visa.SendString(":CURRENT" & elm.ToString & ":RANGE " & FormatNumber(nRangeInAmps, 2))
+            Visa.SendString(":CURRENT" & ":RANGE " & FormatNumber(nRangeInAmps, 2))
         End If
     End Sub
 
@@ -326,29 +329,28 @@ Public Class CPWAN_HIOKI_PW3337
 
         'Fix item order analogical the Yokogawa preset pattern 3 
 
-        Dim fsl As New SortedList(Of String, String)
-        fsl.Add(IPWAN.PA_Function.Voltage.ToString, "U")
-        fsl.Add(IPWAN.PA_Function.Current.ToString, "I")
-        fsl.Add(IPWAN.PA_Function.ActivePower.ToString, "P")
-        fsl.Add(IPWAN.PA_Function.ApparentPower.ToString, "S")
-        fsl.Add(IPWAN.PA_Function.ReactivPower.ToString, "Q")
-        fsl.Add(IPWAN.PA_Function.PF.ToString, "PF")
-        fsl.Add(IPWAN.PA_Function.FrequencyU.ToString, "FREQU")
-        fsl.Add(IPWAN.PA_Function.FrequencyI.ToString, "FREQI")
-        fsl.Add(IPWAN.PA_Function.VoltPeakPlus.ToString, "U_MAX")
-        fsl.Add(IPWAN.PA_Function.VoltPeakMinus.ToString, "U_MIN")
-        fsl.Add(IPWAN.PA_Function.CurrentPeakPlus.ToString, "I_MAX")
-        fsl.Add(IPWAN.PA_Function.CurrentPeakMinus.ToString, "I_MIN")
-        fsl.Add(IPWAN.PA_Function.PowerPeakPlus.ToString, "P_MAX")
-        fsl.Add(IPWAN.PA_Function.PowerPeakMinus.ToString, "P_MIN")
-        fsl.Add(IPWAN.PA_Function.THDvolt.ToString, "UTHD")
-        fsl.Add(IPWAN.PA_Function.THDCurr.ToString, "ITHD")
-        fsl.Add(IPWAN.PA_Function.IntegratedActivePower.ToString, "WP")
-        fsl.Add(IPWAN.PA_Function.IntegratedCurrent.ToString, "IH")
-
+        Dim fsl As New SortedList(Of String, String) From {
+         {IPWAN.PA_Function.Voltage.ToString, "U"},
+        {IPWAN.PA_Function.Current.ToString, "I"},
+        {IPWAN.PA_Function.ActivePower.ToString, "P"},
+        {IPWAN.PA_Function.ApparentPower.ToString, "S"},
+        {IPWAN.PA_Function.ReactivPower.ToString, "Q"},
+        {IPWAN.PA_Function.PF.ToString, "PF"},
+        {IPWAN.PA_Function.FrequencyU.ToString, "FREQU"},
+        {IPWAN.PA_Function.FrequencyI.ToString, "FREQI"},
+        {IPWAN.PA_Function.VoltPeakPlus.ToString, "U_MAX"},
+        {IPWAN.PA_Function.VoltPeakMinus.ToString, "U_MIN"},
+        {IPWAN.PA_Function.CurrentPeakPlus.ToString, "I_MAX"},
+        {IPWAN.PA_Function.CurrentPeakMinus.ToString, "I_MIN"},
+        {IPWAN.PA_Function.PowerPeakPlus.ToString, "P_MAX"},
+        {IPWAN.PA_Function.PowerPeakMinus.ToString, "P_MIN"},
+        {IPWAN.PA_Function.THDvolt.ToString, "UTHD"},
+        {IPWAN.PA_Function.THDCurr.ToString, "ITHD"},
+        {IPWAN.PA_Function.IntegratedActivePower.ToString, "WP"},
+        {IPWAN.PA_Function.IntegratedCurrent.ToString, "IH"}
+        }
 
         Return fsl
-
     End Function
 
     Overrides Sub PresetPattern()
@@ -389,7 +391,7 @@ Public Class CPWAN_HIOKI_PW3337
         Visa.SendString("HEADER OFF")
         Visa.SendString(cmdStr)
         cHelper.Delay(1)
-        Return Visa.ReceiveValueList()
+        Return Visa.ReceiveValueList(";")
 
     End Function
 

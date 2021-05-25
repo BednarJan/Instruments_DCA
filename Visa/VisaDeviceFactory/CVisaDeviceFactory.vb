@@ -9,6 +9,7 @@ Public Class CVisaDeviceFactory
 
         Try
             _Session = Ivi.Visa.GlobalResourceManager.Open(ResourceName)
+            _Session.TimeoutMilliseconds = 5000
 
         Catch ex As Exception
 

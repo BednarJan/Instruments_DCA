@@ -24,6 +24,7 @@ Public Class CVisaDevice
             Try
                 Session.FormattedIO.WriteLine(CMD)
             Catch ex As Exception
+                ErrorMsg = ex.Message
                 _ErrorLogger.LogException(ex, Session.ResourceName)
             End Try
         End If
@@ -39,10 +40,11 @@ Public Class CVisaDevice
 
                 Session.TerminationCharacterEnabled = True
                 Session.TerminationCharacter = termchar
-
+                Session.FormattedIO.DiscardBuffers()
                 Return Session.FormattedIO.ReadUntilMatch(Chr(termchar))
 
             Catch ex As Exception
+                ErrorMsg = ex.Message
                 _ErrorLogger.LogException(ex, Session.ResourceName)
             End Try
         End If
@@ -57,7 +59,10 @@ Public Class CVisaDevice
             Try
                 Return Session.FormattedIO.ReadDouble()
             Catch ex As Exception
+
+                ErrorMsg = ex.Message
                 _ErrorLogger.LogException(ex, Session.ResourceName)
+
             End Try
         End If
 
@@ -98,7 +103,8 @@ Public Class CVisaDevice
 
     'End Function
 
-    Public Function ReceiveValueList(Optional ByRef ErrorMsg As String = "") As Double() Implements IVisaDevice.ReceiveValueList
+
+    Public Function ReceiveValueList(separ As Char, Optional ByRef ErrorMsg As String = "") As Double() Implements IVisaDevice.ReceiveValueList
 
         Dim str As String = String.Empty
         Dim retVal() As Double = New Double() {}
@@ -107,10 +113,13 @@ Public Class CVisaDevice
             Try
 
                 str = ReceiveString()
-                retVal = cHelper.CSVString2DoubleArray(str)
+                retVal = cHelper.CSVString2DoubleArray(str, separ)
 
             Catch ex As Exception
+
+                ErrorMsg = ex.Message
                 _ErrorLogger.LogException(ex, Session.ResourceName)
+
             End Try
 
             Return retVal
