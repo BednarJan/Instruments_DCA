@@ -190,13 +190,13 @@ Public Class BCDAQ
 
     End Function
 
-    Overridable Function GetChannelIndex(ByVal Chan As CDAQChannel) As Integer
+    Overridable Function GetChannelIndex(ByVal ChanNr As Integer) As Integer Implements IDAQ.GetChannelIndex
 
         Dim nRet As Integer = Integer.MinValue
 
         For i As Integer = 0 To _ScanList.Count - 1
 
-            If CInt(_ScanList(i).Nr) = Chan.Nr Then
+            If CInt(_ScanList(i).Nr) = ChanNr Then
 
                 nRet = i
                 Exit For

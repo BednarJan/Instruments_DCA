@@ -31,6 +31,8 @@
 
     Function QueryNumericItems() As Double()
 
+    Function GetChannelIndex(ByVal ChanNr As Integer) As Integer
+
     Sub RouteClose(ByVal nModul As Integer, ByVal Chan As Integer)
     Sub RouteOpen(ByVal nModul As Integer, ByVal Chan As Integer)
 
