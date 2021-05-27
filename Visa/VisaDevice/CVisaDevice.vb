@@ -41,6 +41,7 @@ Public Class CVisaDevice
                 Session.TerminationCharacterEnabled = True
                 Session.TerminationCharacter = termchar
                 Session.FormattedIO.DiscardBuffers()
+
                 Return Session.FormattedIO.ReadUntilMatch(Chr(termchar))
 
             Catch ex As Exception
@@ -129,7 +130,7 @@ Public Class CVisaDevice
     End Function
 
 
-    Public Sub ReadStringToFileRAW(ByVal HardcopyFullFileName As String, Optional termchar As Byte = 10) Implements IVisaDevice.ReadStringToFileRAW
+    Public Sub ReadStringToFileRAW(ByVal HardcopyFullFileName As String, Optional fromFirstChar As Char = "", Optional termchar As Byte = 10) Implements IVisaDevice.ReadStringToFileRAW
 
         Dim _data As Byte()
 
@@ -142,9 +143,27 @@ Public Class CVisaDevice
                 Session.FormattedIO.DiscardBuffers()
                 _data = Session.RawIO.Read(1000000)
 
-                System.IO.File.WriteAllBytes(HardcopyFullFileName, _data)
+                If fromFirstChar <> "" Then
 
+                    Dim srcIndx As Long = Array.IndexOf(Of Byte)(_data, Asc(fromFirstChar))
 
+                    If srcIndx > 0 Then
+
+                        Dim dstIndx As Long = 0
+                        Dim dstLen As Integer = _data.Length - srcIndx
+                        Dim dst(dstLen) As Byte
+
+                        Array.Copy(_data, srcIndx, dst, dstIndx, dstLen)
+
+                        System.IO.File.WriteAllBytes(HardcopyFullFileName, dst)
+
+                    End If
+
+                Else
+
+                    System.IO.File.WriteAllBytes(HardcopyFullFileName, _data)
+
+                End If
 
             Catch ex As Exception
                 _ErrorLogger.LogException(ex, Session.ResourceName)
@@ -152,6 +171,9 @@ Public Class CVisaDevice
         End If
 
     End Sub
+
+
+
 
 #End Region
 

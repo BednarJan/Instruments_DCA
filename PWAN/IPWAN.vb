@@ -4,10 +4,17 @@
 
 #Region "Enum definitions"
     Enum Wiring
-        P1W3 = 1
-        P3W3 = 2
-        P3W4 = 3
-        V3A3 = 4
+        oneP2Wx3 = 1
+        oneP3W_1P2W = 2
+        threP3W_P12W = 3
+        threeP3W2M = 4
+        threeV3A = 5
+        threeP3W3M = 6
+        threeP4W = 7
+        oneP3W = 8
+        threeP3W = 9
+        oneP2W = 10
+
     End Enum
 
     Enum THDNorm

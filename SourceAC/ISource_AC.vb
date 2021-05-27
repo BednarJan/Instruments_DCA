@@ -58,6 +58,13 @@ Public Interface ISource_AC
     Sub SetVoltPuls(ByVal vStart As Single, ByVal vPulse As Single, ByVal Width As Single, Optional ByVal phase As Single = 90)
 
     Function GetStatus() As Single
+
+    Function GetVolt(Optional nPhase As Integer = 1) As Single
+
+    Function GetCurrent(Optional nPhase As Integer = 1) As Single
+
+    Function GetPower(Optional nPhase As Integer = 1) As Single
+
 #End Region
 
 End Interface

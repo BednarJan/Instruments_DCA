@@ -179,13 +179,19 @@ Public Class CPWAN_HIOKI_PW3337
         Dim wirType As String = vbNullString
 
         Select Case iWir
-            Case IPWAN.Wiring.P1W3
+            Case IPWAN.Wiring.oneP2Wx3
+                wirType = "1"
+            Case IPWAN.Wiring.oneP3W_1P2W
                 wirType = "2"
-            Case IPWAN.Wiring.P3W3
+            Case IPWAN.Wiring.threP3W_P12W
                 wirType = "3"
-            Case IPWAN.Wiring.V3A3
+            Case IPWAN.Wiring.threeP3W2M
+                wirType = "4"
+            Case IPWAN.Wiring.threeV3A
                 wirType = "5"
-            Case IPWAN.Wiring.P3W4
+            Case IPWAN.Wiring.threeP3W3M
+                wirType = "6"
+            Case IPWAN.Wiring.threeP4W
                 wirType = "7"
         End Select
 

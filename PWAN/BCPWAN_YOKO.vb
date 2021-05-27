@@ -45,16 +45,16 @@ Public Class BCPWAN_YOKO
     Public Overrides Sub SetWiring(iWir As IPWAN.Wiring) Implements IPWAN.SetWiring
         Dim cmdStr As String = ":INPUT:WIRING"
         Select Case iWir
-            Case IPWAN.Wiring.P1W3
+            Case IPWAN.Wiring.oneP2Wx3, IPWAN.Wiring.oneP2W
+                cmdStr &= " P1W2"
+            Case IPWAN.Wiring.oneP3W
                 cmdStr &= " P1W3"
-            Case IPWAN.Wiring.P3W3
+            Case IPWAN.Wiring.threeP3W
                 cmdStr &= " P3W3"
-            Case IPWAN.Wiring.P3W4
+            Case IPWAN.Wiring.threeP4W
                 cmdStr &= " P3W4"
-            Case IPWAN.Wiring.V3A3
+            Case IPWAN.Wiring.threeV3A
                 cmdStr &= " V3A3"
-            Case Else
-                cmdStr &= " P1W3"
         End Select
 
         Visa.SendString(cmdStr)

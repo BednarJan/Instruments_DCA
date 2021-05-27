@@ -64,6 +64,8 @@ Public Class BCDAQ
 
         If _ScanList.Count > 0 AndAlso GetRouteScanSize() <> _ScanList.Count Then
 
+            _ScanList = _ScanList.OrderBy(Function(x) x.Nr).ToList
+
             ConfigureChannels()
             RouteChannels()
 
@@ -235,7 +237,7 @@ Public Class BCDAQ
         Return sRet & ")"
     End Function
 
-    Private Sub AddChane2ScanList(Chan As CDAQChannel)
+    Overridable Sub AddChane2ScanList(Chan As CDAQChannel) Implements IDAQ.AddChane2ScanList
 
         If Not IsInScanList(Chan) AndAlso Chan IsNot Nothing Then
             _ScanList.Add(Chan)
@@ -266,10 +268,6 @@ Public Class BCDAQ
 
         Return CInt(Visa.ReceiveValue)
 
-    End Function
-
-    Private Function CompareScanListASC(x As Integer, y As Integer) As Integer
-        Return y.CompareTo(x)
     End Function
 
 

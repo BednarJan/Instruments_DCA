@@ -43,7 +43,7 @@ Public Class CScope_RhodeSchwarz_RTM3004
 
         Call Visa.SendString("HCOPy:DATA?")
         Call cHelper.Delay(2)
-        Call Visa.ReadStringToFileRAW(HardcopyFullFileName)
+        Call Visa.ReadStringToFileRAW(HardcopyFullFileName, "‰")
 
     End Sub
 

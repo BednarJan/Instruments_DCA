@@ -51,6 +51,22 @@ End Enum
 
 #End Region
 
+    Public Shared Function GetUniquePictureFileName(ByVal TestResultsPath As String,
+                                             TestName As String,
+                                             fileExt As String) As String
 
+        Dim sRet As String = TestResultsPath & "\ScopePlots\"
+
+        If Not System.IO.Directory.Exists(sRet) Then
+            System.IO.Directory.CreateDirectory(sRet)
+        End If
+
+        sRet &= TestName
+        sRet &= Format(Now(), "ddMMyyyyhhmmss")
+        sRet &= "." & fileExt
+
+        Return sRet
+
+    End Function
 
 End Class

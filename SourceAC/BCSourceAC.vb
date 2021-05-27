@@ -194,6 +194,38 @@ Public Class BCSourceAC
         Return Visa.ReceiveString()
     End Function
 
+    Public Overridable Function GetVolt(Optional nPhase As Integer = 1) As Single Implements ISource_AC.GetVolt
+
+        If nPhase = 1 Then
+            Visa.SendString("MEAS:VOLT:AC?")
+        Else
+
+        End If
+
+    End Function
+
+    Public Overridable Function GetCurrent(Optional nPhase As Integer = 1) As Single Implements ISource_AC.GetCurrent
+
+        If nPhase = 1 Then
+            Visa.SendString("MEAS:CURR:AC?")
+        Else
+
+        End If
+
+    End Function
+
+    Public Overridable Function GetPower(Optional nPhase As Integer = 1) As Single Implements ISource_AC.GetPower
+
+        If nPhase = 1 Then
+            Visa.SendString("MEAS:POW:AC?")
+        Else
+
+        End If
+
+        Return Visa.ReceiveValue()
+
+    End Function
+
 
 #End Region
 

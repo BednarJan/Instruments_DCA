@@ -9,7 +9,7 @@
     Property Channels As CScopeChannels
     Property TimeBase As Single
     Property Trigger As CScopeTrigger
-    ReadOnly Property HardcopyFileFormat As UInteger
+    ReadOnly Property HardcopyFileFormat As String
 
 #End Region
 

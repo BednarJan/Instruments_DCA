@@ -26,7 +26,7 @@ Public Class BCScope
 
     Public Property Trigger As CScopeTrigger Implements IScope.Trigger
 
-    Public ReadOnly Property HardcopyFileFormat As UInteger Implements IScope.HardcopyFileFormat
+    Public ReadOnly Property HardcopyFileFormat As String Implements IScope.HardcopyFileFormat
         Get
 
             If Not String.IsNullOrEmpty(_HardcopyFullFileName) Then

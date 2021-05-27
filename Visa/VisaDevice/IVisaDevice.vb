@@ -13,7 +13,7 @@ Public Interface IVisaDevice
 
     Function ReceiveValueList(separ As Char, Optional ByRef ErrorMsg As String = "") As Double()
 
-    Sub ReadStringToFileRAW(ByVal HardcopyFullFileName As String, Optional termchar As Byte = 10)
+    Sub ReadStringToFileRAW(ByVal HardcopyFullFileName As String, Optional fromFirstChar As Char = "", Optional termchar As Byte = 10)
 
     'Session Config (User Interface)
     Sub ShowConfigUI()

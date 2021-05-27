@@ -26,6 +26,7 @@
 #Region "Methods (Sub & Functions)"
 
     Property ScanList As List(Of CDAQChannel)
+    Sub AddChane2ScanList(Chan As CDAQChannel)
 
     Function MeasChannel(Chan As CDAQChannel, Optional Sample As Integer = 1) As Single
 
