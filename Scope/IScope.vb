@@ -11,6 +11,7 @@
     Property Trigger As CScopeTrigger
     ReadOnly Property HardcopyFileFormat As String
 
+
 #End Region
 
 #Region "Methods (Sub & Functions)"
@@ -31,6 +32,7 @@
     Sub LoadReferenceCurve(sFileName As String, nRef As Integer)
     Sub RefCurveOn(refNr As Integer)
     Sub RefCurveOff(refNr As Integer)
+    Sub SetColorScheme(colScheme As String)
 
     Function MeasDelay(ByVal MeasNr As Integer, ByVal Source1 As String, ByVal slope1 As Integer, ByVal Source2 As String, ByVal slope2 As Integer) As Single
     Function MeasEdge(ByVal MeasNr As Integer, ByVal SOURCE As String, ByVal lowRefLevel As Integer, ByVal highRefLevel As Integer, ByVal slope As Integer) As Single

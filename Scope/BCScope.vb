@@ -4,6 +4,7 @@ Public Class BCScope
     Implements IScope
 
     Private _HardcopyFileFormat As String = "PNG"
+    Private _HardcopyFullFileName As String
 
 #Region "Shorthand Properties"
 
@@ -18,7 +19,23 @@ Public Class BCScope
         End Set
     End Property
 
-    Public Property HardcopyFullFileName As String Implements IScope.HardcopyFullFileName
+    Public Overridable Property HardcopyFullFileName As String Implements IScope.HardcopyFullFileName
+        Get
+            Return _HardcopyFullFileName
+        End Get
+        Set(value As String)
+
+            _HardcopyFullFileName = value
+
+            Dim fi As New System.IO.FileInfo(value)
+            _HardcopyFileFormat = UCase(fi.Extension)
+            _HardcopyFileFormat = _HardcopyFileFormat.Replace(".", "")
+
+            Visa.SendString("HCOPy:FORMat " & _HardcopyFileFormat)
+
+        End Set
+    End Property
+
 
     Public Property Channels As CScopeChannels Implements IScope.Channels
 
@@ -106,8 +123,6 @@ Public Class BCScope
         SetChannel(Chan.ChanNr)
 
     End Sub
-
-
 
     Public Overridable Sub SetChannel(Nr As Integer) Implements IScope.SetChannel
 
@@ -291,6 +306,9 @@ Public Class BCScope
         Throw New NotImplementedException()
     End Function
 
+    Public Overridable Sub SetColorScheme(colScheme As String) Implements IScope.SetColorScheme
+        Throw New NotImplementedException()
+    End Sub
 #End Region
 
 

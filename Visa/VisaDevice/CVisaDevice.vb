@@ -5,6 +5,8 @@ Imports Keysight.Visa
 Public Class CVisaDevice
     Implements IVisaDevice
 
+    Const byteArrSize As Integer = 3000000
+
 #Region "Readonly Properties"
     Public ReadOnly Property ErrorLogger As CErrorLogger Implements IVisaDevice.ErrorLogger
     Public ReadOnly Property Session As IMessageBasedSession Implements IVisaDevice.Session
@@ -13,6 +15,7 @@ Public Class CVisaDevice
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
         _Session = Session
+        _Session.TimeoutMilliseconds = 5000
         _ErrorLogger = ErrorLogger
     End Sub
 #End Region
@@ -129,50 +132,77 @@ Public Class CVisaDevice
 
     End Function
 
-
-    Public Sub ReadStringToFileRAW(ByVal HardcopyFullFileName As String, Optional fromFirstChar As Char = "", Optional termchar As Byte = 10) Implements IVisaDevice.ReadStringToFileRAW
+    Public Sub ReadTextToFile(ByVal HardcopyFullFileName As String, txtEnc As Text.Encoding, Optional fromFirstChar As Char = "", Optional termchar As Byte = 10) Implements IVisaDevice.ReadTextToFile
 
         Dim _data As Byte()
 
-        If Session IsNot Nothing Then
-            Try
+        Try
+            _data = RecBytesRAW(termchar)
 
-                Session.TerminationCharacterEnabled = False
-                Session.TerminationCharacter = termchar
+            If fromFirstChar <> vbNullChar Then
 
-                Session.FormattedIO.DiscardBuffers()
-                _data = Session.RawIO.Read(1000000)
+                Dim srcIndx As Long = Array.IndexOf(Of Byte)(_data, Asc(fromFirstChar))
 
-                If fromFirstChar <> "" Then
+                If srcIndx > 0 Then
 
-                    Dim srcIndx As Long = Array.IndexOf(Of Byte)(_data, Asc(fromFirstChar))
+                    Dim dstIndx As Long = 0
+                    Dim dstLen As Integer = _data.Length - srcIndx
+                    Dim dst(dstLen) As Byte
 
-                    If srcIndx > 0 Then
+                    Array.Copy(_data, srcIndx, dst, dstIndx, dstLen)
 
-                        Dim dstIndx As Long = 0
-                        Dim dstLen As Integer = _data.Length - srcIndx
-                        Dim dst(dstLen) As Byte
-
-                        Array.Copy(_data, srcIndx, dst, dstIndx, dstLen)
-
-                        System.IO.File.WriteAllBytes(HardcopyFullFileName, dst)
-
-                    End If
-
-                Else
-
-                    System.IO.File.WriteAllBytes(HardcopyFullFileName, _data)
+                    System.IO.File.WriteAllText(HardcopyFullFileName, txtEnc.GetString(_data))
 
                 End If
 
-            Catch ex As Exception
-                _ErrorLogger.LogException(ex, Session.ResourceName)
-            End Try
-        End If
+            Else
+
+                System.IO.File.WriteAllText(HardcopyFullFileName, txtEnc.GetString(_data))
+
+            End If
+
+        Catch ex As Exception
+            _ErrorLogger.LogException(ex, Session.ResourceName)
+        End Try
 
     End Sub
 
 
+    Public Sub ReadRAWDataToFile(ByVal HardcopyFullFileName As String, Optional fromFirstChar As Char = "", Optional termchar As Byte = 10) Implements IVisaDevice.ReadRAWDataToFile
+
+        Dim _data As Byte()
+
+        Try
+            _data = RecBytesRAW(termchar)
+
+            If fromFirstChar <> vbNullChar Then
+
+                Dim srcIndx As Long = Array.IndexOf(Of Byte)(_data, Asc(fromFirstChar))
+
+                If srcIndx > 0 Then
+
+                    Dim dstIndx As Long = 0
+                    Dim dstLen As Integer = _data.Length - srcIndx
+                    Dim dst(dstLen) As Byte
+
+                    Array.Copy(_data, srcIndx, dst, dstIndx, dstLen)
+
+                    System.IO.File.WriteAllBytes(HardcopyFullFileName, _data)
+
+
+                End If
+
+            Else
+
+                System.IO.File.WriteAllBytes(HardcopyFullFileName, _data)
+
+            End If
+
+        Catch ex As Exception
+            _ErrorLogger.LogException(ex, Session.ResourceName)
+        End Try
+
+    End Sub
 
 
 #End Region
@@ -201,6 +231,35 @@ Public Class CVisaDevice
         'frmConfigUI.ShowDialog()
 
     End Sub
+#End Region
+
+#Region "Private Functions"
+
+    Function RecBytesRAW(Optional termchar As Byte = 10) As Byte()
+
+        Dim _data As Byte() = New Byte(byteArrSize) {}
+
+        Try
+
+            If Session IsNot Nothing Then
+
+                Session.TerminationCharacterEnabled = False
+                Session.TerminationCharacter = termchar
+
+                Session.FormattedIO.DiscardBuffers()
+                _data = Session.RawIO.Read(3000000)
+
+            End If
+
+        Catch ex As Exception
+            _ErrorLogger.LogException(ex, Session.ResourceName)
+        End Try
+
+        Return _data
+
+    End Function
+
+
 #End Region
 
 End Class

@@ -16,15 +16,15 @@ Public Class BCScopeTEK
 
         MyBase.Initialize()
 
+        Visa.SendString("DISPlay:CLEar:SCReen")
+        Visa.SendString("MENU OFF")
+
         Dim strDate As String = "'" & Format(Now(), "YYYY") & "-"
         strDate &= Format(Now(), "MM") & "-"
         strDate &= Format(Now(), "DD") & "'"
 
         Dim strTime As String = "'" & Format(Now(), "HH:NN:SS") & "'"
 
-
-
-        Visa.SendString("COMMUNICATE:REMOTE ON")
         Visa.SendString("DATE " & strDate)
         Visa.SendString("TIME " & strTime)
 
@@ -37,8 +37,7 @@ Public Class BCScopeTEK
     Public Overrides Sub CaptureScreen2File() Implements IScope.CaptureScreen2File
 
         Call Visa.SendString("HARDCOPY START")
-        Call cHelper.Delay(2)
-        Call Visa.ReadStringToFileRAW(MyBase.HardcopyFullFileName)
+        Call Visa.ReadRAWDataToFile(MyBase.HardcopyFullFileName)
 
     End Sub
 
@@ -241,6 +240,11 @@ Public Class BCScopeTEK
 
     End Function
 
+    Public Overrides Sub SetColorScheme(colScheme As String) Implements IScope.SetColorScheme
+
+        Visa.SendString("HCOPy:COLor:SCHeme " & UCase(colScheme))
+
+    End Sub
 
 #End Region
 
