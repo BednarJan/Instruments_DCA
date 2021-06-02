@@ -5,7 +5,7 @@
 Imports Ivi.Visa
 
 Public Class CPWAN_YOKO_WT333
-    Inherits BCPWAN
+    Inherits BCPWAN_YOKO
     Implements IPWAN
 
 #Region "Shorthand Properties"
@@ -26,6 +26,7 @@ Public Class CPWAN_YOKO_WT333
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
+        MyBase.Initialize()
 
     End Sub
 

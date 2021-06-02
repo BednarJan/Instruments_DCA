@@ -39,7 +39,7 @@ Public Class CPWAN_HIOKI_PW3337
 
         ClearNumericItems()
 
-        Dim nItemsCount As Integer = PresetNumericItemsList()
+        Dim nItemsCount As Integer = CreateNumericNormalItemsList()
 
     End Sub
 #End Region
@@ -58,19 +58,19 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Sub
 
-    Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
 
-        MyBase.SetNumericItem(nFn, elm, itm)
-
-    End Sub
-
-    Public Overrides Sub SetNumericItem(nFn As String, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
-
-        SetNumericItem(nFn, elm, itm, ordHarm)
+        MyBase.SetNumericItem(nFn, itm, elm)
 
     End Sub
 
-    Public Overrides Sub SetNumericItem(sFN As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overrides Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+
+        SetNumericItem(nFn, itm, elm, ordHarm)
+
+    End Sub
+
+    Public Overrides Sub SetNumericItem(sFN As String, itm As Integer, Optional elm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
         Dim cmdStr As String
 
         cmdStr = ":MEASURE:NORMAL:ITEM:" & sFN & ":CH" & elm.ToString & " 1"
@@ -82,9 +82,9 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Sub
 
-    Overrides Function PresetNumericItemsList() As Integer Implements IPWAN.PresetNumericItemsList
+    Overrides Function CreateNumericNormalItemsList() As Integer Implements IPWAN.CreateNumericNormalItemsList
 
-        Return MyBase.PresetNumericItemsList
+        Return MyBase.CreateNumericNormalItemsList
 
     End Function
 
@@ -127,7 +127,7 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Sub
 
-    Public Overrides Sub PresetCurrentShunt(shuntRes As Single, sRange As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentShunt
+    Public Overrides Sub PresetCurrentShunt(resMiliOhms As Single, sRange As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentShunt
 
         Throw New NotImplementedException
 
@@ -138,9 +138,9 @@ Public Class CPWAN_HIOKI_PW3337
         Call SetDisplayItem(IPWAN.PA_Function.Voltage, elm, IPWAN.PA_Display.a)
         Call SetDisplayItem(IPWAN.PA_Function.Current, elm, IPWAN.PA_Display.b)
         Call SetDisplayItem(IPWAN.PA_Function.ActivePower, elm, IPWAN.PA_Display.c)
-        Call SetDisplayItem(IPWAN.PA_Function.IntegratedActivePower, elm, IPWAN.PA_Display.d)
-        Call ClearNumericItems()
-        Call SetNumericItem(IPWAN.PA_Function.IntegratedActivePower, elm)
+        'Call SetDisplayItem(IPWAN.PA_Function.IntegratedActivePower, elm, IPWAN.PA_Display.d)
+        'Call ClearNumericItems()
+        'Call SetNumericItem(IPWAN.PA_Function.IntegratedActivePower, elm)
 
     End Sub
 
@@ -149,9 +149,9 @@ Public Class CPWAN_HIOKI_PW3337
         Call SetDisplayItem(IPWAN.PA_Function.Voltage, elm, IPWAN.PA_Display.a)
         Call SetDisplayItem(IPWAN.PA_Function.Current, elm, IPWAN.PA_Display.b)
         Call SetDisplayItem(IPWAN.PA_Function.ActivePower, elm, IPWAN.PA_Display.c)
-        Call SetDisplayItem(IPWAN.PA_Function.IntegratedCurrent, elm, IPWAN.PA_Display.d)
-        Call ClearNumericItems()
-        Call SetNumericItem(IPWAN.PA_Function.IntegratedCurrent, elm)
+        'Call SetDisplayItem(IPWAN.PA_Function.IntegratedCurrent, elm, IPWAN.PA_Display.d)
+        'Call ClearNumericItems()
+        'Call SetNumericItem(IPWAN.PA_Function.IntegratedCurrent, elm)
 
     End Sub
 
@@ -276,13 +276,13 @@ Public Class CPWAN_HIOKI_PW3337
 
     Public Overrides Function GetUTHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetUTHD
 
-        Return QueryNumericItem(IPWAN.PA_Function.THDvolt, elm)
+        'Return QueryNumericItem(IPWAN.PA_Function.THDvolt, elm)
 
     End Function
 
     Public Overrides Function GetITHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetITHD
 
-        Return QueryNumericItem(IPWAN.PA_Function.THDCurr, elm)
+        'Return QueryNumericItem(IPWAN.PA_Function.THDCurr, elm)
 
     End Function
 
@@ -333,8 +333,6 @@ Public Class CPWAN_HIOKI_PW3337
 
     Overrides Function CreateFunctionList() As SortedList(Of String, String)
 
-        'Fix item order analogical the Yokogawa preset pattern 3 
-
         Dim fsl As New SortedList(Of String, String) From {
          {IPWAN.PA_Function.Voltage.ToString, "U"},
         {IPWAN.PA_Function.Current.ToString, "I"},
@@ -349,11 +347,7 @@ Public Class CPWAN_HIOKI_PW3337
         {IPWAN.PA_Function.CurrentPeakPlus.ToString, "I_MAX"},
         {IPWAN.PA_Function.CurrentPeakMinus.ToString, "I_MIN"},
         {IPWAN.PA_Function.PowerPeakPlus.ToString, "P_MAX"},
-        {IPWAN.PA_Function.PowerPeakMinus.ToString, "P_MIN"},
-        {IPWAN.PA_Function.THDvolt.ToString, "UTHD"},
-        {IPWAN.PA_Function.THDCurr.ToString, "ITHD"},
-        {IPWAN.PA_Function.IntegratedActivePower.ToString, "WP"},
-        {IPWAN.PA_Function.IntegratedCurrent.ToString, "IH"}
+        {IPWAN.PA_Function.PowerPeakMinus.ToString, "P_MIN"}
         }
 
         Return fsl
@@ -384,12 +378,19 @@ Public Class CPWAN_HIOKI_PW3337
 #End Region
 
 #Region "PPrivate  Functions HIOKI PW3337"
-    Private Function QueryNumericItem(nFn As IPWAN.PA_Function, nElm As IPWAN.Elements) As Single
+
+    Private Function QueryNumericItem(Fn As String, nElm As IPWAN.Elements) As Single
 
 
-        Visa.SendString(":MEASURE? " & GetFunction(nFn) & nElm)
+        Visa.SendString(":MEASURE? " & Fn & nElm)
 
         Return Visa.ReceiveValue
+
+    End Function
+
+    Private Function QueryNumericItem(nFn As IPWAN.PA_Function, nElm As IPWAN.Elements) As Single
+
+        QueryNumericItem(GetFunction(nFn), nElm)
 
     End Function
 
@@ -419,9 +420,6 @@ Public Class CPWAN_HIOKI_PW3337
                 Call Visa.SendString(":MEASURE:HARMONIC:ITEM:I:CH" & nElm & " 1")
                 Call Visa.SendString(":MEASURE:HARMONIC:ITEM:U:CH" & nElm & " 0")
             Case IPWAN.PA_Function.Voltage
-                Call Visa.SendString(":MEASURE:HARMONIC:ITEM:I:CH" & nElm & " 0")
-                Call Visa.SendString(":MEASURE:HARMONIC:ITEM:U:CH" & nElm & " 1")
-            Case Else
                 Call Visa.SendString(":MEASURE:HARMONIC:ITEM:I:CH" & nElm & " 0")
                 Call Visa.SendString(":MEASURE:HARMONIC:ITEM:U:CH" & nElm & " 1")
         End Select

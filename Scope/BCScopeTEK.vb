@@ -134,6 +134,10 @@ Public Class BCScopeTEK
 
     End Sub
 
+    Public Overrides Function MeasDelay(MeasNr As Integer, Chan1 As CScopeChannel, slope1 As Integer, Chan2 As CScopeChannel, slope2 As Integer) As Single Implements IScope.MeasDelay
+        Return MeasDelay(MeasNr, Chan1.Name, slope1, Chan2.Name, slope2)
+    End Function
+
     Public Overrides Function MeasDelay(MeasNr As Integer, Source1 As String, slope1 As Integer, Source2 As String, slope2 As Integer) As Single Implements IScope.MeasDelay
         Dim edge1 As String
         Dim edge2 As String
@@ -169,6 +173,10 @@ Public Class BCScopeTEK
 
     End Function
 
+    Public Overrides Function MeasEdge(MeasNr As Integer, Chan1 As CScopeChannel, LowRefLevel As Integer, HighRefLevel As Integer, Slope As Integer) As Single Implements IScope.MeasEdge
+        Return MeasEdge(MeasNr, Chan1.Name, LowRefLevel, HighRefLevel, Slope)
+    End Function
+
     Public Overrides Function MeasEdge(MeasNr As Integer, Source As String, LowRefLevel As Integer, HighRefLevel As Integer, Slope As Integer) As Single Implements IScope.MeasEdge
 
         Dim edge As String = GetSlope(Slope)
@@ -186,10 +194,18 @@ Public Class BCScopeTEK
 
     End Function
 
+    Public Overrides Function MeasFreq(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasFreq
+        Return MeasFreq(MeasNr, Chan.Name)
+    End Function
+
     Public Overrides Function MeasFreq(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasFreq
 
         Return MeasSource(MeasNr, Source1, "FREQ")
 
+    End Function
+
+    Public Overrides Function MeasPK2PK(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasPK2PK
+        Return MeasPK2PK(MeasNr, Chan.Name)
     End Function
 
     Public Overrides Function MeasPK2PK(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPK2PK
@@ -198,10 +214,18 @@ Public Class BCScopeTEK
 
     End Function
 
+    Public Overrides Function MeasRMS(MeasNr As Integer, Chan As CScopeChannel, Optional waitTime As Integer = 1) As Single Implements IScope.MeasRMS
+        MeasRMS(MeasNr, Chan.Name, waitTime)
+    End Function
+
     Public Overrides Function MeasRMS(MeasNr As Integer, Source1 As String, Optional waitTime As Integer = 1) As Single Implements IScope.MeasRMS
 
         Return MeasSource(MeasNr, Source1, "RMS")
 
+    End Function
+
+    Public Overrides Function MeasPOVERSHOOT(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasPOVERSHOOT
+        Return MeasPOVERSHOOT(MeasNr, Chan.Name)
     End Function
 
     Public Overrides Function MeasPOVERSHOOT(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPOVERSHOOT
@@ -210,10 +234,18 @@ Public Class BCScopeTEK
 
     End Function
 
+    Public Overrides Function MeasNOVERSHOOT(MeasNr As Integer, Chan1 As CScopeChannel) As Single Implements IScope.MeasNOVERSHOOT
+        Return MeasNOVERSHOOT(MeasNr, Chan1.Name)
+    End Function
+
     Public Overrides Function MeasNOVERSHOOT(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasNOVERSHOOT
 
         Return MeasSource(MeasNr, Source1, "NOV")
 
+    End Function
+
+    Public Overrides Function MeasIMAX(MeasNr As Integer, Chan1 As CScopeChannel) As Single Implements IScope.MeasIMAX
+        Return MeasIMAX(MeasNr, Chan1.Name)
     End Function
 
     Public Overrides Function MeasIMAX(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasIMAX
@@ -222,10 +254,18 @@ Public Class BCScopeTEK
 
     End Function
 
+    Public Overrides Function MeasIMIN(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasIMIN
+        Return MeasIMIN(MeasNr, Chan.Name)
+    End Function
+
     Public Overrides Function MeasIMIN(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasIMIN
 
         Return MeasSource(MeasNr, Source1, "MINI")
 
+    End Function
+
+    Public Overrides Function MeasHIGH(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasHIGH
+        Return MeasHIGH(MeasNr, Chan.Name)
     End Function
 
     Public Overrides Function MeasHIGH(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasHIGH
@@ -233,6 +273,11 @@ Public Class BCScopeTEK
         Return MeasSource(MeasNr, Source1, "HIGH")
 
     End Function
+
+    Public Overrides Function MeasLOW(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasLOW
+        MeasLOW(MeasNr, Chan.Name)
+    End Function
+
 
     Public Overrides Function MeasLOW(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasLOW
 
@@ -250,12 +295,18 @@ Public Class BCScopeTEK
 
 #Region "Help Meas Functions"
 
+    Overrides Function MeasSource(MeasNr As Integer, Chan As CScopeChannel, MeasType As String) As Single
+
+        MeasSource(MeasNr, Chan.Name, MeasType)
+
+    End Function
+
     Overrides Function MeasSource(MeasNr As Integer, Source As String, MeasType As String) As Single
 
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":SOURCE " & Source)
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":STATE ON")
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":TYPe " & MeasType)
-
+        cHelper.Delay(2)
         Call Visa.SendString("MEASUrement:MEAS" & MeasNr & ":VALue?")
 
         Return CDec(Visa.ReceiveValue)

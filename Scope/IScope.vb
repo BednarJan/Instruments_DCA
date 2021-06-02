@@ -35,16 +35,38 @@
     Sub SetColorScheme(colScheme As String)
 
     Function MeasDelay(ByVal MeasNr As Integer, ByVal Source1 As String, ByVal slope1 As Integer, ByVal Source2 As String, ByVal slope2 As Integer) As Single
+    Function MeasDelay(ByVal MeasNr As Integer, ByVal Chan1 As CScopeChannel, ByVal slope1 As Integer, ByVal Chan2 As CScopeChannel, ByVal slope2 As Integer) As Single
+
     Function MeasEdge(ByVal MeasNr As Integer, ByVal SOURCE As String, ByVal lowRefLevel As Integer, ByVal highRefLevel As Integer, ByVal slope As Integer) As Single
+    Function MeasEdge(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel, ByVal lowRefLevel As Integer, ByVal highRefLevel As Integer, ByVal slope As Integer) As Single
+
+
     Function MeasFreq(ByVal MeasNr As Integer, ByVal sSource1 As String) As Single
+    Function MeasFreq(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel) As Single
+
     Function MeasPK2PK(ByVal MeasNr As Integer, ByVal Source1 As String) As Single
+    Function MeasPK2PK(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel) As Single
+
     Function MeasRMS(ByVal MeasNr As Integer, ByVal sSource1 As String, Optional waitTime As Integer = 1) As Single
+    Function MeasRMS(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel, Optional waitTime As Integer = 1) As Single
+
     Function MeasPOVERSHOOT(ByVal MeasNr As Integer, ByVal sSource1 As String) As Single
+    Function MeasPOVERSHOOT(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel) As Single
+
     Function MeasNOVERSHOOT(ByVal MeasNr As Integer, ByVal sSource1 As String) As Single
+    Function MeasNOVERSHOOT(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel) As Single
+
     Function MeasIMAX(ByVal MeasNr As Integer, ByVal sSource1 As String) As Single
+    Function MeasIMAX(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel) As Single
+
     Function MeasIMIN(ByVal MeasNr As Integer, ByVal sSource1 As String) As Single
+    Function MeasIMIN(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel) As Single
+
     Function MeasHIGH(ByVal MeasNr As Integer, ByVal sSource1 As String) As Single
+    Function MeasHIGH(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel) As Single
+
     Function MeasLOW(ByVal MeasNr As Integer, ByVal sSource1 As String) As Single
+    Function MeasLOW(ByVal MeasNr As Integer, ByVal Chan As CScopeChannel) As Single
 
 #End Region
 

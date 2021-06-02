@@ -58,13 +58,12 @@
         ApparentPower = 10
         ReactivPower = 11
         PF = 12
-        PFtot = 13
-        FrequencyU = 14
-        FrequencyI = 15
-        THDvolt = 16
-        THDCurr = 17
-        IntegratedActivePower = 18
-        IntegratedCurrent = 19
+        FrequencyU = 13
+        FrequencyI = 14
+        'THDvolt = 16
+        'THDCurr = 17
+        'IntegratedActivePower = 18
+        'IntegratedCurrent = 19
     End Enum
 
     Enum PA_Attributes
@@ -127,11 +126,11 @@
 
 
     Sub ClearNumericItems()
-    Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
-    Sub SetNumericItem(nFn As String, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
-    Sub SetNumericItem(nFn As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0)
+    Sub SetNumericItem(nFn As IPWAN.PA_Function, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0)
+    Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0)
+    Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As Integer = 1, Optional ordHarm As Integer = 0)
 
-    Function PresetNumericItemsList() As Integer
+    Function CreateNumericNormalItemsList() As Integer
 
     Sub SetTHDNorm(nTHDNorm As IPWAN.THDNorm)
     Sub SetInputMode(iMode As IPWAN.RectifierMode)

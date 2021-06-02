@@ -266,7 +266,15 @@ Public Class BCScope
         Throw New NotImplementedException()
     End Function
 
+    Public Overridable Function MeasDelay(MeasNr As Integer, Chan1 As CScopeChannel, slope1 As Integer, Chan2 As CScopeChannel, slope2 As Integer) As Single Implements IScope.MeasDelay
+        Throw New NotImplementedException()
+    End Function
+
     Public Overridable Function MeasEdge(MeasNr As Integer, SOURCE As String, lowRefLevel As Integer, highRefLevel As Integer, slope As Integer) As Single Implements IScope.MeasEdge
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasEdge(MeasNr As Integer, Chan As CScopeChannel, lowRefLevel As Integer, highRefLevel As Integer, slope As Integer) As Single Implements IScope.MeasEdge
         Throw New NotImplementedException()
     End Function
 
@@ -274,7 +282,15 @@ Public Class BCScope
         Throw New NotImplementedException()
     End Function
 
+    Public Overridable Function MeasFreq(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasFreq
+        Throw New NotImplementedException()
+    End Function
+
     Public Overridable Function MeasPK2PK(MeasNr As Integer, Source1 As String) As Single Implements IScope.MeasPK2PK
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasPK2PK(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasPK2PK
         Throw New NotImplementedException()
     End Function
 
@@ -282,7 +298,15 @@ Public Class BCScope
         Throw New NotImplementedException()
     End Function
 
+    Public Overridable Function MeasRMS(MeasNr As Integer, Chan As CScopeChannel, Optional waitTime As Integer = 1) As Single Implements IScope.MeasRMS
+        Throw New NotImplementedException()
+    End Function
+
     Public Overridable Function MeasPOVERSHOOT(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasPOVERSHOOT
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasPOVERSHOOT(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasPOVERSHOOT
         Throw New NotImplementedException()
     End Function
 
@@ -290,7 +314,15 @@ Public Class BCScope
         Throw New NotImplementedException()
     End Function
 
+    Public Overridable Function MeasNOVERSHOOT(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasNOVERSHOOT
+        Throw New NotImplementedException()
+    End Function
+
     Public Overridable Function MeasIMAX(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasIMAX
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasIMAX(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasIMAX
         Throw New NotImplementedException()
     End Function
 
@@ -298,7 +330,15 @@ Public Class BCScope
         Throw New NotImplementedException()
     End Function
 
+    Public Overridable Function MeasIMIN(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasIMIN
+        Throw New NotImplementedException()
+    End Function
+
     Public Overridable Function MeasHIGH(MeasNr As Integer, sSource1 As String) As Single Implements IScope.MeasHIGH
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overridable Function MeasHIGH(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasHIGH
         Throw New NotImplementedException()
     End Function
 
@@ -306,9 +346,14 @@ Public Class BCScope
         Throw New NotImplementedException()
     End Function
 
+    Public Overridable Function MeasLOW(MeasNr As Integer, Chan As CScopeChannel) As Single Implements IScope.MeasLOW
+        Throw New NotImplementedException()
+    End Function
+
     Public Overridable Sub SetColorScheme(colScheme As String) Implements IScope.SetColorScheme
         Throw New NotImplementedException()
     End Sub
+
 #End Region
 
 
@@ -367,6 +412,13 @@ Public Class BCScope
         Throw New NotImplementedException
 
     End Function
+
+    Overridable Function MeasSource(MeasNr As Integer, Chan As CScopeChannel, MeasType As String) As Single
+
+        MeasSource(MeasNr, Chan.Name, MeasType)
+
+    End Function
+
 
     Overridable Function MeasSource(MeasNr As Integer, Source1 As String, cmd As String) As Single
 

@@ -22,20 +22,22 @@ Public Class BCPWAN_YOKO
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
-        Visa.SendString("*RST;*CLS" & Chr(10))
-        Visa.SendString(":NUMERIC:FORMAT ASCII" & Chr(10))
-        Visa.SendString(":SYSTEM:COMMUNICATE:COMMAND WT300" & Chr(10))
-        Visa.SendString(":HARMONICS:THD TOTAL" & Chr(10))
-        Visa.SendString(":RATE 500MS" & Chr(10))
-        Visa.SendString(":INPUT:VOLTAGE:AUTO ON" & Chr(10))
-        Visa.SendString(":INPUT:CURRENT:AUTO ON" & Chr(10))
+        Visa.SendString("*RST;*CLS")
+        Visa.SendString(":NUMERIC:FORMAT ASCII")
+        Visa.SendString(":SYSTEM:COMMUNICATE:COMMAND WT300")
+        Visa.SendString(":HARMONICS:THD TOTAL")
+        Visa.SendString(":RATE 500MS")
+        Visa.SendString(":INPUT:VOLTAGE:AUTO ON")
+        Visa.SendString(":INPUT:CURRENT:AUTO ON")
 
-        Visa.SendString(":DISPLAY:NORMAL:ITEM1 U" & Chr(10))
-        Visa.SendString(":DISPLAY:NORMAL:ITEM2 I" & Chr(10))
-        Visa.SendString(":DISPLAY:NORMAL:ITEM3 P" & Chr(10))
-        Visa.SendString(":DISPLAY:NORMAL:ITEM4 LAMB" & Chr(10))
+        Visa.SendString(":DISPLAY:NORMAL:ITEM1 U")
+        Visa.SendString(":DISPLAY:NORMAL:ITEM2 I")
+        Visa.SendString(":DISPLAY:NORMAL:ITEM3 P")
+        Visa.SendString(":DISPLAY:NORMAL:ITEM4 PF")
 
-        Dim nItemsCount As Integer = PresetNumericItemsList()
+        ClearNumericItems()
+
+        Dim nItemsCount As Integer = CreateNumericNormalItemsList()
         SetNumericItemsCount(nItemsCount)
 
     End Sub
@@ -47,7 +49,7 @@ Public Class BCPWAN_YOKO
         Select Case iWir
             Case IPWAN.Wiring.oneP2Wx3, IPWAN.Wiring.oneP2W
                 cmdStr &= " P1W2"
-            Case IPWAN.Wiring.oneP3W
+            Case IPWAN.Wiring.oneP3W, IPWAN.Wiring.oneP3W_1P2W
                 cmdStr &= " P1W3"
             Case IPWAN.Wiring.threeP3W
                 cmdStr &= " P3W3"
@@ -91,10 +93,11 @@ Public Class BCPWAN_YOKO
     Public Overrides Sub ClearNumericItems() Implements IPWAN.ClearNumericItems
 
         Visa.SendString(":NUMERIC:NORMAL:CLEAR ALL")
+        Visa.SendString(":NUMERIC:NORMAL:NUMBER 0")
 
     End Sub
 
-    Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
 
         Dim sFN As String
 
@@ -104,7 +107,7 @@ Public Class BCPWAN_YOKO
 
     End Sub
 
-    Public Overrides Sub SetNumericItem(nFn As String, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overrides Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
 
         Dim sFN As String
 
@@ -114,7 +117,7 @@ Public Class BCPWAN_YOKO
 
     End Sub
 
-    Public Overrides Sub SetNumericItem(sFn As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overrides Sub SetNumericItem(sFn As String, itm As Integer, Optional elm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
         Dim cmdStr As String
 
         cmdStr = ":NUMERIC:NORMAL:ITEM" & itm.ToString & " " & sFn & "," & elm.ToString
@@ -126,9 +129,9 @@ Public Class BCPWAN_YOKO
 
     End Sub
 
-    Overrides Function PresetNumericItemsList() As Integer Implements IPWAN.PresetNumericItemsList
+    Overrides Function CreateNumericNormalItemsList() As Integer Implements IPWAN.CreateNumericNormalItemsList
 
-        Return MyBase.PresetNumericItemsList
+        Return MyBase.CreateNumericNormalItemsList()
 
     End Function
 
@@ -198,15 +201,15 @@ Public Class BCPWAN_YOKO
 
     Public Overrides Function GetUTHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetUTHD
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDvolt, elm))
+        'Dim oVals() As Double = QueryNumericItems()
+        'Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDvolt, elm))
 
     End Function
 
     Public Overrides Function GetITHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetITHD
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDCurr, elm))
+        'Dim oVals() As Double = QueryNumericItems()
+        'Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDCurr, elm))
 
     End Function
 
@@ -274,6 +277,15 @@ Public Class BCPWAN_YOKO
 
     End Sub
 
+    Public Overrides Sub PresetCurrentProbe(sRatioInMamps As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentProbe
+
+        Visa.SendString(":INPUT:SCALING:STATE OFF")
+        Visa.SendString(":INPUT:RCONFIG ON")
+        Visa.SendString(":INPUT:SCALING:CT:ELEMENT" & elm & " " & FormatNumber(sRatioInMamps / 1000))
+        Visa.SendString(":INPUT:SCALING:STATE ON")
+
+    End Sub
+
 
     Public Overrides Sub PresetCurrentTransformer(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentTransformer
 
@@ -292,10 +304,10 @@ Public Class BCPWAN_YOKO
 
     End Sub
 
-    Public Overrides Sub PresetCurrentShunt(shuntRes As Single, sRange As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentShunt
+    Public Overrides Sub PresetCurrentShunt(resMiliOhms As Single, sRange As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentShunt
 
         Visa.SendString(":INPUT:CURRENT:RANGE EXTERNAL," & FormatNumber(sRange) & "V")
-        Visa.SendString(":INPUT:CURRENT:SRATIO:ELEMENT" & elm & " " & FormatNumber(shuntRes))
+        Visa.SendString(":INPUT:CURRENT:SRATIO:ELEMENT" & elm & " " & FormatNumber(resMiliOhms))
 
     End Sub
 
@@ -370,10 +382,9 @@ Public Class BCPWAN_YOKO
 
     Overrides Function GetFunctionIndex(nFn As IPWAN.PA_Function, nElm As Integer) As Integer
 
-        Return MyBase.GetFunctionIndex(nFn, nElm)
+        Return 3 * (CInt(nFn) - 1) + nElm - 1
 
     End Function
-
 
     Overrides Function GetFunction(nFn As IPWAN.PA_Function) As String
 
@@ -392,13 +403,12 @@ Public Class BCPWAN_YOKO
         Call ClearNumericItems()
         Call SetNumericItemsCount(_HarmCount)
 
-        For i As Integer = 1 To _HarmCount
-            Call SetNumericItem(GetFunction(fn), elm, i, i)
-        Next i
+        For itm As Integer = 1 To _HarmCount
+            Call SetNumericItem(GetFunction(fn), elm, itm, itm)
+        Next itm
 
         Call cHelper.Delay(1)
         Dim harm() As Double = QueryNumericItems()
-
 
         Return harm
     End Function
@@ -426,17 +436,34 @@ Public Class BCPWAN_YOKO
     Private Function QueryValueList(ByVal cmdStr As String) As Double()
 
         Visa.SendString(cmdStr)
-        cHelper.Delay(1)
-        Return Visa.ReceiveValueList(";")
+        Return Visa.ReceiveValueList(",")
 
     End Function
 
     Overrides Function CreateFunctionList() As SortedList(Of String, String)
 
-        Return MyBase.CreateFunctionList
+        'this is the fix item order within the preset pattern 3 
+
+        Dim fsl As New SortedList(Of String, String) From {
+        {IPWAN.PA_Function.Voltage.ToString, "U"},
+        {IPWAN.PA_Function.Current.ToString, "I"},
+        {IPWAN.PA_Function.ActivePower.ToString, "P"},
+        {IPWAN.PA_Function.ApparentPower.ToString, "S"},
+        {IPWAN.PA_Function.ReactivPower.ToString, "Q"},
+        {IPWAN.PA_Function.PF.ToString, "LAMBDA"},
+        {IPWAN.PA_Function.FrequencyU.ToString, "FU"},
+        {IPWAN.PA_Function.FrequencyI.ToString, "FI"},
+        {IPWAN.PA_Function.VoltPeakPlus, "UPP"},
+        {IPWAN.PA_Function.VoltPeakMinus.ToString, "UMP"},
+        {IPWAN.PA_Function.CurrentPeakPlus.ToString, "IPP"},
+        {IPWAN.PA_Function.CurrentPeakMinus.ToString, "IMP"},
+        {IPWAN.PA_Function.PowerPeakPlus.ToString, "PPP"},
+        {IPWAN.PA_Function.PowerPeakMinus.ToString, "PMP"}
+        }
+
+        Return fsl
 
     End Function
-
 
 
 #End Region

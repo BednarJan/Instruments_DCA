@@ -43,7 +43,7 @@ Public Class BCPWAN
 
     Public Overrides Sub Initialize() Implements IDevice.Initialize
 
-        MyBase.Initialize()
+        Throw New NotImplementedException
 
     End Sub
 #End Region
@@ -84,27 +84,26 @@ Public Class BCPWAN
     End Sub
 
 
-    Overridable Function PresetNumericItemsList() As Integer Implements IPWAN.PresetNumericItemsList
+    Overridable Function CreateNumericNormalItemsList() As Integer Implements IPWAN.CreateNumericNormalItemsList
 
-        Dim sfl As SortedList(Of String, String) = CreateFunctionList()
-        Dim nCount As Integer = 0
+        Dim item As Integer = 1
 
         Dim paFunctions As Array = System.Enum.GetValues(GetType(IPWAN.PA_Function))
 
 
         For i As Integer = 0 To paFunctions.Length - 1
 
-                Dim fnKey As String = paFunctions(i).ToString
+            Dim fnKey As String = paFunctions(i).ToString
 
-                If sfl.ContainsKey(fnKey) Then
+            If _FunctionList.ContainsKey(fnKey) Then
 
                 For elm As Integer = 1 To 3
 
-                    SetNumericItem(sfl.Item(fnKey), elm, i)
+                    SetNumericItem(_FunctionList.Item(fnKey), item, elm)
 
                     cHelper.Delay(0.2)
 
-                    nCount += 1
+                    item += 1
 
                 Next
 
@@ -112,7 +111,7 @@ Public Class BCPWAN
 
         Next
 
-        Return nCount
+        Return item
 
     End Function
 
@@ -232,7 +231,7 @@ Public Class BCPWAN
     End Sub
 
 
-    Public Overridable Sub SetNumericItem(nFn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overridable Sub SetNumericItem(nFn As IPWAN.PA_Function, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
 
         Dim sFN As String
 
@@ -242,7 +241,7 @@ Public Class BCPWAN
 
     End Sub
 
-    Public Overridable Sub SetNumericItem(nFn As String, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overridable Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
 
         Dim sFN As String
 
@@ -253,7 +252,7 @@ Public Class BCPWAN
     End Sub
 
 
-    Public Overridable Sub SetNumericItem(nFn As String, Optional elm As Integer = 1, Optional itm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overridable Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
 
         Throw New NotImplementedException
 
@@ -278,7 +277,7 @@ Public Class BCPWAN
 
     End Sub
 
-    Public Overridable Sub PresetCurrentShunt(shuntRes As Single, sRange As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentShunt
+    Public Overridable Sub PresetCurrentShunt(resMiliOhms As Single, sRange As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentShunt
 
         Throw New NotImplementedException
 
@@ -361,27 +360,7 @@ Public Class BCPWAN
 
     Overridable Function CreateFunctionList() As SortedList(Of String, String)
 
-
-        'this is the fix item order within the preset pattern 3 
-
-        Dim fsl As New SortedList(Of String, String)
-
-        fsl.Add(IPWAN.PA_Function.Voltage.ToString, "U")
-        fsl.Add(IPWAN.PA_Function.Current.ToString, "I")
-        fsl.Add(IPWAN.PA_Function.ActivePower.ToString, "P")
-        fsl.Add(IPWAN.PA_Function.ApparentPower.ToString, "S")
-        fsl.Add(IPWAN.PA_Function.ReactivPower.ToString, "Q")
-        fsl.Add(IPWAN.PA_Function.PF.ToString, "PF")
-        fsl.Add(IPWAN.PA_Function.FrequencyU.ToString, "FU")
-        fsl.Add(IPWAN.PA_Function.FrequencyI.ToString, "FI")
-        fsl.Add(IPWAN.PA_Function.VoltPeakPlus, "UPP")
-        fsl.Add(IPWAN.PA_Function.VoltPeakMinus.ToString, "UMP")
-        fsl.Add(IPWAN.PA_Function.CurrentPeakPlus.ToString, "IPP")
-        fsl.Add(IPWAN.PA_Function.CurrentPeakMinus.ToString, "IMP")
-        fsl.Add(IPWAN.PA_Function.PowerPeakPlus.ToString, "PPP")
-        fsl.Add(IPWAN.PA_Function.PowerPeakMinus.ToString, "PMP")
-
-        Return fsl
+        Throw New NotImplementedException
 
     End Function
 

@@ -63,7 +63,9 @@ Public Class CSourceAC_CHROMA_6560
     End Sub
 
     Public Overrides Sub SetVoltage(Voltage As Single, CurrentLim As Single, Optional Phase As ISource_AC.EPhaseNumber = ISource_AC.EPhaseNumber.All, Optional SetOutON As Boolean = True) Implements ISource_AC.SetVoltage
-        MyBase.SetVoltage(Voltage, CurrentLim, ISource_AC.EPhaseNumber.All, SetOutON)
+
+        MyBase.SetVoltage(Voltage / 2, CurrentLim, ISource_AC.EPhaseNumber.All, SetOutON)
+
     End Sub
 
     Public Overrides Sub SetVoltage(Voltage As Single, Optional SetOutON As Boolean = True) Implements ISource_AC.SetVoltage
@@ -108,7 +110,6 @@ Public Class CSourceAC_CHROMA_6560
 
     Public Overrides Sub SetPhaseMode(PhaseMode As ISource_AC.EPhaseMode) Implements ISource_AC.SetPhaseMode
 
-        Throw New CInstrumentException(New NotImplementedException, Visa.Session.ResourceName)
 
     End Sub
 
