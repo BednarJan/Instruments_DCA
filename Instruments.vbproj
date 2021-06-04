@@ -109,6 +109,7 @@
     <Compile Include="OfflineHandler\OfflineHandler.vb" />
     <Compile Include="PWAN\BCPWAN_YOKO.vb" />
     <Compile Include="PWAN\BCPWAN.vb" />
+    <Compile Include="PWAN\CNumericNormalItem.vb" />
     <Compile Include="PWAN\CPWAN_HIOKI_PW3337.vb" />
     <Compile Include="PWAN\CPWAN_YOKO_WT200.vb" />
     <Compile Include="PWAN\CPWAN_YOKO_WT333.vb" />

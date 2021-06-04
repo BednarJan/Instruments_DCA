@@ -48,6 +48,10 @@ Public Class CPWAN_HIOKI_PW3337
 
     Public Overrides Function QueryNumericItems() As Double() Implements IPWAN.QueryNumericItems
 
+        If IsEmptyNumericNormaltemsList Then
+            CreateNumericNormalItemsList()
+        End If
+
         Return QueryValueList(":MEASURE?")
 
     End Function
@@ -58,24 +62,15 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Sub
 
-    Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
-
-        MyBase.SetNumericItem(nFn, itm, elm)
-
-    End Sub
-
-    Public Overrides Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
-
-        SetNumericItem(nFn, itm, elm, ordHarm)
-
-    End Sub
-
-    Public Overrides Sub SetNumericItem(sFN As String, itm As Integer, Optional elm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overrides Sub SetNumericItem(_NNItem As CNumericNormalItem) Implements IPWAN.SetNumericItem
         Dim cmdStr As String
 
-        cmdStr = ":MEASURE:NORMAL:ITEM:" & sFN & ":CH" & elm.ToString & " 1"
-        If ordHarm > 0 Then
-            cmdStr = cmdStr & "," & ordHarm
+        cmdStr = ":MEASURE:NORMAL:ITEM:"
+        cmdStr &= _NNItem.Fn
+        cmdStr &= ":CH" & _NNItem.Elm & " 1"
+
+        If _NNItem.OrderHarm > 0 Then
+            cmdStr &= "," & _NNItem.OrderHarm
         End If
 
         Visa.SendString(cmdStr)
@@ -304,19 +299,27 @@ Public Class CPWAN_HIOKI_PW3337
 
     End Function
 
-    Public Overrides Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single() Implements IPWAN.GetHarmonicsU
+    Public Overrides Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Double() Implements IPWAN.GetHarmonicsU
 
-        Call PresetHarmonics(IPWAN.PA_Function.Voltage, elm)
+        If IsEmptyHarmonicsList Then
 
-        Return getHarmonics(elm, IPWAN.PA_Function.Voltage)
+            Call PresetHarmonics(IPWAN.PA_Function.Voltage, elm)
+
+        End If
+
+        Return QueryHarmonicItems(elm, IPWAN.PA_Function.Voltage)
 
     End Function
 
-    Public Overrides Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single() Implements IPWAN.GetHarmonicsI
+    Public Overrides Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Double() Implements IPWAN.GetHarmonicsI
 
-        Call PresetHarmonics(IPWAN.PA_Function.Current, elm)
+        If IsEmptyHarmonicsList Then
 
-        Return getHarmonics(elm, IPWAN.PA_Function.Current)
+            Call PresetHarmonics(IPWAN.PA_Function.Voltage, elm)
+
+        End If
+
+        Return QueryHarmonicItems(elm, IPWAN.PA_Function.Current)
 
     End Function
 
@@ -395,6 +398,7 @@ Public Class CPWAN_HIOKI_PW3337
     End Function
 
     Private Function QueryValueList(ByVal cmdStr As String) As Double()
+
         Visa.SendString("HEADER OFF")
         Visa.SendString(cmdStr)
         cHelper.Delay(1)
@@ -411,9 +415,11 @@ Public Class CPWAN_HIOKI_PW3337
 
     Private Sub PresetHarmonics(nFn As IPWAN.PA_Function, nElm As IPWAN.Elements)
 
+        HarmonicsList.Clear()
+
         Call Visa.SendString(":MEASURE:HARMONIC:ITEM:ALLC")
         Call Visa.SendString(":MEASURE:HARMONIC:ITEM:LIST 1,0,0,0,0,0")
-        Call Visa.SendString(":MEASURE:HARMONIC:ITEM:ORDER 0," & CStr(_HarmCount) & ",ALL")
+        Call Visa.SendString(":MEASURE:HARMONIC:ITEM:ORDER 0," & CStr(HarmCount) & ",ALL")
 
         Select Case nFn
             Case IPWAN.PA_Function.Current

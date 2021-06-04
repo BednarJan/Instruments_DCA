@@ -153,5 +153,41 @@ Public Class cHelper
 
     End Function
 
+    Public Shared Function GetMaxValue(ByVal vals() As Double) As Double
+
+        Dim maxVal As Double = Double.MinValue
+
+        If vals.Length <> 0 Then
+
+            For Each num As Double In vals
+
+                maxVal = Math.Max(maxVal, num)
+
+            Next
+
+        End If
+
+        Return maxVal
+
+    End Function
+
+    Public Shared Function GetMinValue(ByVal vals() As Double) As Double
+        Dim minVal As Double = Double.MaxValue
+
+        If vals.Length <> 0 Then
+
+            For Each num As Double In vals
+
+                minVal = Math.Min(minVal, num)
+
+            Next
+
+        End If
+
+        Return minVal
+
+    End Function
+
+
 
 End Class

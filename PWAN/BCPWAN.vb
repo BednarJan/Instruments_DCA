@@ -13,9 +13,40 @@ Public Class BCPWAN
 
     Public ReadOnly Property FunctionList As SortedList(Of String, String)
 
-    Public ReadOnly Property _HarmCount As Integer = 50
+    Public ReadOnly Property HarmCount As Integer = 50
+    Public Property NumericNormaltemsList As List(Of CNumericNormalItem)
+    Public Property HarmonicsList As List(Of CNumericNormalItem)
+
+    Public ReadOnly Property IsEmptyNumericNormaltemsList As Boolean
+        Get
+            If _NumericNormaltemsList IsNot Nothing AndAlso _NumericNormaltemsList.Count > 0 Then
+
+                Return False
+            Else
+                Return True
+            End If
+
+        End Get
+    End Property
+
+    Public ReadOnly Property IsEmptyHarmonicsList As Boolean
+        Get
+            If _HarmonicsList IsNot Nothing AndAlso _HarmonicsList.Count > 0 Then
+
+                Return False
+            Else
+                Return True
+            End If
+
+        End Get
+    End Property
+
+
 
 #End Region
+
+
+
 
 #Region "Constructor"
     Public Sub New(Session As IMessageBasedSession, ErrorLogger As CErrorLogger)
@@ -89,7 +120,9 @@ Public Class BCPWAN
         Dim item As Integer = 1
 
         Dim paFunctions As Array = System.Enum.GetValues(GetType(IPWAN.PA_Function))
+        Dim _NNItem As CNumericNormalItem
 
+        _NumericNormaltemsList = New List(Of CNumericNormalItem)
 
         For i As Integer = 0 To paFunctions.Length - 1
 
@@ -99,7 +132,11 @@ Public Class BCPWAN
 
                 For elm As Integer = 1 To 3
 
-                    SetNumericItem(_FunctionList.Item(fnKey), item, elm)
+                    _NNItem = New CNumericNormalItem(GetFunction(paFunctions(i)), item, elm)
+
+                    SetNumericItem(_NNItem)
+
+                    _NumericNormaltemsList.Add(_NNItem)
 
                     cHelper.Delay(0.2)
 
@@ -212,13 +249,13 @@ Public Class BCPWAN
 
     End Function
 
-    Public Overridable Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single() Implements IPWAN.GetHarmonicsU
+    Public Overridable Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Double() Implements IPWAN.GetHarmonicsU
 
         Throw New NotImplementedException
 
     End Function
 
-    Public Overridable Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single() Implements IPWAN.GetHarmonicsI
+    Public Overridable Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Double() Implements IPWAN.GetHarmonicsI
 
         Throw New NotImplementedException
 
@@ -230,33 +267,12 @@ Public Class BCPWAN
 
     End Sub
 
-
-    Public Overridable Sub SetNumericItem(nFn As IPWAN.PA_Function, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
-
-        Dim sFN As String
-
-        sFN = GetFunction(nFn)
-
-        Call SetNumericItem(sFN, CInt(elm), itm, ordHarm)
-
-    End Sub
-
-    Public Overridable Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
-
-        Dim sFN As String
-
-        sFN = GetFunction(nFn)
-
-        SetNumericItem(sFN, CInt(elm), itm, ordHarm)
-
-    End Sub
-
-
-    Public Overridable Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overridable Sub SetNumericItem(_NNItem As CNumericNormalItem) Implements IPWAN.SetNumericItem
 
         Throw New NotImplementedException
 
     End Sub
+
 
     Public Overridable Sub PresetCurrentProbe(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentProbe
 
@@ -330,7 +346,7 @@ Public Class BCPWAN
 
 #Region "Help functions"
 
-    Overridable Function getHarmonics(elm As Integer, fn As IPWAN.PA_Function)
+    Overridable Function QueryHarmonicItems()
 
         Visa.SendString(":MEAS:HARM:VALUE?")
         cHelper.Delay(1)
@@ -369,6 +385,12 @@ Public Class BCPWAN
         Throw New NotImplementedException
 
     End Sub
+
+    Public Overridable Function GetNumericItemsCount() As Integer
+
+        Throw New NotImplementedException
+
+    End Function
 
 
     Overridable Function GetFunction(nFn As IPWAN.PA_Function) As String

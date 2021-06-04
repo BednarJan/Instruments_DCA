@@ -6,6 +6,8 @@ Public Class BCPWAN_YOKO
     Inherits BCPWAN
     Implements IPWAN
 
+    Const HarmonicStartPos As Integer = 0
+
 #Region "Shorthand Properties"
 
 #End Region
@@ -86,6 +88,16 @@ Public Class BCPWAN_YOKO
 
     Public Overrides Function QueryNumericItems() As Double() Implements IPWAN.QueryNumericItems
 
+        If Not IsEmptyHarmonicsList Then
+            HarmonicsList.Clear()
+        End If
+
+        If IsEmptyNumericNormaltemsList Then
+            CreateNumericNormalItemsList()
+        End If
+
+        Dim dummy() As Double = QueryValueList(":NUMERIC:NORMAL:VALUE?")
+        cHelper.Delay(0.5)
         Return QueryValueList(":NUMERIC:NORMAL:VALUE?")
 
     End Function
@@ -97,32 +109,17 @@ Public Class BCPWAN_YOKO
 
     End Sub
 
-    Public Overrides Sub SetNumericItem(nFn As IPWAN.PA_Function, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
-
-        Dim sFN As String
-
-        sFN = GetFunction(nFn)
-
-        Call SetNumericItem(sFN, CInt(elm), itm, ordHarm)
-
-    End Sub
-
-    Public Overrides Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
-
-        Dim sFN As String
-
-        sFN = GetFunction(nFn)
-
-        SetNumericItem(sFN, CInt(elm), itm, ordHarm)
-
-    End Sub
-
-    Public Overrides Sub SetNumericItem(sFn As String, itm As Integer, Optional elm As Integer = 1, Optional ordHarm As Integer = 0) Implements IPWAN.SetNumericItem
+    Public Overrides Sub SetNumericItem(_NNItem As CNumericNormalItem) Implements IPWAN.SetNumericItem
         Dim cmdStr As String
 
-        cmdStr = ":NUMERIC:NORMAL:ITEM" & itm.ToString & " " & sFn & "," & elm.ToString
-        If ordHarm > 0 Then
-            cmdStr = cmdStr & "," & ordHarm
+        cmdStr = ":NUMERIC:NORMAL:ITEM"
+        cmdStr &= _NNItem.Itm.ToString & " "
+        cmdStr &= _NNItem.Fn & ","
+        cmdStr &= _NNItem.Elm
+
+        If _NNItem.OrderHarm <> String.Empty Then
+
+            cmdStr &= "," & _NNItem.OrderHarm
         End If
 
         Visa.SendString(cmdStr)
@@ -138,115 +135,115 @@ Public Class BCPWAN_YOKO
 
     Public Overrides Function GetVrms(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVrms
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.Voltage, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.Voltage, elm)
 
     End Function
 
     Public Overrides Function GetVPeakPlus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVPeakPlus
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.VoltPeakPlus, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.VoltPeakPlus, elm)
 
     End Function
 
     Public Overrides Function GetVPeakMinus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetVPeakMinus
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.VoltPeakMinus, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.VoltPeakMinus, elm)
 
     End Function
 
     Public Overrides Function GetIrms(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIrms
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.Current, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.Current, elm)
 
     End Function
 
     Public Overrides Function GetIPeakPlus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIPeakPlus
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.CurrentPeakPlus, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.CurrentPeakPlus, elm)
 
     End Function
 
     Public Overrides Function GetIPeakMinus(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetIPeakMinus
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.CurrentPeakMinus, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.CurrentPeakMinus, elm)
 
     End Function
 
     Public Overrides Function GetPactive(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPactive
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ActivePower, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.ActivePower, elm)
 
     End Function
 
     Public Overrides Function GetPapparent(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPapparent
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ApparentPower, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.ApparentPower, elm)
 
     End Function
 
     Public Overrides Function GetPreact(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPreact
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.ReactivPower, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.ReactivPower, elm)
 
     End Function
 
     Public Overrides Function GetUTHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetUTHD
 
-        'Dim oVals() As Double = QueryNumericItems()
-        'Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDvolt, elm))
+        Dim harm() As Double = GetHarmonicsU(elm)
+
+        'very last item is always THD
+        Return harm(harm.Length - 1)
 
     End Function
 
     Public Overrides Function GetITHD(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetITHD
 
-        'Dim oVals() As Double = QueryNumericItems()
-        'Return oVals(GetFunctionIndex(IPWAN.PA_Function.THDCurr, elm))
+        Dim harm() As Double = GetHarmonicsI(elm)
+
+        'very last item is always THD
+        Return harm(harm.Length - 1)
 
     End Function
 
     Public Overrides Function GetFreqU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetFreqU
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.FrequencyU, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.FrequencyU, elm)
 
     End Function
 
     Public Overrides Function GetFreqI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetFreqI
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.FrequencyI, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.FrequencyI, elm)
 
     End Function
 
     Public Overrides Function GetPF(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single Implements IPWAN.GetPF
 
-        Dim oVals() As Double = QueryNumericItems()
-        Return oVals(GetFunctionIndex(IPWAN.PA_Function.PF, elm))
+        Return QueryNumericItem(IPWAN.PA_Function.PF, elm)
 
     End Function
 
-    Public Overrides Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single() Implements IPWAN.GetHarmonicsU
+    Public Overrides Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Double() Implements IPWAN.GetHarmonicsU
 
-        Dim harm() As Single = getHarmonics(elm, IPWAN.PA_Function.Voltage)
+        If IsEmptyHarmonicsList Then
 
-        Return harm
+            PresetHarmonics("UK", elm)
+
+        End If
+
+        Return QueryHarmonicItems()
 
     End Function
 
-    Public Overrides Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single() Implements IPWAN.GetHarmonicsI
+    Public Overrides Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Double() Implements IPWAN.GetHarmonicsI
 
-        Dim harm() As Single = getHarmonics(elm, IPWAN.PA_Function.Current)
+        If Not IsEmptyNumericNormaltemsList OrElse IsEmptyHarmonicsList Then
 
-        Return harm
+            PresetHarmonics("IK", elm)
+
+        End If
+
+        Return QueryHarmonicItems()
 
     End Function
 
@@ -398,19 +395,75 @@ Public Class BCPWAN_YOKO
 
     End Sub
 
-    Overrides Function getHarmonics(elm As Integer, fn As IPWAN.PA_Function)
+    Public Overrides Function GetNumericItemsCount() As Integer
+
+        Dim ErrorMsg As String = vbNullString
+
+        Call Visa.SendString(":NUMERIC:NORMAL:NUMBER?")
+        Dim nCount As Integer = Visa.ReceiveValue(ErrorMsg)
+
+        Return CInt(nCount)
+
+    End Function
+
+
+    Private Sub PresetHarmonics(Fn As String)
+
+        PresetHarmonics(Fn, IPWAN.Elements.Element1)
+
+    End Sub
+
+    Private Sub PresetHarmonics(Fn As String, Elm As IPWAN.Elements)
+
+        Dim _NNItem As CNumericNormalItem
 
         Call ClearNumericItems()
-        Call SetNumericItemsCount(_HarmCount)
+        NumericNormaltemsList.Clear()
 
-        For itm As Integer = 1 To _HarmCount
-            Call SetNumericItem(GetFunction(fn), elm, itm, itm)
-        Next itm
+        HarmonicsList = New List(Of CNumericNormalItem)
 
-        Call cHelper.Delay(1)
-        Dim harm() As Double = QueryNumericItems()
+        Call SetNumericItemsCount(HarmCount + 3)
 
-        Return harm
+
+        Dim itm As Integer = 1
+
+        _NNItem = New CNumericNormalItem(Fn, HarmonicStartPos + itm, Elm, "TOTAL")
+        HarmonicsList.Add(_NNItem)
+        itm += 1
+
+        _NNItem = New CNumericNormalItem(Fn, HarmonicStartPos + itm, Elm, "DC")
+        HarmonicsList.Add(_NNItem)
+        itm += 1
+
+        Do While itm < HarmCount + 3
+
+            _NNItem = New CNumericNormalItem(Fn, HarmonicStartPos + itm, Elm, (itm - HarmonicStartPos - 2).ToString)
+            HarmonicsList.Add(_NNItem)
+
+            itm += 1
+        Loop
+
+        'THD item as suffix
+
+        Select Case Fn
+            Case "UK"
+                _NNItem = New CNumericNormalItem("UHDFk", HarmonicStartPos + itm, Elm, itm.ToString)
+            Case "IK"
+                _NNItem = New CNumericNormalItem("IHDFk", HarmonicStartPos + itm, Elm, itm.ToString)
+        End Select
+        HarmonicsList.Add(_NNItem)
+
+        For Each _NNItem In HarmonicsList
+            Call SetNumericItem(_NNItem)
+            cHelper.Delay(0.2)
+        Next
+
+    End Sub
+
+    Overrides Function QueryHarmonicItems()
+
+        Return QueryValueList(":NUMERIC:NORMAL:VALUE?")
+
     End Function
 
     Overrides Function GetElement(nElm As Integer) As String
@@ -440,6 +493,20 @@ Public Class BCPWAN_YOKO
 
     End Function
 
+    Private Function QueryNumericItem(fn As IPWAN.PA_Function, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Decimal
+
+        If IsEmptyNumericNormaltemsList Then
+
+            CreateNumericNormalItemsList()
+
+        End If
+
+        Dim oVals() As Double = QueryNumericItems()
+        Return oVals(GetFunctionIndex(fn, elm))
+
+    End Function
+
+
     Overrides Function CreateFunctionList() As SortedList(Of String, String)
 
         'this is the fix item order within the preset pattern 3 
@@ -453,7 +520,7 @@ Public Class BCPWAN_YOKO
         {IPWAN.PA_Function.PF.ToString, "LAMBDA"},
         {IPWAN.PA_Function.FrequencyU.ToString, "FU"},
         {IPWAN.PA_Function.FrequencyI.ToString, "FI"},
-        {IPWAN.PA_Function.VoltPeakPlus, "UPP"},
+        {IPWAN.PA_Function.VoltPeakPlus.ToString, "UPP"},
         {IPWAN.PA_Function.VoltPeakMinus.ToString, "UMP"},
         {IPWAN.PA_Function.CurrentPeakPlus.ToString, "IPP"},
         {IPWAN.PA_Function.CurrentPeakMinus.ToString, "IMP"},

@@ -119,16 +119,14 @@
     Function GetFreqU(Optional elm As Elements = Elements.Element1) As Single
     Function GetFreqI(Optional elm As Elements = Elements.Element1) As Single
 
-    Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single()
-    Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Single()
+    Function GetHarmonicsU(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Double()
+    Function GetHarmonicsI(Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) As Double()
 
     Function GetFunctionIndex(nFn As IPWAN.PA_Function, nElm As Integer) As Integer
 
 
     Sub ClearNumericItems()
-    Sub SetNumericItem(nFn As IPWAN.PA_Function, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0)
-    Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1, Optional ordHarm As Integer = 0)
-    Sub SetNumericItem(nFn As String, itm As Integer, Optional elm As Integer = 1, Optional ordHarm As Integer = 0)
+    Sub SetNumericItem(_NNItem As CNumericNormalItem)
 
     Function CreateNumericNormalItemsList() As Integer
 
