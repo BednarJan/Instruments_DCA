@@ -112,6 +112,7 @@
     <Compile Include="PWAN\CNumericNormalItem.vb" />
     <Compile Include="PWAN\CPWAN_HIOKI_PW3337.vb" />
     <Compile Include="PWAN\CPWAN_YOKO_WT200.vb" />
+    <Compile Include="PWAN\CPWAN_YOKO_WT333E.vb" />
     <Compile Include="PWAN\CPWAN_YOKO_WT333.vb" />
     <Compile Include="PWAN\CPWAN_YOKO_WT310.vb" />
     <Compile Include="PWAN\IPWAN.vb" />

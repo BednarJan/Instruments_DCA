@@ -29,6 +29,7 @@ Public Class CVisaDevice
             Catch ex As Exception
                 ErrorMsg = ex.Message
                 _ErrorLogger.LogException(ex, Session.ResourceName)
+                Throw New CInstrumentException(ex, Session.ResourceName)
             End Try
         End If
 
@@ -50,6 +51,7 @@ Public Class CVisaDevice
             Catch ex As Exception
                 ErrorMsg = ex.Message
                 _ErrorLogger.LogException(ex, Session.ResourceName)
+                Throw New CInstrumentException(ex, Session.ResourceName)
             End Try
         End If
 
@@ -66,6 +68,7 @@ Public Class CVisaDevice
 
                 ErrorMsg = ex.Message
                 _ErrorLogger.LogException(ex, Session.ResourceName)
+                Throw New CInstrumentException(ex, Session.ResourceName)
 
             End Try
         End If
@@ -123,6 +126,7 @@ Public Class CVisaDevice
 
                 ErrorMsg = ex.Message
                 _ErrorLogger.LogException(ex, Session.ResourceName)
+                Throw New CInstrumentException(ex, Session.ResourceName)
 
             End Try
 
@@ -162,7 +166,10 @@ Public Class CVisaDevice
             End If
 
         Catch ex As Exception
+
             _ErrorLogger.LogException(ex, Session.ResourceName)
+            Throw New CInstrumentException(ex, Session.ResourceName)
+
         End Try
 
     End Sub
@@ -199,7 +206,10 @@ Public Class CVisaDevice
             End If
 
         Catch ex As Exception
+
             _ErrorLogger.LogException(ex, Session.ResourceName)
+            Throw New CInstrumentException(ex, Session.ResourceName)
+
         End Try
 
     End Sub
@@ -252,7 +262,10 @@ Public Class CVisaDevice
             End If
 
         Catch ex As Exception
+
             _ErrorLogger.LogException(ex, Session.ResourceName)
+            Throw ex
+
         End Try
 
         Return _data

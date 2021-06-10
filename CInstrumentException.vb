@@ -1,5 +1,5 @@
 ﻿Public Class CInstrumentException
-    Inherits Exception
+    Inherits System.Exception
 #Region "Shorthand Properties"
 
     Public Property VisaAdr As String

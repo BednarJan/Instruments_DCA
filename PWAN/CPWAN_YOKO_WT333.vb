@@ -34,9 +34,34 @@ Public Class CPWAN_YOKO_WT333
 
 #Region "Interface Methodes IPWAN"
 
+
 #End Region
 
 #Region "Public Special Functions "
+
+    Public Overrides Sub PresetCurrentProbe(sRatioInMamps As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentProbe
+
+        Throw New NotImplementedException
+
+    End Sub
+
+    Public Overrides Sub PresetCurrentTransformer(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentTransformer
+
+        Throw New NotImplementedException
+
+    End Sub
+
+    Public Overrides Sub PresetVoltDivider(sRatio As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetVoltDivider
+
+        Throw New NotImplementedException
+
+    End Sub
+
+    Public Overrides Sub PresetCurrentShunt(resMiliOhms As Single, sRange As Single, Optional elm As IPWAN.Elements = IPWAN.Elements.Element1) Implements IPWAN.PresetCurrentShunt
+
+        Throw New NotImplementedException
+
+    End Sub
 
 
 #End Region

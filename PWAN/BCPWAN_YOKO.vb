@@ -96,9 +96,9 @@ Public Class BCPWAN_YOKO
             CreateNumericNormalItemsList()
         End If
 
-        Dim dummy() As Double = QueryValueList(":NUMERIC:NORMAL:VALUE?")
-        cHelper.Delay(0.5)
-        Return QueryValueList(":NUMERIC:NORMAL:VALUE?")
+        'Dim dummy() As Double = QueryValueList(":NUMERIC:NORMAL:VALUE?;*WAI?")
+        'cHelper.Delay(0.5)
+        Return QueryValueList(":NUMERIC:NORMAL:VALUE?;*WAI?")
 
     End Function
 
@@ -331,9 +331,6 @@ Public Class BCPWAN_YOKO
         Call Visa.SendString("INTEGRATE:TYPE STANdard")
 
     End Sub
-
-
-
 
     Public Overrides Sub StartIntegration() Implements IPWAN.StartIntegration
 
